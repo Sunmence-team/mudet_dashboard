@@ -14,11 +14,13 @@ const Navbar = () => {
     const navItems = [
         {
             name: 'Dashboard',
+            // icon: <MdOutlineDashboard size={20} />,
             path: '/user/overview',
             role: ["user"]
         },
         {
             name: 'Network',
+            // icon: <PiNetwork size={20} />,
             path: '/user/network',
             role: ["user"]
         },
@@ -35,8 +37,9 @@ const Navbar = () => {
             role: ["user"]
         },
         {
-            name: 'Products',
-            path: '/user/products',
+            name: 'Register',
+            // icon: <PiNetwork size={20} />,
+            path: '/user/register',
             role: ["user"]
         },
     ];
