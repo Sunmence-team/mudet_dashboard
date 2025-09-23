@@ -16,7 +16,7 @@ const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
                 as="div"
                 title={`View ${user.username} info`}
                 ref={refs.setReference}
-                className="group bg-primary text-tetiary cursor-pointer thiscard rounded-full transition-all duration-300 w-[200px] relative text-sm p-2"
+                className="group bg-primary border-x-5 border-secondary text-tetiary cursor-pointer thiscard rounded-full transition-all duration-300 w-[200px] relative text-sm p-2"
             >
                 <div className="flex flex-row gap-3 items-center">
                     <div className="md:w-11 w-10 md:h-11 h-10 rounded-full border-2 border-[#D9D9D9] bg-[#D9D9D9] text-primary overflow-hidden uppercase font-extrabold flex items-center justify-center">
@@ -43,8 +43,8 @@ const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
                     </div>
                 )}
             </Popover.Button>
-            {isExpanded && user.left && <div className="absolute left-[49%] -translate-x-1/2 -bottom-7 w-[1px] h-8 bg-black -z-1"></div>}
-            {isExpanded && user.right && <div className="absolute left-[59%] -translate-x-1/2 -bottom-7 w-[1px] h-8 bg-black -z-1"></div>}
+            {isExpanded && user.left && <div className="absolute left-[49%] -translate-x-1/2 -bottom-7 h-8 border-[.5px] border-black -z-1"></div>}
+            {isExpanded && user.right && <div className="absolute left-[59%] -translate-x-1/2 -bottom-7 h-8 border-[.5px] border-black -z-1"></div>}
 
             <Popover.Panel
                 ref={refs.setFloating}
