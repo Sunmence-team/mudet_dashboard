@@ -6,6 +6,7 @@ import Overview from "./pages/user/Overview";
 import Profile from './pages/user/Profile';
 import Deposit from './pages/user/Deposit';
 import Network from './pages/user/Network';
+import Products from './pages/user/Products';
 
 function App() {
   
@@ -16,6 +17,11 @@ function App() {
         <Route 
           path={"/user/overview"}
           element={<MainLayout child={<Overview />} />}
+        />
+
+        <Route 
+          path={"/user/products"}
+          element={<MainLayout child={<Products />} />}
         />
         <Route 
           path={"/user/profile"}

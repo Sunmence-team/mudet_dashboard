@@ -1,11 +1,101 @@
-import React from 'react'
+import React from "react";
+import SearchInput from "../../components/SearchInput";
+import PackageCard from "../../components/cards/PackageCard";
+import OverviewCard from "../../components/cards/OverviewCard";
+import AnnouncementCard from "../../components/cards/AnnouncementCard";
+import MembersCard from "../../components/cards/MembersCard";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Overview = () => {
-  return (
-    <div>Overview</div>
-  )
-}
+  const topWallets = [
+    {
+      walletType: "E-Wallet",
+      walletBalance: "2,344,000",
+      path: "/user/",
+      pathName: "Fund Wallet",
+    },
+    {
+      walletType: "Incentive Wallet",
+      walletBalance: "0",
+      path: "/user/",
+      pathName: "Withdraw",
+    },
+    {
+      walletType: "Repurchase Wallet",
+      walletBalance: "0",
+      path: "/user/",
+      pathName: "Repurchase Wallet",
+    },
+  ];
 
-export default Overview
+  const otherWallets = [
+    {
+      walletType: "Total Credit",
+      walletBalance: "0",
+      path: "/user/",
+      pathName: "History",
+    },
+    {
+      walletType: "Earning Wallet",
+      walletBalance: "0",
+      path: "/user/",
+      pathName: "Transfer",
+    },
+    {
+      walletType: "Total Debit",
+      walletBalance: "0",
+      path: "/user/",
+      pathName: "History",
+    },
+    {
+      walletType: "Unilevel Wallet",
+      walletBalance: "0",
+      path: "/user/",
+      // pathName: "Repurchase Wallet",
+    },
+  ];
+  const firstName = "Dorcas";
+  return (
+    <div className="flex flex-col gap-7">
+      <div className="flex justify-between lg:items-center items-start gap-4">
+        <div className="flex flex-col text-justify">
+          <h3 className="text-xl font-semibold">Hello, {firstName}</h3>
+          <p className="text-base">Here’s your dashboard overview</p>
+        </div>
+        <div className="">
+          <SearchInput />
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row items-end gap-4 w-full">
+        <div className="w-full lg:w-[25%]">
+          <PackageCard />
+        </div>
+        <div className="flex flex-col gap-4 lg:w-[75%] w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
+            {topWallets.map((wallet, index) => (
+              <OverviewCard details={wallet} key={index} />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {otherWallets.map((wallet, index) => (
+              <OverviewCard details={wallet} key={index} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-between gap-6 lg:flex-row flex-col md:flex-row md:flex-wrap lg:flex-nowrap">
+        <div className="lg:w-[65%] w-full lg:mx-0 mx-auto">
+          <AnnouncementCard />
+        </div>
+        <div className="lg:w-[35%] w-full lg:mx-0 mx-auto">
+          <MembersCard />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Overview;

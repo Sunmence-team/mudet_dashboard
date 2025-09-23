@@ -34,6 +34,11 @@ const Navbar = () => {
             path: '/user/deposit',
             role: ["user"]
         },
+        {
+            name: 'Products',
+            path: '/user/products',
+            role: ["user"]
+        },
     ];
 
     // const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
