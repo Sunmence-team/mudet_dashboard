@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+*{
+  font-family: "Raleway", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+@theme {
+  --color-primary: #2B7830;
+  --color-secondary: #A9890B;
+  --color-tetiary: #EFF7F0;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+.no-scrollbar::-webkit-scrollbar{
+  @apply hidden
+}
+.styled-scrollbar::-webkit-scrollbar{
+  @apply w-1 h-1
+}
+.styled-scrollbar::-webkit-scrollbar-thumb{
+  @apply bg-primary/40 rounded-full
+}
+
+.nav-links::after {
+  content: "";
+  @apply absolute -bottom-0 left-0 w-0 h-1 bg-primary rounded-full transition-all duration-500
+}
+
+.nav-links:hover::after,
+.nav-links.active::after{
+  @apply w-full
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.slide-in {
+  animation: slide-in 0.5s forwards;
+}
+.slide-out {
+  animation: slide-out 0.5s forwards;
+}
