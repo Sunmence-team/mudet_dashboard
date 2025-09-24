@@ -24,9 +24,10 @@ const Profile = () => {
 
   return (
     <div className="">
+      <h2 className="text-xl font-semibold mb-5">Profile</h2>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_3fr] gap-6">
         
-        <div className="bg-white  rounded-2xl shadow flex flex-col items-center border">
+        <div className="bg-white  rounded-2xl shadow flex flex-col items-center">
           <div className="w-30 h-30 flex items-center justify-center rounded-full bg-[var(--color-primary)]/30 text-green-900 font-bold text-[36px] mt-6">
             OD
           </div>
