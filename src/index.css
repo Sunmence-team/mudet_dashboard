@@ -1,39 +1,40 @@
 @import "tailwindcss";
 
-*{
+* {
   font-family: "Raleway", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
 }
 
 @theme {
-  --color-primary: #2B7830;
-  --color-secondary: #A9890B;
-  --color-tetiary: #EFF7F0;
+  --color-primary: #2b7830;
+  --color-secondary: #a9890b;
+  --color-tetiary: #eff7f0;
 }
 
-html, body {
+html,
+body {
   overflow-x: hidden;
 }
 
-.no-scrollbar::-webkit-scrollbar{
-  @apply hidden
+.no-scrollbar::-webkit-scrollbar {
+  @apply hidden;
 }
-.styled-scrollbar::-webkit-scrollbar{
-  @apply w-1 h-1
+.styled-scrollbar::-webkit-scrollbar {
+  @apply w-1 h-1;
 }
-.styled-scrollbar::-webkit-scrollbar-thumb{
-  @apply bg-primary/40 rounded-full
+.styled-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-primary/40 rounded-full;
 }
 
 .nav-links::after {
   content: "";
-  @apply absolute -bottom-0 left-0 w-0 h-1 bg-primary rounded-full transition-all duration-500
+  @apply absolute -bottom-0 left-0 w-0 h-1 bg-primary rounded-full transition-all duration-500;
 }
 
 .nav-links:hover::after,
-.nav-links.active::after{
-  @apply w-full
+.nav-links.active::after {
+  @apply w-full;
 }
 
 @keyframes slide-in {
@@ -63,4 +64,40 @@ html, body {
 }
 .slide-out {
   animation: slide-out 0.5s forwards;
+}
+
+.thiscard {
+  box-shadow: 2px 2px 5px #0000001a, -2px -2px 5px #0000001a;
+}
+.children-card {
+  position: relative;
+}
+
+.children-card.left-card::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: calc(50% + 15px);
+  height: 50px;
+  border: 0.5px solid #000000;
+  border-width: 2px 0px 0px 2px;
+  z-index: -1;
+}
+
+.children-card.right-card::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: 50%;
+  width: calc(49.2%);
+  height: 50px;
+  border: 0.5px solid #000000;
+  border-width: 2px 2px 0px 0px;
+  z-index: -1;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
