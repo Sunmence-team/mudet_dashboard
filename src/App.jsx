@@ -7,6 +7,8 @@ import Profile from './pages/user/Profile';
 import Deposit from './pages/user/Deposit';
 import Network from './pages/user/Network';
 import Register from './pages/user/Register';
+import Products from './pages/user/Products';
+import Cart from './pages/user/CART';
 
 function App() {
   
@@ -33,6 +35,14 @@ function App() {
         <Route 
           path={"/user/register"}
           element={<MainLayout child={<Register />} />}
+        />
+        <Route 
+          path={"/user/products"}
+          element={<MainLayout child={<Products />} />}
+        />
+        <Route 
+          path={"/user/cart"}
+          element={<MainLayout child={<Cart />} />}
         />
       </Routes>
     </>
