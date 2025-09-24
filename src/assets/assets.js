@@ -1,7 +1,10 @@
 import logo from "./images/logo.png";
+import cinamon from "./images/cinamon.png"
 
 const assets = {
-    logo
+    logo,
+    cinamon
+
 }
 
 export default assets;
