@@ -82,7 +82,7 @@ const ProductCard = ({ product }) => {
           <div className="text-lg font-bold text-primary">
             Price: ₦{price.toLocaleString()}
           </div>
-          <div className="text-xs text-secondary">Pv: {pv}</div>
+          <div className="lg:text-base text-sm text-secondary">Pv: {pv}</div>
         </div>
 
         <div className="flex flex-col space-y-2">

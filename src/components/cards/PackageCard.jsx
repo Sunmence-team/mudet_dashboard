@@ -17,11 +17,11 @@ const PackageCard = () => {
           <h2 className="text-[18px] font-semibold">{userDetails.name}</h2>
         </div>
         <div className="flex justify-between items-center gap-4 text-base">
-          <h4>
+          <h4 className="flex gap-1 items-center">
             Package:
             <span className="font-semibold"> {userDetails.package}</span>
           </h4>
-          <h4>
+          <h4 className="flex gap-1 items-center">
             Rank:
             <span className="font-semibold">
               {" "}
