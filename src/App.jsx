@@ -9,6 +9,8 @@ import Network from './pages/user/Network';
 import Register from './pages/user/Register';
 import Products from './pages/user/Products';
 import Cart from './pages/user/CART';
+import Testimonials from './pages/admin/Testimonials';
+import ProductUpload from './pages/admin/ProductUpload';
 
 function App() {
   
@@ -43,6 +45,14 @@ function App() {
         <Route 
           path={"/user/cart"}
           element={<MainLayout child={<Cart />} />}
+        />
+        <Route 
+          path={"/admin/testimonials"}
+          element={<MainLayout child={<Testimonials />} />}
+        />
+        <Route 
+          path={"/admin/product-upload"}
+          element={<MainLayout child={<ProductUpload />} />}
         />
       </Routes>
     </>
