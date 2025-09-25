@@ -10,47 +10,57 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 const Overview = () => {
   const topWallets = [
     {
+      type:"wallet",
       walletType: "E-Wallet",
-      walletBalance: "2,344,000",
+      walletBalance: 2344000,
       path: "/user/",
       pathName: "Fund Wallet",
+      color:"deepGreen",
     },
     {
+      type:"wallet",
       walletType: "Incentive Wallet",
-      walletBalance: "0",
+      walletBalance: 0,
       path: "/user/",
       pathName: "Withdraw",
+      color:"gold"
     },
     {
+      type:"wallet",
       walletType: "Repurchase Wallet",
-      walletBalance: "0",
+      walletBalance: 0,
       path: "/user/",
       pathName: "Repurchase Wallet",
+      color:"lightGreen"
     },
   ];
 
   const otherWallets = [
     {
+      type:"wallet",
       walletType: "Total Credit",
-      walletBalance: "0",
+      walletBalance: 0,
       path: "/user/",
       pathName: "History",
     },
     {
+      type:"wallet",
       walletType: "Earning Wallet",
-      walletBalance: "0",
+      walletBalance: 0,
       path: "/user/",
       pathName: "Transfer",
     },
     {
+      type:"wallet",
       walletType: "Total Debit",
-      walletBalance: "0",
+      walletBalance: 0,
       path: "/user/",
       pathName: "History",
     },
     {
+      type:"wallet",
       walletType: "Unilevel Wallet",
-      walletBalance: "0",
+      walletBalance: 0,
       path: "/user/",
       // pathName: "Repurchase Wallet",
     },
@@ -63,7 +73,7 @@ const Overview = () => {
           <h3 className="text-xl font-semibold">Hello, {firstName}</h3>
           <p className="text-base">Here’s your dashboard overview</p>
         </div>
-        <div className="">
+        <div className="lg:block hidden">
           <SearchInput />
         </div>
       </div>
