@@ -11,6 +11,8 @@ import Register from "./pages/user/Register";
 import Products from "./pages/user/Products";
 import Cart from "./pages/user/CART";
 import Users from "./pages/admin/Users";
+import Testimonials from './pages/admin/Testimonials';
+import ProductUpload from './pages/admin/ProductUpload';
 
 function App() {
   return (
@@ -48,6 +50,18 @@ function App() {
         <Route
           path={"/user/products"}
           element={<MainLayout child={<Products />} />}
+        />
+        <Route 
+          path={"/user/cart"}
+          element={<MainLayout child={<Cart />} />}
+        />
+        <Route 
+          path={"/admin/testimonials"}
+          element={<MainLayout child={<Testimonials />} />}
+        />
+        <Route 
+          path={"/admin/product-upload"}
+          element={<MainLayout child={<ProductUpload />} />}
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
       </Routes>
