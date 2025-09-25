@@ -13,33 +13,6 @@ const Products = () => {
       pv: 16,
       price: 14000,
     },
-    {
-      id: 2,
-      title: "Cinnamon Herbal Extract",
-      description:
-        "Cinnamon herbal extract is derived from the bark of the cinnamon tree.",
-      imageSrc: assets.cinamon,
-      pv: 16,
-      price: 14000,
-    },
-    {
-      id: 3,
-      title: "Cinnamon Herbal Extract",
-      description:
-        "Cinnamon herbal extract is derived from the bark of the cinnamon tree.",
-      imageSrc: assets.cinamon,
-      pv: 16,
-      price: 14000,
-    },
-    {
-      id: 4,
-      title: "Cinnamon Herbal Extract",
-      description:
-        "Cinnamon herbal extract is derived from the bark of the cinnamon tree.",
-      imageSrc: assets.cinamon,
-      pv: 16,
-      price: 14000,
-    },
   ];
   return (
     <div className="flex flex-col gap-4">
