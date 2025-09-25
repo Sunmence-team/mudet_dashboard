@@ -10,55 +10,55 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 const Overview = () => {
   const topWallets = [
     {
-      type:"wallet",
+      type: "wallet",
       walletType: "E-Wallet",
       walletBalance: 2344000,
       path: "/user/",
       pathName: "Fund Wallet",
-      color:"deepGreen",
+      color: "deepGreen",
     },
     {
-      type:"wallet",
+      type: "wallet",
       walletType: "Incentive Wallet",
       walletBalance: 0,
       path: "/user/",
       pathName: "Withdraw",
-      color:"gold"
+      color: "gold",
     },
     {
-      type:"wallet",
+      type: "wallet",
       walletType: "Repurchase Wallet",
       walletBalance: 0,
       path: "/user/",
       pathName: "Repurchase Wallet",
-      color:"lightGreen"
+      color: "lightGreen",
     },
   ];
 
   const otherWallets = [
     {
-      type:"wallet",
+      type: "wallet",
       walletType: "Total Credit",
       walletBalance: 0,
       path: "/user/",
       pathName: "History",
     },
     {
-      type:"wallet",
+      type: "wallet",
       walletType: "Earning Wallet",
       walletBalance: 0,
       path: "/user/",
       pathName: "Transfer",
     },
     {
-      type:"wallet",
+      type: "wallet",
       walletType: "Total Debit",
       walletBalance: 0,
       path: "/user/",
       pathName: "History",
     },
     {
-      type:"wallet",
+      type: "wallet",
       walletType: "Unilevel Wallet",
       walletBalance: 0,
       path: "/user/",
@@ -67,7 +67,7 @@ const Overview = () => {
   ];
   const firstName = "Dorcas";
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-[2rem]">
       <div className="flex justify-between lg:items-center items-start gap-4">
         <div className="flex flex-col text-justify">
           <h3 className="text-xl font-semibold">Hello, {firstName}</h3>
@@ -96,7 +96,7 @@ const Overview = () => {
         </div>
       </div>
 
-      <div className="flex justify-between gap-6 lg:flex-row flex-col md:flex-row md:flex-wrap lg:flex-nowrap">
+      <div className="flex justify-between lg:mt-7 mt-4 gap-9 lg:flex-row flex-col md:flex-row md:flex-wrap lg:flex-nowrap">
         <div className="lg:w-[65%] w-full lg:mx-0 mx-auto">
           <AnnouncementCard />
         </div>

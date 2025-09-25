@@ -5,7 +5,8 @@ import { CgArrowRight } from "react-icons/cg";
 import { Link } from "react-router-dom";
 
 const OverviewCard = ({ details }) => {
-  const { walletType, walletBalance, path, pathName, color, users,type } = details;
+  const { walletType, walletBalance, path, pathName, color, users, type } =
+    details;
 
   const bgColor =
     color === "deepGreen"
@@ -32,12 +33,12 @@ const OverviewCard = ({ details }) => {
           ) : (
             <div className="flex items-center gap-3">
               <p>{users}</p>
-              <Users/>
+              <Users />
             </div>
           )}
         </div>
       </div>
-      <div className="w-full text-[#FFFFFF]/50 font-bold">
+      <div className="w-full text-gray-300 font-bold">
         <hr />
       </div>
       <Link
