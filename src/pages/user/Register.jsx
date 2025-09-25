@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import Step1 from "../steps/Step1";
-import Step2 from "../steps/Step2";
-import Step3 from "../steps/Step3";
-import Step4 from "../steps/Step4";
-import Step5 from "../steps/Step5";
+import Step1 from "./registersteps/Step1";
+import Step2 from "./registersteps/Step2";
+import Step3 from "./registersteps/Step3";
+import Step4 from "./registersteps/Step4";
+import Step5 from "./registersteps/Step5";
 
 const steps = [
   "Initial Registration",
