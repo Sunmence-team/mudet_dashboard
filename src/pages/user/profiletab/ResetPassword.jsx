@@ -62,7 +62,7 @@ const ResetPassword = () => {
         </span>
       </div>
 
-      <button className="bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border text-white text-sm font-medium py-4 px-5 rounded-2xl w-full">
+      <button className="bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border text-white text-sm font-medium py-4 px-5 rounded-4xl w-full">
         Reset Password
       </button>
     </form>
