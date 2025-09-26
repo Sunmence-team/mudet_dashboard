@@ -1,17 +1,19 @@
+import { Users } from "lucide-react";
 import React from "react";
 import { BiWallet } from "react-icons/bi";
 import { CgArrowRight } from "react-icons/cg";
 import { Link } from "react-router-dom";
 
 const OverviewCard = ({ details }) => {
-  const { walletType, walletBalance, path, pathName } = details;
+  const { walletType, walletBalance, path, pathName, color, users, type } =
+    details;
 
   const bgColor =
-    walletType === "E-Wallet"
+    color === "deepGreen"
       ? "#2B7830"
-      : walletType === "Incentive Wallet"
+      : color === "gold"
       ? "#A9890B"
-      : walletType === "Repurchase Wallet"
+      : color === "lightGreen"
       ? "#6CAE0A"
       : "#ffffff";
   const textColor = bgColor === "#ffffff" ? "#000000" : "#ffffff";
@@ -23,13 +25,20 @@ const OverviewCard = ({ details }) => {
       <div className="flex flex-col items-start text-sm lg:text-base font-light">
         <h3>{walletType}</h3>
         <div className="flex gap-2 items-center">
-          <BiWallet size={25} />
-          <h2 className="text-base lg:text-2xl font-semibold">
-            ₦{walletBalance}
-          </h2>
+          {type === "wallet" && <BiWallet size={25} />}
+          {type === "wallet" ? (
+            <h2 className="text-base lg:text-2xl font-semibold">
+              ₦{walletBalance.toLocaleString()}
+            </h2>
+          ) : (
+            <div className="flex items-center gap-3">
+              <p>{users}</p>
+              <Users />
+            </div>
+          )}
         </div>
       </div>
-      <div className="w-full text-[#FFFFFF]/50 font-bold">
+      <div className="w-full text-gray-300 font-bold">
         <hr />
       </div>
       <Link

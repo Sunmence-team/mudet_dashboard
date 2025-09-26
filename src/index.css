@@ -22,10 +22,10 @@ body::-webkit-scrollbar,
   @apply hidden;
 }
 .styled-scrollbar::-webkit-scrollbar {
-  @apply w-1 h-1;
+  @apply lg:w-2 w-1 h-1;
 }
 .styled-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-primary/40 rounded-full;
+  @apply bg-[#cbd5e1] rounded-full;
 }
 
 .nav-links::after {

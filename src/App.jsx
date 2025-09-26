@@ -1,31 +1,30 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from "react-router-dom";
 
 import { Toaster } from "sonner";
-import MainLayout from './layout/MainLayout';
+import MainLayout from "./layout/MainLayout";
 import Overview from "./pages/user/Overview";
-import Profile from './pages/user/Profile';
-import Deposit from './pages/user/Deposit';
-import Network from './pages/user/Network';
-import Register from './pages/user/Register';
-import Products from './pages/user/Products';
-import Cart from './pages/user/CART';
+import AdminOverview from "./pages/admin/AdminOverview";
+import Profile from "./pages/user/Profile";
+import Deposit from "./pages/user/Deposit";
+import Network from "./pages/user/Network";
+import Register from "./pages/user/Register";
+import Products from "./pages/user/Products";
+import Cart from "./pages/user/CART";
+import Users from "./pages/admin/Users";
 import Testimonials from './pages/admin/Testimonials';
 import ProductUpload from './pages/admin/ProductUpload';
 import Login from './auth/Login';
 
 function App() {
-
   return (
     <>
       <Toaster />
       <Routes>
-        <Route path="/login" element={<Login />} />
-
-        <Route
+        <Route 
           path={"/user/overview"}
           element={<MainLayout child={<Overview />} />}
         />
-        <Route
+        <Route 
           path={"/user/profile"}
           element={<MainLayout child={<Profile />} />}
         />
@@ -57,10 +56,10 @@ function App() {
           path={"/admin/product-upload"}
           element={<MainLayout child={<ProductUpload />} />}
         />
+        <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
       </Routes>
     </>
-  )
-
+  );
 }
 
-export default App
+export default App;

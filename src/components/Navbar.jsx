@@ -25,6 +25,18 @@ const Navbar = () => {
       role: ["user"],
     },
     {
+      name: "Dashboard",
+      // icon: <MdOutlineDashboard size={20} />,
+      path: "/admin/overview",
+      role: ["admin"],
+    },
+    {
+      name: "Users",
+      // icon: <MdOutlineDashboard size={20} />,
+      path: "/admin/users",
+      role: ["admin"],
+    },
+    {
       name: "Network",
       // icon: <PiNetwork size={20} />,
       path: "/user/network",
