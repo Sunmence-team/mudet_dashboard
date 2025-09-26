@@ -20,11 +20,21 @@ function App() {
     <>
       <Toaster />
       <Routes>
-        <Route 
+        <Route path="/login" element={<Login />} />
+
+        <Route
           path={"/user/overview"}
           element={<MainLayout child={<Overview />} />}
         />
-        <Route 
+        <Route
+          path={"/admin/overview"}
+          element={<MainLayout child={<AdminOverview />} />}
+        />
+        <Route
+          path={"/admin/users"}
+          element={<MainLayout child={<Users />} />}
+        />
+        <Route
           path={"/user/profile"}
           element={<MainLayout child={<Profile />} />}
         />
