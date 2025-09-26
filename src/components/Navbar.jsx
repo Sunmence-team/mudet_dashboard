@@ -79,6 +79,12 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
+      name: "AllTransactions",
+      // icon: <PiNetwork size={20} />,
+      path: "/admin/transactions",
+      role: ["admin"],
+    },
+    {
       name: "Package Upload",
       // icon: <PiNetwork size={20} />,
       path: "/admin/package-upload",
