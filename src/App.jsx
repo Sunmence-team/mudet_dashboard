@@ -15,6 +15,7 @@ import Testimonials from "./pages/admin/Testimonials";
 import ProductUpload from "./pages/admin/ProductUpload";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./utilities/ProtectRoute";
+import PackageUpload from "./pages/admin/PackageUpload";
 
 function App() {
   return (
@@ -63,6 +64,10 @@ function App() {
         <Route
           path={"/admin/product-upload"}
           element={<MainLayout child={<ProductUpload />} />}
+        />
+        <Route
+          path={"/admin/package-upload"}
+          element={<MainLayout child={<PackageUpload />} />}
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
       </Routes>
