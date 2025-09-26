@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { setupInterceptors } from "../utilities/api";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -93,6 +94,10 @@ export const UserProvider = ({ children }) => {
       }, 100);
     }
   };
+
+  useEffect(() => {
+    setupInterceptors(logout);
+  }, []);
 
   return (
     <UserContext.Provider

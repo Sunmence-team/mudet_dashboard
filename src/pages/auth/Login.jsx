@@ -5,6 +5,8 @@ import assets from "../../assets/assets";
 import { useUser } from "../../context/UserContext";
 import axios from "axios";
 import { toast } from "sonner";
+import api from "../../utilities/api";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -19,7 +21,9 @@ const loginSchema = Yup.object().shape({
 
 
 const Login = () => {
-  const { login } = useUser()
+  const { login } = useUser();
+  const navigate = useNavigate()
+
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -30,12 +34,7 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Form submitted:', values);
       try {
-        const response = await axios.post(`${API_URL}/api/login`, values, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-
+        const response = await api.post(`/api/login`, values)
         console.log("response", response)
 
        if (response.status === 200) {
