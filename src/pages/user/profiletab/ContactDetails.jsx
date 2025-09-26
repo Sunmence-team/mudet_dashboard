@@ -42,7 +42,7 @@ const ContactDetails = () => {
       {/* Save Button */}
       <button
         type="submit"
-        className="bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border-1 text-white text-sm font-medium py-4 px-5 rounded-2xl w-full"
+        className="bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border-1 text-white text-sm font-medium py-4 px-5 rounded-4xl w-full"
       >
         Save Contact Details
       </button>

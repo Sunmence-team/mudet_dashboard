@@ -78,6 +78,18 @@ const Navbar = () => {
       path: "/admin/product-upload",
       role: ["admin"],
     },
+    {
+      name: "AllUsers",
+      // icon: <PiNetwork size={20} />,
+      path: "/admin/users",
+      role: ["admin"],
+    },
+    {
+      name: "AllTransactions",
+      // icon: <PiNetwork size={20} />,
+      path: "/admin/transactions",
+      role: ["admin"],
+    },
   ];
 
   // const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
