@@ -94,7 +94,7 @@ const Register = () => {
               >
                 <div
                   className={`flex items-center justify-center w-12 h-12 rounded-full border-2 absolute top-1/2 -translate-y-1/2
-                    ${isCompleted || isActive ? "border-primary text-primary bg-white" : "border-green-300 text-gray-500 bg-white"}
+                    ${isCompleted || isActive ? "border-primary text-primary bg-white" : "border-primary/40 text-gray-500 bg-white"}
                     ${index === 0 ? "left-0" : "-ml-6"}
                   `}
                 >
