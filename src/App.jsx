@@ -9,10 +9,12 @@ import Deposit from "./pages/user/Deposit";
 import Network from "./pages/user/Network";
 import Register from "./pages/user/Register";
 import Products from "./pages/user/Products";
-import Cart from "./pages/user/CART";
+import Cart from "./pages/user/Cart";
 import Users from "./pages/admin/Users";
-import Testimonials from './pages/admin/Testimonials';
-import ProductUpload from './pages/admin/ProductUpload';
+import Testimonials from "./pages/admin/Testimonials";
+import ProductUpload from "./pages/admin/ProductUpload";
+import Login from "./pages/auth/Login";
+import ProtectedRoute from "./utilities/ProtectRoute";
 import Login from './auth/Login';
 
 function App() {
@@ -24,7 +26,7 @@ function App() {
 
         <Route
           path={"/user/overview"}
-          element={<MainLayout child={<Overview />} />}
+          element={<ProtectedRoute element={() => <MainLayout child={<Overview />} />} />}
         />
         <Route
           path={"/admin/overview"}
@@ -54,10 +56,7 @@ function App() {
           path={"/user/products"}
           element={<MainLayout child={<Products />} />}
         />
-        <Route
-          path={"/user/cart"}
-          element={<MainLayout child={<Cart />} />}
-        />
+        <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
         <Route
           path={"/admin/testimonials"}
           element={<MainLayout child={<Testimonials />} />}
