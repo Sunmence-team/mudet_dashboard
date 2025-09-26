@@ -13,12 +13,15 @@ import Cart from "./pages/user/Cart";
 import Users from "./pages/admin/Users";
 import Testimonials from './pages/admin/Testimonials';
 import ProductUpload from './pages/admin/ProductUpload';
+import Login from './auth/Login';
 
 function App() {
   return (
     <>
       <Toaster />
       <Routes>
+        <Route path="/login" element={<Login />} />
+
         <Route
           path={"/user/overview"}
           element={<MainLayout child={<Overview />} />}
@@ -51,15 +54,15 @@ function App() {
           path={"/user/products"}
           element={<MainLayout child={<Products />} />}
         />
-        <Route 
+        <Route
           path={"/user/cart"}
           element={<MainLayout child={<Cart />} />}
         />
-        <Route 
+        <Route
           path={"/admin/testimonials"}
           element={<MainLayout child={<Testimonials />} />}
         />
-        <Route 
+        <Route
           path={"/admin/product-upload"}
           element={<MainLayout child={<ProductUpload />} />}
         />
