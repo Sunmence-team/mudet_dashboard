@@ -67,6 +67,12 @@ const Navbar = () => {
       role: ["user"],
     },
     {
+      name: "E-Wallet Transfer",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/ewallet-transfer",
+      role: ["user"],
+    },
+    {
       name: "Testimonials",
       // icon: <PiNetwork size={20} />,
       path: "/admin/testimonials",

@@ -18,6 +18,7 @@ import ProtectedRoute from "./utilities/ProtectRoute";
 import AllUsers from './pages/admin/AllUsers';
 import Transactions from './pages/admin/Transactions';
 import PackageUpload from "./pages/admin/PackageUpload";
+import EwalletTransfer from "./pages/user/EwalletTransfer";
 
 function App() {
   return (
@@ -53,6 +54,10 @@ function App() {
         <Route
           path={"/user/register"}
           element={<MainLayout child={<Register />} />}
+        />
+        <Route
+          path={"/user/ewallet-transfer"}
+          element={<MainLayout child={<EwalletTransfer />} />}
         />
         <Route
           path={"/user/products"}

@@ -7,28 +7,16 @@ const Transactions = () => {
 
   return (
     <div className="">
-      {/* Toggle buttons */}
-      <div className="grid grid-cols-2 border border-[var(--color-primary)] rounded-[10px] overflow-hidden mb-6">
-        <button
-          onClick={() => setActiveTab("deposit")}
-          className={`py-2 font-medium transition-all ${
-            activeTab === "deposit"
-              ? "bg-[var(--color-primary)] text-white rounded-e-[10px]"
-              : "bg-transparent text-[var(--color-primary)]"
-          }`}
+      {/* Dropdown aligned to the right */}
+      <div className="flex justify-end mb-6">
+        <select
+          value={activeTab}
+          onChange={(e) => setActiveTab(e.target.value)}
+          className="border border-[var(--color-primary)] text-[var(--color-primary)] font-medium px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
         >
-          Deposit
-        </button>
-        <button
-          onClick={() => setActiveTab("withdraw")}
-          className={`py-2 font-medium transition-all ${
-            activeTab === "withdraw"
-              ? "bg-[var(--color-primary)] text-white rounded-s-[10px]"
-              : "bg-transparent text-[var(--color-primary)]"
-          }`}
-        >
-          Withdraw
-        </button>
+          <option value="deposit">Deposit</option>
+          <option value="withdraw">Withdraw</option>
+        </select>
       </div>
 
       {/* Tab content */}
