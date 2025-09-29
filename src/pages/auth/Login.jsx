@@ -35,20 +35,25 @@ const Login = () => {
       console.log('Form submitted:', values);
       try {
         const response = await api.post(`/api/login`, values)
-        console.log("response", response)
+         console.log("Login response data:", response.data);
+        if (response.status === 200) {
+          const { token, role, user } = response.data; // <-- make sure backend sends `user`
 
-       if (response.status === 200) {
-          const { token, role } = response.data;
+          // Save token + user to localStorage
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+
           await login(token);
 
-          toast.success('Login successful');
+          toast.success("Login successful");
           setTimeout(() => {
             toast("Redirecting to dashboard...");
             setTimeout(() => {
-              role === "admin" ? navigate(`/admin/overview`) : navigate('/user/overview');
+              role === "admin" ? navigate(`/admin/overview`) : navigate("/user/overview");
             }, 2000);
           }, 1000);
         }
+
       } catch (err) {
         console.error('Error during logging in:', err);
         if (axios.isAxiosError(err) && err.response && err.response.status === 401) {
@@ -64,6 +69,9 @@ const Login = () => {
       }
     },
   });
+
+
+
 
   return (
     <div className="min-h-screen flex">
@@ -92,7 +100,7 @@ const Login = () => {
         >
           {/* Dark overlay for better text readability */}
           <div className="absolute inset-0 bg-black/20"></div>
-          
+
           {/* Centered white container */}
           <div className="relative min-h-screen flex items-center justify-center p-6">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 mx-auto">
@@ -171,7 +179,7 @@ const Login = () => {
 
                 <button
                   type="submit"
-                  disabled={formik.isSubmitting} 
+                  disabled={formik.isSubmitting}
                   className="w-full bg-primary hover:bg-primary text-white font-medium py-3 rounded-lg transition duration-300 disabled:opacity-50 shadow-lg"
                 >
                   {formik.isSubmitting ? 'Logging in...' : 'Login'}
@@ -252,7 +260,7 @@ const Login = () => {
 
               <button
                 type="submit"
-                disabled={formik.isSubmitting} 
+                disabled={formik.isSubmitting}
                 className="w-full bg-primary hover:bg-primary text-white font-medium py-3 rounded-lg transition duration-300 disabled:opacity-50 shadow-lg"
               >
                 {formik.isSubmitting ? 'Logging in...' : 'Login'}

@@ -3,10 +3,21 @@ import assets from "../../assets/assets";
 import { HiOutlineArrowUpRight } from "react-icons/hi2";
 import { IoCopy } from "react-icons/io5";
 import { toast, Toaster } from "sonner";
-
+import api from "../../utilities/api";
 
 const Deposit = () => {
   const [selectedMethod, setSelectedMethod] = useState("paystack");
+  const [amount, setAmount] = useState("");
+  const [proofFile, setProofFile] = useState(null);
+  const [pinModalOpen, setPinModalOpen] = useState(false);
+  const [pin, setPin] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const user_id = user?.id;
+  const email = user?.email;
+  const userPin = user?.pin; // the PIN from backend
+  const eWallet = user?.e_wallet || "0.00";
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -22,12 +33,68 @@ const Deposit = () => {
     });
   };
 
+  const handleConfirm = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error("Please enter a valid amount.");
+      return;
+    }
+
+    if (selectedMethod === "paystack") {
+      setPinModalOpen(true);
+    } else if (selectedMethod === "manual") {
+      if (!proofFile) {
+        toast.error("Please upload proof of payment.");
+        return;
+      }
+      // No API call for manual as per instructions; just simulate success or leave as UI only
+      toast.success("Manual deposit details submitted. Awaiting approval.");
+      // Reset form if needed
+      setAmount("");
+      setProofFile(null);
+    }
+  };
+
+  const handlePinSubmit = async () => {
+    if (pin !== userPin) {
+      toast.error("Incorrect PIN.");
+      return;
+    }
+
+    setLoading(true);
+    setPinModalOpen(false);
+    setPin("");
+
+    try {
+      const response = await api.post("/api/wallets/fund/initiate", {
+        user_id,
+        amount,
+        email,
+        payment_method: "paystack",
+        pin, // the entered pin
+      });
+
+      if (response.data.ok) {
+        toast.success("Payment initialized.");
+        window.open(response.data.authorization_url, "_blank");
+      } else {
+        toast.error(response.data.message || "Something went wrong.");
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to initialize payment.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatBalance = (balance) => {
+    return parseFloat(balance).toLocaleString('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
+
   return (
     <div className="min-h-screen bg-[var(--color-tetiary)] lg:pr-10 grid grid-cols-1 lg:grid-cols-[75%_25%] lg:gap-6 gap-0">
-     
       <div className="block lg:hidden bg-[var(--color-primary)] text-white p-6 mb-7 h-[200px] rounded-2xl shadow">
         <p className="text-sm opacity-80">E-Wallet</p>
-        <p className="text-2xl font-bold my-2">₦2,344,000</p>
+        <p className="text-2xl font-bold my-2">{formatBalance(eWallet)}</p>
         <div className="border-1 border-white/50 mb-5 mt-4"></div>
         <div className="flex items-center gap-2 justify-end">
           <p className="text-sm font-normal">Fund Wallet</p>
@@ -37,7 +104,6 @@ const Deposit = () => {
         </div>
       </div>
 
-      
       <div className="flex-1 bg-white p-6 rounded-2xl shadow transition-all duration-300">
         <h1 className="text-2xl font-bold mb-1 text-black">Deposit Funds</h1>
         <p className="text-black/50 mb-6">
@@ -169,6 +235,8 @@ const Deposit = () => {
               <input
                 type="number"
                 placeholder="₦14,000"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 className="w-full rounded-xl px-4 border-1 border-black/40 py-3 focus:ring-1 focus:ring-black/40 outline-0"
               />
             </div>
@@ -189,22 +257,59 @@ const Deposit = () => {
                   />
                 </div>
                 <div className="flex gap-3 items-center">
-                  <input type="file" id="proof" className="hidden" />
+                  <input
+                    type="file"
+                    id="proof"
+                    className="hidden"
+                    onChange={(e) => setProofFile(e.target.files[0])}
+                  />
                   <label
                     htmlFor="proof"
                     className="cursor-pointer px-4 py-2 border-black/20 border rounded-md text-gray-600 hover:text-[var(--color-secondary)] hover:border-[var(--color-secondary)] transition"
                   >
                     Choose File
                   </label>
-                  <span className="text-sm text-gray-500">No file chosen</span>
+                  <span className="text-sm text-gray-500">
+                    {proofFile ? proofFile.name : "No file chosen"}
+                  </span>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        <button className="bg-[var(--color-primary)] text-white w-full py-3 rounded-xl hover:opacity-90 transition my-6">
-          Confirm Deposit
+        <button
+          onClick={handleConfirm}
+          disabled={loading}
+          className="bg-[var(--color-primary)] text-white w-full py-3 rounded-xl hover:opacity-90 transition my-6 disabled:opacity-50"
+        >
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <svg
+                className="animate-spin h-5 w-5 mr-2 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Processing...
+            </div>
+          ) : (
+            "Confirm Deposit"
+          )}
         </button>
       </div>
 
@@ -213,7 +318,7 @@ const Deposit = () => {
         {/* Wallet Card */}
         <div className="bg-[var(--color-primary)] text-white p-6 rounded-2xl shadow">
           <p className="text-sm opacity-80">E-Wallet</p>
-          <p className="text-2xl font-bold my-2">₦2,344,000</p>
+          <p className="text-2xl font-bold my-2">{formatBalance(eWallet)}</p>
           <div className="border-1 border-white/50 mb-5 mt-4"></div>
           <div className="flex items-center gap-2 justify-end">
             <p className="text-sm font-normal">Fund Wallet</p>
@@ -261,6 +366,39 @@ const Deposit = () => {
           </div>
         )}
       </div>
+
+      {/* PIN Modal */}
+      {pinModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+            <h2 className="text-lg font-bold mb-4">Enter Your PIN</h2>
+            <input
+              type="password"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              placeholder="Enter PIN (default: 1234)"
+              className="w-full rounded-xl px-4 border-1 border-black/40 py-3 focus:ring-1 focus:ring-black/40 outline-0 mb-4"
+            />
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => {
+                  setPinModalOpen(false);
+                  setPin("");
+                }}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePinSubmit}
+                className="bg-[var(--color-primary)] text-white px-5 py-2 rounded-full hover:opacity-90"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Toaster />
     </div>
