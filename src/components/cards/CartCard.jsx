@@ -21,6 +21,7 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
             onClick={() => onRemoveFromCart(id)}
             className="border border-gray-400 py-1 px-2 rounded-2xl cursor-pointer text-2xl"
             disabled={quantity === 1 ? true : false}
+            title={quantity === 1 ? "Disabled" : "Deduct Quantity"}
           >
             -
           </button>
@@ -28,6 +29,7 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
           <button
             onClick={() => onAddToCart(product)}
             className="border border-gray-400 py-1 px-2 rounded-2xl cursor-pointer text-2xl"
+            title="Add More Quantity"
           >
             +
           </button>
@@ -41,6 +43,7 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
           <BsTrashFill
             className="cursor-pointer"
             onClick={() => onDelete(id)}
+            title="Remove Product"
           />
         </div>
       </div>

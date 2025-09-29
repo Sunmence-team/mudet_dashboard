@@ -49,9 +49,15 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "Transfer Funds",
+      name: "Deposit Funds",
       // icon: <PiNetwork size={20} />,
       path: "/user/deposit",
+      role: ["user"],
+    },
+    {
+      name: "Transfer Funds",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/transfer",
       role: ["user"],
     },
     {

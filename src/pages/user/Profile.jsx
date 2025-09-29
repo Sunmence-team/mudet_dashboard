@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ResetPassword from "./profiletab/ResetPassword";
 import ResetPin from "./profiletab/ResetPin";
 import ContactDetails from "./profiletab/ContactDetails";
@@ -15,6 +15,8 @@ import { HiUserGroup } from "react-icons/hi";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("password");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const [activeUser, setActiveuser] = useState({});
 
   const tabs = [
     { key: "password", label: "Password Reset" },
@@ -23,6 +25,10 @@ const Profile = () => {
     { key: "contact", label: "Contact Details" },
     { key: "bank", label: "Bank Details" },
   ];
+
+  useEffect(() => {
+    setActiveuser(user);
+  }, []);
 
   return (
     <div className="">
@@ -35,9 +41,9 @@ const Profile = () => {
           </div>
 
           <h2 className="mt-2 font-semibold text-lg text-gray-800 text-center">
-            Odekunle Dorcas
+            {activeUser.first_name} {activeUser.last_name}
           </h2>
-          <p className="text-gray-500 text-sm">@dorcas</p>
+          <p className="text-gray-500 text-sm">@{activeUser.username}</p>
 
           <div className="mt-4 space-y-2 w-full">
             <div className="border-y-2 p-3 border-black/30">
@@ -45,7 +51,7 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   EMAIL:
                 </span>{" "}
-                DorcasTiwa@gmail.com
+                {activeUser.email}
               </p>
             </div>
             <div className="border-b-2 p-3 border-black/30">
@@ -53,7 +59,7 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   USERNAME:
                 </span>{" "}
-                Dorcas
+                {activeUser.username}
               </p>
             </div>
             <div className="border-b-2 p-3 border-black/30">
