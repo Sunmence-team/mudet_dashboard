@@ -3,31 +3,67 @@ import OverviewCard from "../../../components/cards/OverviewCard";
 import AnnouncementCard from "../../../components/cards/AnnouncementCard";
 import { useFormik } from "formik";
 import PinModal from "../../../components/modals/PinModal";
+import { toast } from "sonner";
+import api from "../../../utilities/api";
+import axios, { isAxiosError } from "axios";
 
 const TransferFunds = () => {
   const [activeUser, setActiveuser] = useState({});
-  const [submitting, setSubmitting] = useState(false);
   const [pinModal, setPinModal] = useState(false);
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     setActiveuser(user);
   }, []);
 
-  const onSubmit = () => {
-    const transactionPin = sessionStorage.getItem("currentAuth");
+  const onSubmit = async () => {
+    const transactionPin = localStorage.getItem("currentAuth");
     if (!transactionPin) {
       setPinModal(true);
       return;
     }
     try {
-      console.log(formik.values, transactionPin);
+      const res = await api.post("/api/earning/fund/initiate", {
+        ...formik.values,
+        pin: transactionPin,
+        user_id: activeUser.id,
+      });
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        setPinModal(false);
+        formik.resetForm();
+      } else {
+        toast.error(toast.data.message);
+      }
+      console.log(res);
     } catch (error) {
       console.log(error);
+      if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.status === 401
+      ) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(
+          "An unexpected error occurred while creating package. " +
+            error?.response?.data?.message ||
+            error?.message ||
+            "Please try again later."
+        );
+        console.error("Error during creating package:", error);
+      }
     }
   };
-  const onDecline = ()=>{
-    const transactionPin = lo
-  }
+  const onDecline = () => {
+    const transactionPin = localStorage.getItem("currentAuth");
+    if (transactionPin) {
+      localStorage.removeItem("currentAuth");
+      setPinModal(false);
+    } else {
+      setPinModal(false);
+    }
+  };
   const formik = useFormik({
     initialValues: {
       from: "",
@@ -198,7 +234,7 @@ const TransferFunds = () => {
         </div>
       </div>
       {pinModal ? (
-        <PinModal onClose={() => setPinModal(false)} onConfirm={onSubmit} />
+        <PinModal onClose={onDecline} onConfirm={onSubmit} user={activeUser} />
       ) : null}
     </>
   );
