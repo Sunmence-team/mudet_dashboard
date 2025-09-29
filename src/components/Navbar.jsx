@@ -119,10 +119,11 @@ const Navbar = () => {
                   key={index}
                   className={({ isActive }) => `
                                         nav-links relative font-semibold whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${isActive
-                      ? "active text-primary !font-extrabold"
-                      : ""
-                    }
+                                        ${
+                                          isActive
+                                            ? "active text-primary !font-extrabold"
+                                            : ""
+                                        }
                                     `}
                   onClick={() => setIsOpen(false)}
                 >
@@ -155,8 +156,9 @@ const Navbar = () => {
       </nav>
 
       <nav
-        className={`absolute top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${isOpen ? "slide-in" : "slide-out"
-          }`}
+        className={`absolute top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${
+          isOpen ? "slide-in" : "slide-out"
+        }`}
       >
         <div className="flex flex-col h-[calc(100%-40px-24px)] w-full md:gap-6 gap-3">
           <div className="flex flex-row-reverse items-center justify-between ">
@@ -182,10 +184,11 @@ const Navbar = () => {
                   key={index}
                   className={({ isActive }) => `
                                         nav-links relative font-medium whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${isActive
-                      ? "active text-primary !font-extrabold"
-                      : ""
-                    }
+                                        ${
+                                          isActive
+                                            ? "active text-primary !font-extrabold"
+                                            : ""
+                                        }
                                     `}
                   onClick={() => setIsOpen(false)}
                 >

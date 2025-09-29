@@ -374,7 +374,9 @@ const PackageUpload = ({
       {isDeleteModalOpen ? (
         <WarningModal
           title={"Are you sure you want to delete this package?"}
-          message={`Clicking the confirm button will delete the ${activePackage.name} package permanently.`}
+          message={`Clicking the confirm button will delete ${
+            activePackage.name ? `the ${activePackage.name}` : "this package"
+          } permanently.`}
           negativeAction={() => setDeleteModalOpen(false)}
           positiveAction={handleDeletePackage}
           isPositive={deletingPackage}
