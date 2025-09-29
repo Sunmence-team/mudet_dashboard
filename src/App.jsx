@@ -18,8 +18,8 @@ import ProtectedRoute from "./utilities/ProtectRoute";
 import AllUsers from './pages/admin/AllUsers';
 import Transactions from './pages/admin/Transactions';
 import PackageUpload from "./pages/admin/PackageUpload";
-import EwalletTransfer from "./pages/user/EwalletTransfer";
 import TransferFunds from "./pages/user/profiletab/TransferFunds";
+import EwalletTransfer from "./pages/user/EwalletTransfer";
 
 function App() {
   return (

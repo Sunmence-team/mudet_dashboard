@@ -7,8 +7,10 @@ import { HiMiniBars3BottomLeft } from "react-icons/hi2";
 import { IoCloseOutline } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
 import { useEffect } from "react";
+import { useUser } from "../context/UserContext";
 
 const Navbar = () => {
+  const { user } = useUser();
   const cart = JSON.parse(localStorage.getItem("carts")) || [];
   const [isOpen, setIsOpen] = useState(false);
   const [cartItem, setCartItem] = useState(0);
@@ -94,7 +96,7 @@ const Navbar = () => {
       name: "AllTransactions",
       // icon: <PiNetwork size={20} />,
       path: "/admin/transactions",
-      role: ["admin"],
+      role: ["user"],
     },
     {
       name: "Package Upload",
@@ -104,7 +106,7 @@ const Navbar = () => {
     },
   ];
 
-  // const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
+  const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
 
   return (
     <div>
@@ -124,8 +126,8 @@ const Navbar = () => {
           />
           <ul className="md:flex hidden items-center gap-6 overflow-x-scroll no-scrollbar">
             {
-              // filteredLinks.map(({ name, path }, index) => (
-              navItems.map(({ name, path }, index) => (
+              filteredLinks.map(({ name, path }, index) => (
+              // navItems.map(({ name, path }, index) => (
                 <NavLink
                   to={path}
                   key={index}
