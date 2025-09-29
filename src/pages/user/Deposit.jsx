@@ -3,6 +3,7 @@ import assets from "../../assets/assets";
 import { HiOutlineArrowUpRight } from "react-icons/hi2";
 import { IoCopy } from "react-icons/io5";
 import { toast, Toaster } from "sonner";
+import { BsFillWalletFill } from "react-icons/bs";
 import api from "../../utilities/api";
 
 const Deposit = () => {
@@ -126,11 +127,8 @@ const Deposit = () => {
               }`}
             >
               <div className="flex items-center gap-4">
-                <img
-                  src={assets.wallet}
-                  alt="Paystack"
-                  className="w-10 h-10 object-contain"
-                />
+                <BsFillWalletFill size={34} className="text-[var(--color-primary)]"/>
+
                 <div>
                   <span className="block font-semibold text-[var(--color-primary)]">
                     Paystack
@@ -158,11 +156,7 @@ const Deposit = () => {
               }`}
             >
               <div className="flex items-center gap-4">
-                <img
-                  src={assets.wallet}
-                  alt="Manual"
-                  className="w-10 h-10 object-contain"
-                />
+                <BsFillWalletFill size={34} className="text-[var(--color-primary)]"/>
                 <div>
                   <span className="block font-semibold text-[var(--color-primary)]">
                     Manual
