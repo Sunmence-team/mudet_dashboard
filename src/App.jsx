@@ -19,6 +19,7 @@ import AllUsers from './pages/admin/AllUsers';
 import Transactions from './pages/admin/Transactions';
 import PackageUpload from "./pages/admin/PackageUpload";
 import EwalletTransfer from "./pages/user/EwalletTransfer";
+import TransferFunds from "./pages/user/profiletab/TransferFunds";
 
 function App() {
   return (
@@ -46,6 +47,10 @@ function App() {
         <Route
           path={"/user/deposit"}
           element={<MainLayout child={<Deposit />} />}
+        />
+        <Route
+          path={"/user/transfer"}
+          element={<MainLayout child={<TransferFunds />} />}
         />
         <Route
           path={"/user/network"}
