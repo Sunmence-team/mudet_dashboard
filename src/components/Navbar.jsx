@@ -7,8 +7,10 @@ import { HiMiniBars3BottomLeft } from "react-icons/hi2";
 import { IoCloseOutline } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
 import { useEffect } from "react";
+import { useUser } from "../context/UserContext";
 
 const Navbar = () => {
+  const { user } = useUser();
   const cart = JSON.parse(localStorage.getItem("carts")) || [];
   const [isOpen, setIsOpen] = useState(false);
   const [cartItem, setCartItem] = useState(0);
@@ -61,6 +63,12 @@ const Navbar = () => {
       role: ["user"],
     },
     {
+      name: "Transactions",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/transactions",
+      role: ["user"],
+    },
+    {
       name: "Register",
       // icon: <PiNetwork size={20} />,
       path: "/user/register",
@@ -70,6 +78,18 @@ const Navbar = () => {
       name: "Products",
       // icon: <PiNetwork size={20} />,
       path: "/user/products",
+      role: ["user"],
+    },
+    {
+      name: "E-Wallet Transfer",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/ewallet-transfer",
+      role: ["user"],
+    },
+    {
+      name: "Upgrade Package",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/upgrade-package",
       role: ["user"],
     },
     {
@@ -98,7 +118,7 @@ const Navbar = () => {
     },
   ];
 
-  // const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
+  const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
 
   return (
     <div>
@@ -118,8 +138,8 @@ const Navbar = () => {
           />
           <ul className="md:flex hidden items-center gap-6 overflow-x-scroll no-scrollbar">
             {
-              // filteredLinks.map(({ name, path }, index) => (
-              navItems.map(({ name, path }, index) => (
+              filteredLinks.map(({ name, path }, index) => (
+              // navItems.map(({ name, path }, index) => (
                 <NavLink
                   to={path}
                   key={index}

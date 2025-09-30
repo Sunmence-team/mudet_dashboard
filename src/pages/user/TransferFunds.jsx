@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import OverviewCard from "../../../components/cards/OverviewCard";
-import AnnouncementCard from "../../../components/cards/AnnouncementCard";
+import OverviewCard from "../../components/cards/OverviewCard";
 import { useFormik } from "formik";
-import PinModal from "../../../components/modals/PinModal";
+import PinModal from "../../components/modals/PinModal";
 import { toast } from "sonner";
-import api from "../../../utilities/api";
+import api from "../../utilities/api";
 import axios, { isAxiosError } from "axios";
 
 const TransferFunds = () => {
@@ -32,8 +31,10 @@ const TransferFunds = () => {
         toast.success(res.data.message);
         setPinModal(false);
         formik.resetForm();
+        localStorage.removeItem("currentAuth");
       } else {
         toast.error(toast.data.message);
+        localStorage.removeItem("currentAuth");
       }
       console.log(res);
     } catch (error) {
@@ -53,6 +54,8 @@ const TransferFunds = () => {
         );
         console.error("Error during creating package:", error);
       }
+    } finally {
+      localStorage.removeItem("currentAuth");
     }
   };
   const onDecline = () => {

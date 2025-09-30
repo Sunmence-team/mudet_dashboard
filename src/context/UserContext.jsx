@@ -12,18 +12,29 @@ export const UserProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [miscellaneousDetails, setMiscellaneousDetails] = useState(null);
 
+  // 🔒 Safe JSON parse helper
+  const safeJSONParse = (value, key) => {
+    if (!value || value === "undefined") return null;
+    try {
+      return JSON.parse(value);
+    } catch (err) {
+      console.warn(`Invalid JSON in localStorage for key "${key}", clearing it.`);
+      localStorage.removeItem(key);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    const storedMiscellaneousDetails = localStorage.getItem("miscellaneousDetails");
+    const storedUser = safeJSONParse(localStorage.getItem("user"), "user");
+    const storedMiscellaneousDetails = safeJSONParse(
+      localStorage.getItem("miscellaneousDetails"),
+      "miscellaneousDetails"
+    );
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-    if (storedMiscellaneousDetails) {
-      setMiscellaneousDetails(JSON.parse(storedMiscellaneousDetails));
-    }
+    if (storedToken) setToken(storedToken);
+    if (storedUser) setUser(storedUser);
+    if (storedMiscellaneousDetails) setMiscellaneousDetails(storedMiscellaneousDetails);
   }, []);
 
   const login = async (authToken) => {
@@ -46,8 +57,6 @@ export const UserProvider = ({ children }) => {
       const data = response.data.data;
       const updatedUser = data.user;
 
-      // console.log("refresh response data", data)
-
       const updatedMiscellaneousDetails = {
         planDetails: data.plan_details,
         stockistDetails: data.stockist_details,
@@ -62,8 +71,7 @@ export const UserProvider = ({ children }) => {
       localStorage.setItem("miscellaneousDetails", JSON.stringify(updatedMiscellaneousDetails));
     } catch (err) {
       console.error("Failed to refresh user:", err);
-      // Optional: If refresh fails, consider logging out automatically
-      // logout();
+      // Optional: logout();
     }
   };
 
@@ -73,24 +81,27 @@ export const UserProvider = ({ children }) => {
   const logout = async () => {
     const toastId = toast.loading("Logging Out...");
     try {
-      await axios.put(`${API_URL}/api/logout`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `${API_URL}/api/logout`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       toast.success("Logged out successfully", { id: toastId });
     } catch (err) {
       console.error("API Logout failed, clearing local state anyway:", err);
       toast.error("Logout failed. Please try again.", { id: toastId });
     } finally {
+      // ✅ Always remove keys (don’t set undefined)
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("miscellaneousDetails");
+
       setToken(null);
       setUser(null);
       setMiscellaneousDetails(null);
 
-      // Redirect after a short delay
       setTimeout(() => {
-        // window.location.href = "https://back-to-homepage.com/#/login";
+        // window.location.href = "/login";
       }, 100);
     }
   };
@@ -101,7 +112,18 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, token, role, miscellaneousDetails, login, logout, isLoggedIn, refreshUser, setUser, setToken }}
+      value={{
+        user,
+        token,
+        role,
+        miscellaneousDetails,
+        login,
+        logout,
+        isLoggedIn,
+        refreshUser,
+        setUser,
+        setToken,
+      }}
     >
       {children}
     </UserContext.Provider>

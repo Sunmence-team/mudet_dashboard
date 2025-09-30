@@ -18,7 +18,10 @@ import ProtectedRoute from "./utilities/ProtectRoute";
 import AllUsers from "./pages/admin/AllUsers";
 import Transactions from "./pages/admin/Transactions";
 import PackageUpload from "./pages/admin/PackageUpload";
-import TransferFunds from "./pages/user/profiletab/TransferFunds";
+import TransferFunds from "./pages/user/TransferFunds";
+import EwalletTransfer from "./pages/user/EwalletTransfer";
+import UserTransactions from "./pages/user/UserTransactions";
+import Upgrade from "./pages/user/Upgrade";
 
 function App() {
   return (
@@ -64,6 +67,10 @@ function App() {
           element={<MainLayout child={<Register />} />}
         />
         <Route
+          path={"/user/ewallet-transfer"}
+          element={<MainLayout child={<EwalletTransfer />} />}
+        />
+        <Route
           path={"/user/products"}
           element={<MainLayout child={<Products />} />}
         />
@@ -88,6 +95,14 @@ function App() {
         <Route
           path={"/admin/transactions"}
           element={<MainLayout child={<Transactions />} />}
+        />
+        <Route
+          path={"/user/transactions"}
+          element={<MainLayout child={<UserTransactions />} />}
+        />
+        <Route
+          path={"/user/upgrade-package"}
+          element={<MainLayout child={<Upgrade />} />}
         />
       </Routes>
     </>

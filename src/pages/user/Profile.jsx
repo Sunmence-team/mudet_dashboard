@@ -12,11 +12,12 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
+import { useUser } from "../../context/UserContext";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("password");
-  const user = JSON.parse(localStorage.getItem("user"));
-  const [activeUser, setActiveuser] = useState({});
+  const { activeUser } = useUser();
+  console.log(activeUser);
 
   const tabs = [
     { key: "password", label: "Password Reset" },
@@ -25,10 +26,6 @@ const Profile = () => {
     { key: "contact", label: "Contact Details" },
     { key: "bank", label: "Bank Details" },
   ];
-
-  useEffect(() => {
-    setActiveuser(user);
-  }, []);
 
   return (
     <div className="">
@@ -67,7 +64,7 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   PACKAGE:
                 </span>{" "}
-                Gold
+                {activeUser.plan ? activeUser.plan : "None"}
               </p>
             </div>
             <div className="border-b-2 p-3 border-black/30">
@@ -75,7 +72,7 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   CURRENT RANK:
                 </span>{" "}
-                No Rank
+                {activeUser.rank ? activeUser.rank : "No Rank"}
               </p>
             </div>
           </div>
@@ -93,7 +90,9 @@ const Profile = () => {
                 <FaUser className="w-[18px] h-[18px]" />
                 <span className="text-sm font-semibold "> Personal PV</span>
               </div>
-              <span className="text-2xl font-bold mt-1">27376</span>
+              <span className="text-2xl font-bold mt-1">
+                {Number(activeUser.personal_pv).toLocaleString()}
+              </span>
             </div>
 
             <div className="bg-[var(--color-secondary)] text-white rounded-xl p-6 flex justify-between items-center">
@@ -101,7 +100,9 @@ const Profile = () => {
                 <HiUserGroup className="w-[22px] h-[22px]" />
                 <span className="text-sm font-semibold ">Total PV</span>
               </div>
-              <span className="text-2xl font-bold mt-1">9274</span>
+              <span className="text-2xl font-bold mt-1">
+                {Number(activeUser.total_pv).toLocaleString()}
+              </span>
             </div>
 
             <div className="bg-[var(--color-secondary)] text-white rounded-xl p-6 flex justify-between items-center">
@@ -109,7 +110,9 @@ const Profile = () => {
                 <FaArrowAltCircleRight className="w-[18px] h-[18px]" />
                 <span className="text-sm font-semibold ">Right PV</span>
               </div>
-              <span className="text-2xl font-bold mt-1">5746</span>
+              <span className="text-2xl font-bold mt-1">
+                {Number(activeUser.right_pv_checkpoint).toLocaleString()}
+              </span>{" "}
             </div>
 
             <div className="bg-[var(--color-primary)] text-white rounded-xl p-6 flex justify-between items-center">
@@ -117,7 +120,9 @@ const Profile = () => {
                 <FaArrowAltCircleLeft className="w-[18px] h-[18px]" />
                 <span className="text-sm font-semibold ">Left PV</span>
               </div>
-              <span className="text-2xl font-bold mt-1">3528</span>
+              <span className="text-2xl font-bold mt-1">
+                {Number(activeUser.left_pv_checkpoint).toLocaleString()}
+              </span>{" "}
             </div>
           </div>
 
