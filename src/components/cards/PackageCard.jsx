@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const PackageCard = () => {
   const userDetails = {
@@ -31,9 +32,12 @@ const PackageCard = () => {
         </div>
       </div>
       <div className="mx-auto">
-        <button className="py-2 px-9 border-0 bg-[#1B6020] rounded-3xl text-white cursor-pointer font-medium">
+        <Link
+          to={"/user/upgrade-package"}
+          className="py-2 px-9 border-0 bg-[#1B6020] rounded-3xl text-white cursor-pointer font-medium"
+        >
           Upgrade
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -13,11 +13,14 @@ import {
 } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
 import { useUser } from "../../context/UserContext";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("password");
-  const { activeUser } = useUser();
-  console.log(activeUser);
+  const backupUser = JSON.parse(localStorage.getItem("user"));
+  const [activeUser, setActiveuser] = useState({});
+  const { user } = useUser();
+
 
   const tabs = [
     { key: "password", label: "Password Reset" },
@@ -26,6 +29,10 @@ const Profile = () => {
     { key: "contact", label: "Contact Details" },
     { key: "bank", label: "Bank Details" },
   ];
+
+  useEffect(() => {
+    setActiveuser(user || backupUser);
+  }, []);
 
   return (
     <div className="">
@@ -64,7 +71,7 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   PACKAGE:
                 </span>{" "}
-                {activeUser.plan ? activeUser.plan : "None"}
+                {activeUser.plan ? activeUser.stockist_plan : "None"}
               </p>
             </div>
             <div className="border-b-2 p-3 border-black/30">
@@ -78,9 +85,9 @@ const Profile = () => {
           </div>
 
           {/* Button now fits nicely inside */}
-          <button className="mt-6 mb-4 bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border text-white text-sm font-medium py-3 px-6 rounded-4xl">
+          <Link to={"/user/upgrade-package"} className="mt-6 mb-4 bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border text-white text-sm font-medium py-3 px-6 rounded-4xl">
             Upgrade Package
-          </button>
+          </Link>
         </div>
 
         <div className="flex flex-col gap-6">

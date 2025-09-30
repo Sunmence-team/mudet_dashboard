@@ -47,12 +47,12 @@ const TransferFunds = () => {
         toast.error(error.response.data.message);
       } else {
         toast.error(
-          "An unexpected error occurred while creating package. " +
+          "An unexpected error occurred while transfering funds. " +
             error?.response?.data?.message ||
             error?.message ||
             "Please try again later."
         );
-        console.error("Error during creating package:", error);
+        console.error("Error during transfering funds:", error);
       }
     } finally {
       localStorage.removeItem("currentAuth");
