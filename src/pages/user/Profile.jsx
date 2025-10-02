@@ -20,7 +20,10 @@ const Profile = () => {
   const backupUser = JSON.parse(localStorage.getItem("user"));
   const [activeUser, setActiveuser] = useState({});
   const { user } = useUser();
-
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
+  const name = `${user?.first_name || backUpUser?.first_name} ${
+    user?.last_name || backUpUser?.last_name
+  }`;
 
   const tabs = [
     { key: "password", label: "Password Reset" },
@@ -41,7 +44,11 @@ const Profile = () => {
         {/* Profile Card (fixed height removed, content-based height instead) */}
         <div className="bg-white rounded-2xl shadow flex flex-col items-center h-[520px] ">
           <div className="p-6 flex items-center justify-center rounded-full bg-[var(--color-primary)]/30 text-green-900 font-bold text-[36px] mt-6">
-            OD
+            {name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()}
           </div>
 
           <h2 className="mt-2 font-semibold text-lg text-gray-800 text-center">
@@ -85,7 +92,10 @@ const Profile = () => {
           </div>
 
           {/* Button now fits nicely inside */}
-          <Link to={"/user/upgrade-package"} className="mt-6 mb-4 bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border text-white text-sm font-medium py-3 px-6 rounded-4xl">
+          <Link
+            to={"/user/upgrade-package"}
+            className="mt-6 mb-4 bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border text-white text-sm font-medium py-3 px-6 rounded-4xl"
+          >
             Upgrade Package
           </Link>
         </div>

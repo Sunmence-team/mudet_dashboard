@@ -158,8 +158,8 @@ const Upgrade = () => {
                   filterNonCurrentPackage.reverse().map((pkg, index) => (
                     <div
                       key={index}
-                      className={`w-full lg:w-[300px] md:w-[350px] border border-black/10 flex flex-col rounded-2xl ${
-                        selectedPackage === pkg.name ? "border-primary" : ""
+                      className={`w-full cursor-pointer lg:w-[300px] md:w-[350px] border border-black/10 flex flex-col rounded-2xl ${
+                        selectedPackage === pkg.id ? "border-primary" : ""
                       }`}
                       onClick={() => setSelectedPackage(pkg.id)}
                     >
@@ -205,9 +205,9 @@ const Upgrade = () => {
             </div>
 
             {/* Upgrade button - hidden on mobile */}
-            <div className="flex flex-row-reverse mt-4 md:flex">
+            <div className="flex lg:flex-row-reverse mt-4 md:flex">
               <button
-                className="bg-primary w-fit py-3 px-8 cursor-pointer text-white rounded-lg"
+                className="bg-primary w-full lg:w-fit py-3 px-8 cursor-pointer text-white rounded-lg"
                 disabled={selectedPackage === ""}
                 onClick={handleConfirmModal}
               >

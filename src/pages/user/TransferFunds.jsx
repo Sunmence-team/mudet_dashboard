@@ -22,7 +22,7 @@ const TransferFunds = () => {
       return;
     }
     try {
-      const res = await api.post("/api/earning/fund/initiate", {
+      const res = await api.post("/api/wallet/funds", {
         ...formik.values,
         pin: transactionPin,
         user_id: activeUser.id,

@@ -91,10 +91,10 @@ export const UserProvider = ({ children }) => {
       console.error("API Logout failed, clearing local state anyway:", err);
       toast.error("Logout failed. Please try again.", { id: toastId });
     } finally {
-      // ✅ Always remove keys (don’t set undefined)
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("miscellaneousDetails");
+      location.replace("/#/login")
 
       setToken(null);
       setUser(null);

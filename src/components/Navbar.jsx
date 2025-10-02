@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
 
 const Navbar = () => {
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
   const { user } = useUser();
   const cart = JSON.parse(localStorage.getItem("carts")) || [];
   const [isOpen, setIsOpen] = useState(false);
@@ -118,7 +119,14 @@ const Navbar = () => {
     },
   ];
 
-  const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
+  const userName = `${user?.first_name || backUpUser?.first_name} ${
+    user?.last_name || backUpUser?.last_name
+  }`;
+
+  const filteredLinks = navItems.filter(
+    (navItem) =>
+      Array.isArray(navItem.role) && navItem.role.includes(user?.role)
+  );
 
   return (
     <div>
@@ -137,13 +145,12 @@ const Navbar = () => {
             className="object-cover md:block hidden"
           />
           <ul className="md:flex hidden items-center gap-6 overflow-x-scroll no-scrollbar">
-            {
-              filteredLinks.map(({ name, path }, index) => (
+            {filteredLinks.map(({ name, path }, index) => (
               // navItems.map(({ name, path }, index) => (
-                <NavLink
-                  to={path}
-                  key={index}
-                  className={({ isActive }) => `
+              <NavLink
+                to={path}
+                key={index}
+                className={({ isActive }) => `
                                         nav-links relative font-semibold whitespace-nowrap text-black cursor-pointer text-base py-1
                                         ${
                                           isActive
@@ -151,12 +158,11 @@ const Navbar = () => {
                                             : ""
                                         }
                                     `}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {name}
-                </NavLink>
-              ))
-            }
+                onClick={() => setIsOpen(false)}
+              >
+                {name}
+              </NavLink>
+            ))}
           </ul>
         </div>
         <div className="flex items-center gap-4">
@@ -176,7 +182,14 @@ const Navbar = () => {
             to={"/user/profile"}
             className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-xl bg-tetiary text-primary"
           >
-            <h3>OD</h3>
+            <h3>
+              {" "}
+              {userName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()}
+            </h3>
           </Link>
         </div>
       </nav>
@@ -204,7 +217,7 @@ const Navbar = () => {
           <ul className="flex flex-col items-center gap-6 overflow-y-scroll no-scrollbar">
             {
               // filteredLinks.map(({ name, path }, index) => (
-              navItems.map(({ name, path }, index) => (
+              filteredLinks.map(({ name, path }, index) => (
                 <NavLink
                   to={path}
                   key={index}
