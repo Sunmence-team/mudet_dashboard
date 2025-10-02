@@ -20,8 +20,8 @@ const PinModal = ({ onClose, onConfirm }) => {
   const handleConfirm = () => {
     const pinValue = pin.join("");
     if (pinValue.length === 4) {
-      sessionStorage.setItem("currentAuth", pinValue)
-      onConfirm()
+      sessionStorage.setItem("currentAuth", pinValue);
+      onConfirm(pinValue); // ✅ pass the pin to parent
       setPin(["", "", "", ""]);
     } else {
       toast.error("Please enter a 4-digit PIN");
