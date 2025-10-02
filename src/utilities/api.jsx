@@ -15,8 +15,8 @@ export const setupInterceptors = (logout) => {
   api.interceptors.request.use(
     (config) => {
       // const token = localStorage.getItem("token");
-      const token = localStorage.getItem("token");
-      if (token) {
+      const token = "88|mJjADwVH1TeszXxqAnPTigaGAdUvjzs6jRPoapkqc5c91b30"; 
+     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
