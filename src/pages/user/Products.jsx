@@ -1,29 +1,23 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "../../components/cards/ProductCard";
-import axios from "axios";
-import { useUser } from "../../context/UserContext";
 import { toast } from "sonner";
+import api from "../../utilities/api";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Products = () => {
-  const { token, logout } = useUser();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/api/allproducts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(`${API_URL}/api/allproducts`)
 
-      console.log("Products Response:", response);
+      console.log(response.data);
 
       if (response.status === 200) {
-        setProducts(response.data.products || response.data);
+        setProducts(response.data);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -40,12 +34,9 @@ const Products = () => {
   };
 
   useEffect(() => {
-    if (token) {
       fetchProducts();
-    }
-  }, [token]);
+  }, []);
 
-  const displayProducts = products;
 
   // loading state UI
   if (loading) {
@@ -61,8 +52,8 @@ const Products = () => {
     <div className="flex flex-col gap-4">
       <h2 className="text-xl font-semibold">Products</h2>
       <div className="grid lg:grid-cols-4 grid-cols-1 gap-3 sm:grid-cols-2">
-        {displayProducts.length > 0 ? (
-          displayProducts.map((product, index) => (
+        {products.length > 0 ? (
+          products.map((product, index) => (
             <ProductCard product={product} key={product.id || index} />
           ))
         ) : (
