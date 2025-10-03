@@ -7,8 +7,11 @@ import { HiMiniBars3BottomLeft } from "react-icons/hi2";
 import { IoCloseOutline } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
 import { useEffect } from "react";
+import { useUser } from "../context/UserContext";
 
 const Navbar = () => {
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
+  const { user } = useUser();
   const cart = JSON.parse(localStorage.getItem("carts")) || [];
   const [isOpen, setIsOpen] = useState(false);
   const [cartItem, setCartItem] = useState(0);
@@ -49,9 +52,21 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "Transfer Funds",
+      name: "Deposit Funds",
       // icon: <PiNetwork size={20} />,
       path: "/user/deposit",
+      role: ["user"],
+    },
+    {
+      name: "Transfer Funds",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/transfer",
+      role: ["user"],
+    },
+    {
+      name: "Transactions",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/transactions",
       role: ["user"],
     },
     {
@@ -64,6 +79,18 @@ const Navbar = () => {
       name: "Products",
       // icon: <PiNetwork size={20} />,
       path: "/user/products",
+      role: ["user"],
+    },
+    {
+      name: "E-Wallet Transfer",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/ewallet-transfer",
+      role: ["user"],
+    },
+    {
+      name: "Upgrade Package",
+      // icon: <PiNetwork size={20} />,
+      path: "/user/upgrade-package",
       role: ["user"],
     },
     {
@@ -92,7 +119,14 @@ const Navbar = () => {
     },
   ];
 
-  // const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
+  const userName = `${user?.first_name || backUpUser?.first_name} ${
+    user?.last_name || backUpUser?.last_name
+  }`;
+
+  const filteredLinks = navItems.filter(
+    (navItem) =>
+      Array.isArray(navItem.role) && navItem.role.includes(user?.role)
+  );
 
   return (
     <div>
@@ -111,25 +145,24 @@ const Navbar = () => {
             className="object-cover md:block hidden"
           />
           <ul className="md:flex hidden items-center gap-6 overflow-x-scroll no-scrollbar">
-            {
-              // filteredLinks.map(({ name, path }, index) => (
-              navItems.map(({ name, path }, index) => (
-                <NavLink
-                  to={path}
-                  key={index}
-                  className={({ isActive }) => `
+            {filteredLinks.map(({ name, path }, index) => (
+              // navItems.map(({ name, path }, index) => (
+              <NavLink
+                to={path}
+                key={index}
+                className={({ isActive }) => `
                                         nav-links relative font-semibold whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${isActive
-                      ? "active text-primary !font-extrabold"
-                      : ""
-                    }
+                                        ${
+                                          isActive
+                                            ? "active text-primary !font-extrabold"
+                                            : ""
+                                        }
                                     `}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {name}
-                </NavLink>
-              ))
-            }
+                onClick={() => setIsOpen(false)}
+              >
+                {name}
+              </NavLink>
+            ))}
           </ul>
         </div>
         <div className="flex items-center gap-4">
@@ -149,14 +182,22 @@ const Navbar = () => {
             to={"/user/profile"}
             className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-xl bg-tetiary text-primary"
           >
-            <h3>OD</h3>
+            <h3>
+              {" "}
+              {userName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()}
+            </h3>
           </Link>
         </div>
       </nav>
 
       <nav
-        className={`absolute top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${isOpen ? "slide-in" : "slide-out"
-          }`}
+        className={`absolute top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${
+          isOpen ? "slide-in" : "slide-out"
+        }`}
       >
         <div className="flex flex-col h-[calc(100%-40px-24px)] w-full md:gap-6 gap-3">
           <div className="flex flex-row-reverse items-center justify-between ">
@@ -176,16 +217,17 @@ const Navbar = () => {
           <ul className="flex flex-col items-center gap-6 overflow-y-scroll no-scrollbar">
             {
               // filteredLinks.map(({ name, path }, index) => (
-              navItems.map(({ name, path }, index) => (
+              filteredLinks.map(({ name, path }, index) => (
                 <NavLink
                   to={path}
                   key={index}
                   className={({ isActive }) => `
                                         nav-links relative font-medium whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${isActive
-                      ? "active text-primary !font-extrabold"
-                      : ""
-                    }
+                                        ${
+                                          isActive
+                                            ? "active text-primary !font-extrabold"
+                                            : ""
+                                        }
                                     `}
                   onClick={() => setIsOpen(false)}
                 >

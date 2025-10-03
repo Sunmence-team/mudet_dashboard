@@ -8,7 +8,6 @@ const ResetPassword = () => {
 
   return (
     <form className="space-y-4 p-6">
-      {/* Current Password */}
       <div className="relative">
         <label className="block text-sm font-medium text-black/80 mb-2">
           Current Password
@@ -25,7 +24,6 @@ const ResetPassword = () => {
         </span>
       </div>
 
-      {/* New Password */}
       <div className="relative">
         <label className="block text-sm font-medium text-black/80 mb-2">
           New Password
@@ -45,7 +43,6 @@ const ResetPassword = () => {
         </span>
       </div>
 
-      {/* Confirm Password */}
       <div className="relative">
         <label className="block text-sm font-medium text-black/80 mb-2">
           Confirm New Password

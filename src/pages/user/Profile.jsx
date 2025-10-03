@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ResetPassword from "./profiletab/ResetPassword";
 import ResetPin from "./profiletab/ResetPin";
 import ContactDetails from "./profiletab/ContactDetails";
@@ -12,9 +12,18 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
+import { useUser } from "../../context/UserContext";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("password");
+  const backupUser = JSON.parse(localStorage.getItem("user"));
+  const [activeUser, setActiveuser] = useState({});
+  const { user } = useUser();
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
+  const name = `${user?.first_name || backUpUser?.first_name} ${
+    user?.last_name || backUpUser?.last_name
+  }`;
 
   const tabs = [
     { key: "password", label: "Password Reset" },
@@ -24,6 +33,10 @@ const Profile = () => {
     { key: "bank", label: "Bank Details" },
   ];
 
+  useEffect(() => {
+    setActiveuser(user || backupUser);
+  }, []);
+
   return (
     <div className="">
       <h2 className="text-xl font-semibold mb-5">Profile</h2>
@@ -31,13 +44,17 @@ const Profile = () => {
         {/* Profile Card (fixed height removed, content-based height instead) */}
         <div className="bg-white rounded-2xl shadow flex flex-col items-center h-[520px] ">
           <div className="p-6 flex items-center justify-center rounded-full bg-[var(--color-primary)]/30 text-green-900 font-bold text-[36px] mt-6">
-            OD
+            {name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()}
           </div>
 
           <h2 className="mt-2 font-semibold text-lg text-gray-800 text-center">
-            Odekunle Dorcas
+            {activeUser.first_name} {activeUser.last_name}
           </h2>
-          <p className="text-gray-500 text-sm">@dorcas</p>
+          <p className="text-gray-500 text-sm">@{activeUser.username}</p>
 
           <div className="mt-4 space-y-2 w-full">
             <div className="border-y-2 p-3 border-black/30">
@@ -45,7 +62,7 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   EMAIL:
                 </span>{" "}
-                DorcasTiwa@gmail.com
+                {activeUser.email}
               </p>
             </div>
             <div className="border-b-2 p-3 border-black/30">
@@ -53,7 +70,7 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   USERNAME:
                 </span>{" "}
-                Dorcas
+                {activeUser.username}
               </p>
             </div>
             <div className="border-b-2 p-3 border-black/30">
@@ -61,7 +78,7 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   PACKAGE:
                 </span>{" "}
-                Gold
+                {activeUser.plan ? activeUser.stockist_plan : "None"}
               </p>
             </div>
             <div className="border-b-2 p-3 border-black/30">
@@ -69,15 +86,18 @@ const Profile = () => {
                 <span className="font-semibold text-black text-[16px]">
                   CURRENT RANK:
                 </span>{" "}
-                No Rank
+                {activeUser.rank ? activeUser.rank : "No Rank"}
               </p>
             </div>
           </div>
 
           {/* Button now fits nicely inside */}
-          <button className="mt-6 mb-4 bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border text-white text-sm font-medium py-3 px-6 rounded-4xl">
+          <Link
+            to={"/user/upgrade-package"}
+            className="mt-6 mb-4 bg-[var(--color-primary)] hover:bg-white hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] border text-white text-sm font-medium py-3 px-6 rounded-4xl"
+          >
             Upgrade Package
-          </button>
+          </Link>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -87,7 +107,9 @@ const Profile = () => {
                 <FaUser className="w-[18px] h-[18px]" />
                 <span className="text-sm font-semibold "> Personal PV</span>
               </div>
-              <span className="text-2xl font-bold mt-1">27376</span>
+              <span className="text-2xl font-bold mt-1">
+                {Number(activeUser.personal_pv).toLocaleString()}
+              </span>
             </div>
 
             <div className="bg-[var(--color-secondary)] text-white rounded-xl p-6 flex justify-between items-center">
@@ -95,7 +117,9 @@ const Profile = () => {
                 <HiUserGroup className="w-[22px] h-[22px]" />
                 <span className="text-sm font-semibold ">Total PV</span>
               </div>
-              <span className="text-2xl font-bold mt-1">9274</span>
+              <span className="text-2xl font-bold mt-1">
+                {Number(activeUser.total_pv).toLocaleString()}
+              </span>
             </div>
 
             <div className="bg-[var(--color-secondary)] text-white rounded-xl p-6 flex justify-between items-center">
@@ -103,7 +127,9 @@ const Profile = () => {
                 <FaArrowAltCircleRight className="w-[18px] h-[18px]" />
                 <span className="text-sm font-semibold ">Right PV</span>
               </div>
-              <span className="text-2xl font-bold mt-1">5746</span>
+              <span className="text-2xl font-bold mt-1">
+                {Number(activeUser.right_pv_checkpoint).toLocaleString()}
+              </span>{" "}
             </div>
 
             <div className="bg-[var(--color-primary)] text-white rounded-xl p-6 flex justify-between items-center">
@@ -111,7 +137,9 @@ const Profile = () => {
                 <FaArrowAltCircleLeft className="w-[18px] h-[18px]" />
                 <span className="text-sm font-semibold ">Left PV</span>
               </div>
-              <span className="text-2xl font-bold mt-1">3528</span>
+              <span className="text-2xl font-bold mt-1">
+                {Number(activeUser.left_pv_checkpoint).toLocaleString()}
+              </span>{" "}
             </div>
           </div>
 
