@@ -8,28 +8,31 @@ import MembersCard from "../../components/cards/MembersCard";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Overview = () => {
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const firstName = user.first_name || "User";
+
   const topWallets = [
     {
       type: "wallet",
       walletType: "E-Wallet",
-      walletBalance: 2344000,
-      path: "/user/",
+      walletBalance: parseFloat(user.e_wallet || 0),
+      path: "/user/deposit",
       pathName: "Fund Wallet",
       color: "deepGreen",
     },
     {
       type: "wallet",
       walletType: "Incentive Wallet",
-      walletBalance: 0,
-      path: "/user/",
+      walletBalance: parseFloat(user.incentive_wallet || 0),
+      path: "/user/withdraw",
       pathName: "Withdraw",
       color: "gold",
     },
     {
       type: "wallet",
       walletType: "Repurchase Wallet",
-      walletBalance: 0,
-      path: "/user/",
+      walletBalance: parseFloat(user.purchased_wallet || 0),
+      path: "/user/transfer",
       pathName: "Repurchase Wallet",
       color: "lightGreen",
     },
@@ -39,33 +42,33 @@ const Overview = () => {
     {
       type: "wallet",
       walletType: "Total Credit",
-      walletBalance: 0,
-      path: "/user/",
+      walletBalance: parseFloat(user.total_credit || 0),
+      path: "/user/transactions",
       pathName: "History",
     },
     {
       type: "wallet",
       walletType: "Earning Wallet",
-      walletBalance: 0,
-      path: "/user/",
+      walletBalance: parseFloat(user.earning_wallet || 0),
+      path: "/user/transfer",
       pathName: "Transfer",
     },
     {
       type: "wallet",
       walletType: "Total Debit",
-      walletBalance: 0,
-      path: "/user/",
+      walletBalance: parseFloat(user.total_debit || 0),
+      path: "/user/transfer",
       pathName: "History",
     },
     {
       type: "wallet",
       walletType: "Unilevel Wallet",
-      walletBalance: 0,
-      path: "/user/",
+      walletBalance: parseFloat(user.unilevel_wallet || 0),
+      // path: "/user/",
       // pathName: "Repurchase Wallet",
     },
   ];
-  const firstName = "Dorcas";
+
   return (
     <div className="flex flex-col gap-[2rem]">
       <div className="flex justify-between lg:items-center items-start gap-4">

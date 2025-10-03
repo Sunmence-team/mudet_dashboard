@@ -15,20 +15,28 @@ import Testimonials from "./pages/admin/Testimonials";
 import ProductUpload from "./pages/admin/ProductUpload";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./utilities/ProtectRoute";
-import AllUsers from './pages/admin/AllUsers';
-import Transactions from './pages/admin/Transactions';
+import AllUsers from "./pages/admin/AllUsers";
+import Transactions from "./pages/admin/Transactions";
 import PackageUpload from "./pages/admin/PackageUpload";
+import TransferFunds from "./pages/user/TransferFunds";
+import EwalletTransfer from "./pages/user/EwalletTransfer";
+import UserTransactions from "./pages/user/UserTransactions";
+import Upgrade from "./pages/user/Upgrade";
 
 function App() {
   return (
     <>
-      <Toaster />
+      <Toaster richColors />
       <Routes>
         <Route path="/login" element={<Login />} />
 
         <Route
           path={"/user/overview"}
-          element={<ProtectedRoute element={() => <MainLayout child={<Overview />} />} />}
+          element={
+            <ProtectedRoute
+              element={() => <MainLayout child={<Overview />} />}
+            />
+          }
         />
         <Route
           path={"/admin/overview"}
@@ -47,12 +55,20 @@ function App() {
           element={<MainLayout child={<Deposit />} />}
         />
         <Route
+          path={"/user/transfer"}
+          element={<MainLayout child={<TransferFunds />} />}
+        />
+        <Route
           path={"/user/network"}
           element={<MainLayout child={<Network />} />}
         />
         <Route
           path={"/user/register"}
           element={<MainLayout child={<Register />} />}
+        />
+        <Route
+          path={"/user/ewallet-transfer"}
+          element={<MainLayout child={<EwalletTransfer />} />}
         />
         <Route
           path={"/user/products"}
@@ -72,13 +88,21 @@ function App() {
           element={<MainLayout child={<PackageUpload />} />}
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
-        <Route 
+        <Route
           path={"/admin/users"}
           element={<MainLayout child={<AllUsers />} />}
         />
-        <Route 
+        <Route
           path={"/admin/transactions"}
           element={<MainLayout child={<Transactions />} />}
+        />
+        <Route
+          path={"/user/transactions"}
+          element={<MainLayout child={<UserTransactions />} />}
+        />
+        <Route
+          path={"/user/upgrade-package"}
+          element={<MainLayout child={<Upgrade />} />}
         />
       </Routes>
     </>
