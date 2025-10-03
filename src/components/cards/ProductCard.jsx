@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import ProductModal from "../modals/ProductModal";
 
 const ProductCard = ({ product }) => {
-  const { id, title, imageSrc, description, pv, price } = product;
+  const { id, product_name, product_image, product_description, product_pv, price } = product;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productQuantity, setProductQuantity] = useState(null);
 
@@ -29,7 +29,7 @@ const ProductCard = ({ product }) => {
       localStorage.setItem("carts", JSON.stringify(cart));
       setProductQuantity(cart.find((item) => item.id === id)?.quantity || null);
 
-      toast.success(`${title} added to cart`);
+      toast.success(`${product_name} added to cart`);
     } catch (error) {
       console.error(error);
       toast.error(`Unable to add ${title} to cart`);
@@ -65,24 +65,24 @@ const ProductCard = ({ product }) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <div className="flex justify-center mb-4">
           <img
-            src={imageSrc}
-            alt={title}
+            src={product_image}
+            alt={product_name}
             className="h-48 object-contain rounded-md bg-gray-100 w-full"
           />
         </div>
 
         <h3 className="text-lg font-semibold text-gray-900 mb-2 text-justify">
-          {title}
+          {product_name}
         </h3>
         <p className="text-sm text-gray-600 mb-4 text-justify leading-relaxed">
-          {description.slice(0, 80)}...
+          {product_description.slice(0, 80)}...
         </p>
 
         <div className="flex justify-between mb-4 items-center">
           <div className="text-lg font-bold text-primary">
             Price: ₦{price.toLocaleString()}
           </div>
-          <div className="lg:text-base text-sm text-secondary">Pv: {pv}</div>
+          <div className="lg:text-base text-sm text-secondary">Pv: {product_pv}</div>
         </div>
 
         <div className="flex flex-col space-y-2">
