@@ -92,17 +92,17 @@ export const UserProvider = ({ children }) => {
       toast.error("Logout failed. Please try again.", { id: toastId });
     } finally {
       // ✅ Always remove keys (don’t set undefined)
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("miscellaneousDetails");
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("user");
+      // localStorage.removeItem("miscellaneousDetails");
 
-      setToken(null);
-      setUser(null);
-      setMiscellaneousDetails(null);
+      // setToken(null);
+      // setUser(null);
+      // setMiscellaneousDetails(null);
 
-      setTimeout(() => {
-        // window.location.href = "/login";
-      }, 100);
+      // setTimeout(() => {
+      //   // window.location.href = "/login";
+      // }, 100);
     }
   };
 
