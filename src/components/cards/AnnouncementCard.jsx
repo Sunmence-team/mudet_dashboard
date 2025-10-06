@@ -46,7 +46,7 @@ const AnnouncementCard = ({ announcements = [] }) => {
           {itemsToRender.map((item, index) => (
             <div
               key={index}
-              className="lg:w-[97%] relative bg-white rounded-xl p-4 border border-gray-200 hover:bg-[#000000]/10 cursor-pointer"
+              className="lg:w-[97%] relative bg-white rounded-xl p-4 border border-gray-200 hover:bg-[#EFF7F0]/10 cursor-pointer"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
