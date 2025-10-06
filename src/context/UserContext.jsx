@@ -18,7 +18,9 @@ export const UserProvider = ({ children }) => {
     try {
       return JSON.parse(value);
     } catch (err) {
-      console.warn(`Invalid JSON in localStorage for key "${key}", clearing it.`);
+      console.warn(
+        `Invalid JSON in localStorage for key "${key}", clearing it.`
+      );
       localStorage.removeItem(key);
       return null;
     }
@@ -34,7 +36,8 @@ export const UserProvider = ({ children }) => {
 
     if (storedToken) setToken(storedToken);
     if (storedUser) setUser(storedUser);
-    if (storedMiscellaneousDetails) setMiscellaneousDetails(storedMiscellaneousDetails);
+    if (storedMiscellaneousDetails)
+      setMiscellaneousDetails(storedMiscellaneousDetails);
   }, []);
 
   const login = async (authToken) => {
@@ -68,7 +71,10 @@ export const UserProvider = ({ children }) => {
       setMiscellaneousDetails(updatedMiscellaneousDetails);
 
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      localStorage.setItem("miscellaneousDetails", JSON.stringify(updatedMiscellaneousDetails));
+      localStorage.setItem(
+        "miscellaneousDetails",
+        JSON.stringify(updatedMiscellaneousDetails)
+      );
     } catch (err) {
       console.error("Failed to refresh user:", err);
       // Optional: logout();
@@ -94,15 +100,19 @@ export const UserProvider = ({ children }) => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("miscellaneousDetails");
-      location.replace("/#/login")
+      location.replace("/#/login");
+      // ✅ Always remove keys (don’t set undefined)
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("user");
+      // localStorage.removeItem("miscellaneousDetails");
 
-      setToken(null);
-      setUser(null);
-      setMiscellaneousDetails(null);
+      // setToken(null);
+      // setUser(null);
+      // setMiscellaneousDetails(null);
 
-      setTimeout(() => {
-        // window.location.href = "/login";
-      }, 100);
+      // setTimeout(() => {
+      //   // window.location.href = "/login";
+      // }, 100);
     }
   };
 

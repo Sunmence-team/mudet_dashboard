@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getCountryCallingCode, isValidPhoneNumber } from "libphonenumber-js";
+import api from "../../../utilities/api";
+import { toast } from "sonner";
+import { useUser } from "../../../context/UserContext";
 
-const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValidity }) => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+const Step2 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, setFormValidity }, ref) => {
+  const { token } = useUser();
 
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [loading, setLoading] = useState({ countries: false, states: false, cities: false });
+  const [stockists, setStockists] = useState([]);
+  const [loading, setLoading] = useState({ countries: false, states: false, cities: false, stockists: false });
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [countryCodeMap, setCountryCodeMap] = useState({});
 
@@ -32,7 +35,7 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
         return isoCode ? isValidPhoneNumber(value, isoCode) : false;
       }),
     email: Yup.string().email("Must be a valid email address").required("Email is required"),
-    stockist: Yup.string().required("Stockist is required"),
+    stockist: Yup.number().required("Stockist is required"),
   });
 
   const formik = useFormik({
@@ -49,11 +52,81 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
       stockist: formData.stockist || "",
     },
     validationSchema,
-    onSubmit: (values) => {
-      updateFormData(values);
-      nextStep();
+    onSubmit: async (values) => {
+      setSubmitting(true);
+      // Log the form data in the desired format
+      const logData = {
+        success: true,
+        message: "Step 2 completed successfully",
+        current_step: 3,
+        data: {
+          first_name: values.first_name,
+          last_name: values.last_name,
+          date_of_birth: values.date_of_birth,
+          gender: values.gender,
+          country: values.country,
+          state: values.state,
+          city: values.city,
+          mobile: values.mobile,
+          email: values.email,
+          stockist: parseInt(values.stockist),
+        },
+      };
+      console.log(JSON.stringify(logData, null, 2));
+
+      try {
+        if (!token) {
+          toast.error("No authentication token found. Please log in.");
+          return;
+        }
+
+        const payload = {
+          first_name: values.first_name,
+          last_name: values.last_name,
+          date_of_birth: values.date_of_birth,
+          gender: values.gender,
+          country: values.country,
+          state: values.state,
+          city: values.city,
+          mobile: values.mobile,
+          email: values.email,
+          stockist: parseInt(values.stockist),
+        };
+
+        const response = await api.post("/api/registration/step-2", payload, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "X-Session-ID": formData.session_id,
+          },
+        });
+
+        if (response.data.success) {
+          toast.success(response.data.message || "Step 2 completed successfully");
+          updateFormData({
+            ...response.data.data,
+            session_id: formData.session_id,
+          });
+          nextStep();
+        } else {
+          toast.error(response.data.message || "Step 2 submission failed");
+        }
+      } catch (error) {
+        console.error("Error during Step 2 submission:", error);
+        toast.error(
+          error.response?.data?.message || error.message || "An error occurred during Step 2 submission"
+        );
+      } finally {
+        setSubmitting(false);
+      }
     },
   });
+
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      formik.submitForm();
+    },
+  }));
 
   useEffect(() => {
     setFormValidity(formik.isValid && formik.dirty);
@@ -69,7 +142,9 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
         if (result.error) throw new Error(result.msg);
 
         const countryMap = {};
-        const countryList = result.data.map((c) => ({ name: c.country, isoCode: c.iso2 })).sort((a, b) => a.name.localeCompare(b.name));
+        const countryList = result.data.map((c) => ({ name: c.country, isoCode: c.iso2 })).sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
         countryList.forEach((c) => (countryMap[c.name] = c.isoCode));
 
         setCountries(countryList.map((c) => c.name));
@@ -152,13 +227,35 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
     }
   }, [formik.values.state, formik.values.country]);
 
+  useEffect(() => {
+    const fetchStockists = async () => {
+      setLoading((prev) => ({ ...prev, stockists: true }));
+      setError(null);
+      try {
+        const response = await api.get("/api/stockists", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setStockists(response.data.data || []);
+      } catch (error) {
+        console.error("Error fetching stockists:", error);
+        setError("Failed to load stockists. Please try again later.");
+        setStockists([]);
+        toast.error(error.response?.data?.message || error.message || "Failed to load stockists.");
+      } finally {
+        setLoading((prev) => ({ ...prev, stockists: false }));
+      }
+    };
+    fetchStockists();
+  }, [token]);
+
   const getMobilePlaceholder = () => {
     const country = formik.values.country;
     if (!country || !countryCodeMap[country]) return "Enter phone number";
     return `+${getCountryCallingCode(countryCodeMap[country])}XXXXXXXXXX`;
   };
-
-  const stockists = [{ id: "1", username: "Stockist A", stockist_location: "Location A" }, { id: "2", username: "Stockist B", stockist_location: "Location B" }];
 
   return (
     <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
@@ -169,7 +266,10 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
               <label htmlFor="first_name" className="text-sm font-medium text-gray-700 mb-1">
-                First Name {formik.touched.first_name && formik.errors.first_name && <span className="text-red-500 text-xs"> - {formik.errors.first_name}</span>}
+                First Name{" "}
+                {formik.touched.first_name && formik.errors.first_name && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.first_name}</span>
+                )}
               </label>
               <input
                 type="text"
@@ -178,12 +278,17 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 value={formik.values.first_name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border ${formik.touched.first_name && formik.errors.first_name ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border ${
+                  formik.touched.first_name && formik.errors.first_name ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
             </div>
             <div className="flex flex-col">
               <label htmlFor="last_name" className="text-sm font-medium text-gray-700 mb-1">
-                Last Name {formik.touched.last_name && formik.errors.last_name && <span className="text-red-500 text-xs"> - {formik.errors.last_name}</span>}
+                Last Name{" "}
+                {formik.touched.last_name && formik.errors.last_name && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.last_name}</span>
+                )}
               </label>
               <input
                 type="text"
@@ -192,12 +297,17 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 value={formik.values.last_name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border ${formik.touched.last_name && formik.errors.last_name ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border ${
+                  formik.touched.last_name && formik.errors.last_name ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
             </div>
             <div className="flex flex-col w-full">
               <label htmlFor="date_of_birth" className="text-sm font-medium text-gray-700 mb-1">
-                Date of Birth (YYYY-MM-DD) {formik.touched.date_of_birth && formik.errors.date_of_birth && <span className="text-red-500 text-xs"> - {formik.errors.date_of_birth}</span>}
+                Date of Birth (YYYY-MM-DD){" "}
+                {formik.touched.date_of_birth && formik.errors.date_of_birth && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.date_of_birth}</span>
+                )}
               </label>
               <input
                 type="date"
@@ -206,12 +316,17 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 value={formik.values.date_of_birth}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`h-12 w-full px-4 py-2 border ${formik.touched.date_of_birth && formik.errors.date_of_birth ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 w-full px-4 py-2 border ${
+                  formik.touched.date_of_birth && formik.errors.date_of_birth ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
             </div>
             <div className="flex flex-col">
               <label htmlFor="gender" className="text-sm font-medium text-gray-700 mb-1">
-                Gender {formik.touched.gender && formik.errors.gender && <span className="text-red-500 text-xs"> - {formik.errors.gender}</span>}
+                Gender{" "}
+                {formik.touched.gender && formik.errors.gender && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.gender}</span>
+                )}
               </label>
               <select
                 id="gender"
@@ -219,7 +334,9 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 value={formik.values.gender}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border ${formik.touched.gender && formik.errors.gender ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border ${
+                  formik.touched.gender && formik.errors.gender ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               >
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
@@ -228,7 +345,10 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
             </div>
             <div className="flex flex-col">
               <label htmlFor="country" className="text-sm font-medium text-gray-700 mb-1">
-                Country {formik.touched.country && formik.errors.country && <span className="text-red-500 text-xs"> - {formik.errors.country}</span>}
+                Country{" "}
+                {formik.touched.country && formik.errors.country && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.country}</span>
+                )}
               </label>
               <select
                 id="country"
@@ -242,7 +362,9 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 }}
                 onBlur={formik.handleBlur}
                 disabled={loading.countries}
-                className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${formik.touched.country && formik.errors.country ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${
+                  formik.touched.country && formik.errors.country ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               >
                 <option value="">{loading.countries ? "Loading countries..." : "Select Country"}</option>
                 {countries.map((country) => (
@@ -254,7 +376,10 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
             </div>
             <div className="flex flex-col">
               <label htmlFor="state" className="text-sm font-medium text-gray-700 mb-1">
-                State {formik.touched.state && formik.errors.state && <span className="text-red-500 text-xs"> - {formik.errors.state}</span>}
+                State{" "}
+                {formik.touched.state && formik.errors.state && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.state}</span>
+                )}
               </label>
               <select
                 id="state"
@@ -266,7 +391,9 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 }}
                 onBlur={formik.handleBlur}
                 disabled={!formik.values.country || loading.states}
-                className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${formik.touched.state && formik.errors.state ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${
+                  formik.touched.state && formik.errors.state ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               >
                 <option value="">
                   {loading.states
@@ -286,7 +413,10 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
             </div>
             <div className="flex flex-col">
               <label htmlFor="city" className="text-sm font-medium text-gray-700 mb-1">
-                Local Government Area {formik.touched.city && formik.errors.city && <span className="text-red-500 text-xs"> - {formik.errors.city}</span>}
+                Local Government Area{" "}
+                {formik.touched.city && formik.errors.city && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.city}</span>
+                )}
               </label>
               <select
                 id="city"
@@ -295,7 +425,9 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 disabled={!formik.values.state || loading.cities}
-                className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${formik.touched.city && formik.errors.city ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${
+                  formik.touched.city && formik.errors.city ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               >
                 <option value="">
                   {loading.cities
@@ -315,7 +447,10 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
             </div>
             <div className="flex flex-col">
               <label htmlFor="mobile" className="text-sm font-medium text-gray-700 mb-1">
-                Mobile Number {formik.touched.mobile && formik.errors.mobile && <span className="text-red-500 text-xs"> - {formik.errors.mobile}</span>}
+                Mobile Number{" "}
+                {formik.touched.mobile && formik.errors.mobile && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.mobile}</span>
+                )}
               </label>
               <input
                 type="text"
@@ -325,12 +460,17 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder={getMobilePlaceholder()}
-                className={`h-12 px-4 py-2 border ${formik.touched.mobile && formik.errors.mobile ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border ${
+                  formik.touched.mobile && formik.errors.mobile ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
             </div>
             <div className="flex flex-col">
               <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
-                Email {formik.touched.email && formik.errors.email && <span className="text-red-500 text-xs"> - {formik.errors.email}</span>}
+                Email{" "}
+                {formik.touched.email && formik.errors.email && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.email}</span>
+                )}
               </label>
               <input
                 type="email"
@@ -340,12 +480,17 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="Enter your email"
-                className={`h-12 px-4 py-2 border ${formik.touched.email && formik.errors.email ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border ${
+                  formik.touched.email && formik.errors.email ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
             </div>
             <div className="flex flex-col">
               <label htmlFor="stockist" className="text-sm font-medium text-gray-700 mb-1">
-                Stockist {formik.touched.stockist && formik.errors.stockist && <span className="text-red-500 text-xs"> - {formik.errors.stockist}</span>}
+                Stockist{" "}
+                {formik.touched.stockist && formik.errors.stockist && (
+                  <span className="text-red-500 text-xs"> - {formik.errors.stockist}</span>
+                )}
               </label>
               <select
                 id="stockist"
@@ -353,9 +498,18 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
                 value={formik.values.stockist}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border ${formik.touched.stockist && formik.errors.stockist ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                disabled={loading.stockists}
+                className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${
+                  formik.touched.stockist && formik.errors.stockist ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               >
-                <option value="" disabled>Select Stockist</option>
+                <option value="">
+                  {loading.stockists
+                    ? "Loading stockists..."
+                    : stockists.length === 0
+                    ? "No stockists available"
+                    : "Select Stockist"}
+                </option>
                 {stockists.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.username} ({item.stockist_location})
@@ -368,6 +522,6 @@ const Step2 = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValid
       </form>
     </div>
   );
-};
+});
 
 export default Step2;
