@@ -26,7 +26,7 @@ const PackageUpload = ({
   const fetchPackages = async () => {
     setFetchingPackage(true);
     try {
-      const response = await api.post("/api/plans/all");
+      const response = await api.get("/api/plans/all");
       console.log(response.data.data.data);
       setPackages(response.data.data.data);
     } catch (error) {

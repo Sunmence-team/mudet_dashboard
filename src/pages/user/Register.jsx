@@ -16,18 +16,35 @@ const steps = [
 const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
   const progressRef = useRef(null);
   const stepRefs = useRef([]);
-  const [isFormValid, setIsFormValid] = useState(false);
+  const stepRef = useRef(null);
 
   const nextStep = () => {
     if (currentStep < steps.length && isFormValid) {
       setCurrentStep(currentStep + 1);
+      setSubmitting(false); // Reset loader after navigation
     }
   };
 
   const prevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      setSubmitting(false); // Ensure loader is off when going back
+    }
+  };
+
+  const handleNext = () => {
+    if (submitting) return; // Prevent multiple clicks
+    if (stepRef.current && typeof stepRef.current.submit === 'function') {
+      setSubmitting(true);
+      stepRef.current.submit();
+    } else if (isFormValid) {
+      setSubmitting(true);
+      nextStep();
+    }
   };
 
   const updateFormData = (values) => {
@@ -41,15 +58,15 @@ const Register = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <Step1 nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} setFormValidity={setFormValidity} />;
+        return <Step1 ref={stepRef} nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} setFormValidity={setFormValidity} setSubmitting={setSubmitting} />;
       case 2:
-        return <Step2 nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} setFormValidity={setFormValidity} />;
+        return <Step2 ref={stepRef} nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} setFormValidity={setFormValidity} setSubmitting={setSubmitting} />;
       case 3:
-        return <Step3 nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} setFormValidity={setFormValidity} />;
+        return <Step3 ref={stepRef} nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} setFormValidity={setFormValidity} setSubmitting={setSubmitting} />;
       case 4:
-        return <Step4 nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} />;
+        return <Step4 ref={stepRef} nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} setSubmitting={setSubmitting} />;
       case 5:
-        return <Step5 nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} />;
+        return <Step5 ref={stepRef} nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} setSubmitting={setSubmitting} />;
       default:
         return null;
     }
@@ -107,22 +124,31 @@ const Register = () => {
         </div>
       </div>
       <div className="mb-6">{renderStep()}</div>
-      <div className="flex justify-between">
-        <button
-          onClick={prevStep}
-          disabled={currentStep === 1}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-        >
-          Back
-        </button>
-        <button
-          onClick={nextStep}
-          disabled={currentStep === steps.length || !isFormValid}
-          className="px-4 py-2 bg-primary text-white rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      {currentStep !== 5 && (
+        <div className="flex justify-between">
+          <button
+            onClick={prevStep}
+            disabled={currentStep === 1 || submitting}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+          >
+            Back
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={currentStep === steps.length || !isFormValid || submitting}
+            className="px-4 py-2 bg-primary text-white rounded disabled:opacity-50 flex items-center justify-center"
+          >
+            {submitting ? (
+              <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+              </svg>
+            ) : (
+              "Next"
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -20,6 +20,10 @@ import Transactions from "./pages/admin/Transactions";
 import PackageUpload from "./pages/admin/PackageUpload";
 import TransferFunds from "./pages/user/TransferFunds";
 import EwalletTransfer from "./pages/user/EwalletTransfer";
+import Contact from "./pages/admin/Contact";
+import Announcements from "./pages/admin/Announcements";
+import Stockist from "./pages/admin/Stockist";
+import StockistUser from "./pages/StockistUser";
 import UserTransactions from "./pages/user/UserTransactions";
 import Upgrade from "./pages/user/Upgrade";
 
@@ -45,6 +49,18 @@ function App() {
         <Route
           path={"/admin/users"}
           element={<MainLayout child={<Users />} />}
+        />
+        <Route
+          path={"/admin/contact"}
+          element={<MainLayout child={<Contact />} />}
+        />
+        <Route
+          path={"/admin/announcements"}
+          element={<MainLayout child={<Announcements />} />}
+        />
+        <Route
+          path={"/admin/stockist"}
+          element={<MainLayout child={<Stockist />} />}
         />
         <Route
           path={"/user/profile"}
@@ -75,6 +91,10 @@ function App() {
           element={<MainLayout child={<Products />} />}
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
+        <Route
+          path={"/user/stockistuser"}
+          element={<MainLayout child={<StockistUser />} />}
+        />
         <Route
           path={"/admin/testimonials"}
           element={<MainLayout child={<Testimonials />} />}

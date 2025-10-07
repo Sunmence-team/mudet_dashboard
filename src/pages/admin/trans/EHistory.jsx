@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 
-const Deposit = () => {
+const EHistory = () => {
   const { user } = useUser();
-  const [depositsData, setDepositsData] = useState({
+  const [historyData, setHistoryData] = useState({
     data: [],
     current_page: 1,
     last_page: 1,
@@ -15,69 +15,39 @@ const Deposit = () => {
 
   const userId = user?.id;
 
-  const fetchDeposits = async (page = 1) => {
+  const fetchHistory = async (page = 1) => {
     setLoading(true);
     try {
-      if (!userId) {
-        console.error("User ID is undefined. Please log in.");
-        setDepositsData({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          per_page: 15,
-          total: 0,
-        });
-        return;
-      }
-
-      const response = await api.get(`/api/users/${userId}/fund-e-wallets?page=${page}`, {
+      const response = await api.get(`/api/user/p2p/${userId}?page=${page}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token || JSON.parse(localStorage.getItem("user") || "{}").token}`,
         },
       });
 
-      console.log("Deposit API response:", response.data);
-
       if (response.data.ok) {
-        setDepositsData({
-          data: response.data.data.data || [], // Use nested data.data for transactions
+        setHistoryData({
+          data: response.data.transactions,
           current_page: page,
-          last_page: Math.ceil((response.data.data.total || 0) / 15), // Use nested data.total
+          last_page: Math.ceil(response.data.total / 15), // Calculate last_page based on total and per_page
           per_page: 15,
-          total: response.data.data.total || 0,
-        });
-      } else {
-        console.error("API response not OK:", response.data);
-        setDepositsData({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          per_page: 15,
-          total: 0,
+          total: response.data.total,
         });
       }
     } catch (err) {
-      console.error("Error fetching deposits:", err);
-      setDepositsData({
-        data: [],
-        current_page: 1,
-        last_page: 1,
-        per_page: 15,
-        total: 0,
-      });
+      console.error("Error fetching transaction history:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDeposits();
+    fetchHistory();
   }, []);
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= depositsData.last_page) {
-      fetchDeposits(page);
+    if (page >= 1 && page <= historyData.last_page) {
+      fetchHistory(page);
     }
   };
 
@@ -103,7 +73,7 @@ const Deposit = () => {
     }
   };
 
-  const { data: deposits, current_page, last_page } = depositsData;
+  const { data: transactions, current_page, last_page } = historyData;
 
   return (
     <div className="bg-[var(--color-tetiary)]">
@@ -143,10 +113,10 @@ const Deposit = () => {
               </svg>
               <span className="text-black/60">Loading...</span>
             </div>
-          ) : !Array.isArray(deposits) || deposits.length === 0 ? (
-            <div className="text-center py-4">No deposits found.</div>
+          ) : transactions.length === 0 ? (
+            <div className="text-center py-4">No transactions found.</div>
           ) : (
-            deposits.map((item, idx) => {
+            transactions.map((item, idx) => {
               const { date, time } = formatDateTime(item.created_at);
               return (
                 <div
@@ -205,4 +175,4 @@ const Deposit = () => {
   );
 };
 
-export default Deposit;
+export default EHistory;
