@@ -10,9 +10,7 @@ const AnnouncementCard = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-
+  const [loading, setLoading] = useState(true)
 
   // Generate random color for each announcement
   const getRandomColor = () => {

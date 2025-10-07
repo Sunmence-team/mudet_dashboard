@@ -37,19 +37,16 @@ const Navbar = () => {
     },
     {
       name: "Contact",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/admin/contact",
       role: ["admin"],
     },
     {
       name: "Announcements",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/admin/announcements",
       role: ["admin"],
     },
     {
       name: "Stockist",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/admin/stockist",
       role: ["admin"],
     },
