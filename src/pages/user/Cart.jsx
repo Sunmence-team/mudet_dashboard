@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import CartCard from "../../components/cards/CartCard";
 import CartNotFound from "../../components/CartNotFound";
 import SummaryCard from "../../components/cards/SummaryCard";
+import { useUser } from "../../context/UserContext";
 
 const Cart = () => {
   const [cartProducts, setCartProducts] = useState([]);
+  const {user} = useUser()
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("carts")) || [];
@@ -60,7 +62,7 @@ const Cart = () => {
               ))}
             </div>
             <div className="lg:w-1/3 w-full">
-              <SummaryCard items={cartProducts.length} subtotal={cartProducts} />
+              <SummaryCard items={cartProducts.length} subtotal={cartProducts} user={user}/>
             </div>
           </div>
         </div>

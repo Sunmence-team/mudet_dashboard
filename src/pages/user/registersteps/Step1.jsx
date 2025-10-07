@@ -11,7 +11,7 @@ import api from "../../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const Step1 = forwardRef(
   (
