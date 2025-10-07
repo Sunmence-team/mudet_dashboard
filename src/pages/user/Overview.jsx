@@ -4,11 +4,12 @@ import PackageCard from "../../components/cards/PackageCard";
 import OverviewCard from "../../components/cards/OverviewCard";
 import AnnouncementCard from "../../components/cards/AnnouncementCard";
 import MembersCard from "../../components/cards/MembersCard";
+import { useUser } from "../../context/UserContext";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Overview = () => {
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const { user } = useUser();
   const firstName = user.first_name || "User";
 
   const topWallets = [
@@ -24,7 +25,7 @@ const Overview = () => {
       type: "wallet",
       walletType: "Incentive Wallet",
       walletBalance: parseFloat(user.incentive_wallet || 0),
-      path: "/user/",
+      path: "/user/withdraw",
       pathName: "Withdraw",
       color: "gold",
     },
@@ -32,7 +33,7 @@ const Overview = () => {
       type: "wallet",
       walletType: "Repurchase Wallet",
       walletBalance: parseFloat(user.purchased_wallet || 0),
-      path: "/user/",
+      path: "/user/transfer",
       pathName: "Repurchase Wallet",
       color: "lightGreen",
     },
@@ -43,28 +44,28 @@ const Overview = () => {
       type: "wallet",
       walletType: "Total Credit",
       walletBalance: parseFloat(user.total_credit || 0),
-      path: "/user/",
+      path: "/user/transactions",
       pathName: "History",
     },
     {
       type: "wallet",
       walletType: "Earning Wallet",
       walletBalance: parseFloat(user.earning_wallet || 0),
-      path: "/user/",
+      path: "/user/transfer",
       pathName: "Transfer",
     },
     {
       type: "wallet",
       walletType: "Total Debit",
       walletBalance: parseFloat(user.total_debit || 0),
-      path: "/user/",
+      path: "/user/transfer",
       pathName: "History",
     },
     {
       type: "wallet",
       walletType: "Unilevel Wallet",
       walletBalance: parseFloat(user.unilevel_wallet || 0),
-      path: "/user/",
+      // path: "/user/",
       // pathName: "Repurchase Wallet",
     },
   ];

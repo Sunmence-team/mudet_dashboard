@@ -15,26 +15,32 @@ import Testimonials from "./pages/admin/Testimonials";
 import ProductUpload from "./pages/admin/ProductUpload";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./utilities/ProtectRoute";
-import AllUsers from './pages/admin/AllUsers';
-import Transactions from './pages/admin/Transactions';
+import AllUsers from "./pages/admin/AllUsers";
+import Transactions from "./pages/admin/Transactions";
 import PackageUpload from "./pages/admin/PackageUpload";
-import TransferFunds from "./pages/user/profiletab/TransferFunds";
+import TransferFunds from "./pages/user/TransferFunds";
 import EwalletTransfer from "./pages/user/EwalletTransfer";
 import Contact from "./pages/admin/Contact";
 import Announcements from "./pages/admin/Announcements";
 import Stockist from "./pages/admin/Stockist";
 import StockistUser from "./pages/StockistUser";
+import UserTransactions from "./pages/user/UserTransactions";
+import Upgrade from "./pages/user/Upgrade";
 
 function App() {
   return (
     <>
-      <Toaster />
+      <Toaster richColors />
       <Routes>
         <Route path="/login" element={<Login />} />
 
         <Route
           path={"/user/overview"}
-          element={<ProtectedRoute element={() => <MainLayout child={<Overview />} />} />}
+          element={
+            <ProtectedRoute
+              element={() => <MainLayout child={<Overview />} />}
+            />
+          }
         />
         <Route
           path={"/admin/overview"}
@@ -56,7 +62,6 @@ function App() {
           path={"/admin/stockist"}
           element={<MainLayout child={<Stockist />} />}
         />
-        
         <Route
           path={"/user/profile"}
           element={<MainLayout child={<Profile />} />}
@@ -88,6 +93,10 @@ function App() {
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
         <Route path={"/user/stockistuser"} element={<MainLayout child={<StockistUser />} />} />
         <Route
+          path={"/user/stockistuser"}
+          element={<MainLayout child={<StockistUser />} />}
+        />
+        <Route
           path={"/admin/testimonials"}
           element={<MainLayout child={<Testimonials />} />}
         />
@@ -100,13 +109,21 @@ function App() {
           element={<MainLayout child={<PackageUpload />} />}
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
-        <Route 
+        <Route
           path={"/admin/users"}
           element={<MainLayout child={<AllUsers />} />}
         />
-        <Route 
+        <Route
           path={"/admin/transactions"}
           element={<MainLayout child={<Transactions />} />}
+        />
+        <Route
+          path={"/user/transactions"}
+          element={<MainLayout child={<UserTransactions />} />}
+        />
+        <Route
+          path={"/user/upgrade-package"}
+          element={<MainLayout child={<Upgrade />} />}
         />
       </Routes>
     </>

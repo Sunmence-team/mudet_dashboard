@@ -107,22 +107,30 @@ const EwalletTransfer = () => {
         pin: pin,
       });
 
-      const response = await api.post("/api/p2p", {
-        user_id: activeUser.id,
-        receiver_id: receiverId,
-        wallet: "e_wallet",
-        amount: formik.values.amount,
-        pin: pin,
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await api.post(
+        "/api/p2p",
+        {
+          user_id: activeUser.id,
+          receiver_id: receiverId,
+          wallet: "e_wallet",
+          amount: formik.values.amount,
+          pin: pin,
         },
-      });
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       console.log("Transfer response:", response);
 
-      if (response.data.ok && response.data.message === "e_wallet_transfer transfer completed successfully.") {
+      if (
+        response.data.ok &&
+        response.data.message ===
+          "e_wallet_transfer transfer completed successfully."
+      ) {
         toast.success("Transfer completed successfully");
         setActiveUser((prev) => ({
           ...prev,

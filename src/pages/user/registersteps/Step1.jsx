@@ -296,10 +296,22 @@ const Step1 = forwardRef(({
                   onClick={handleConfirmSponsor}
                 />
               </div>
-              {formik.touched.sponsor && formik.errors.sponsor && (
-                <p className="text-red-500 text-xs mt-1">
-                  {formik.errors.sponsor}
-                </p>
+              {sponsorNameDisplay && (
+                <div className="flex flex-col w-full">
+                  <label
+                    htmlFor="sponsorFullName"
+                    className="text-xs font-medium text-gray-700 mb-1"
+                  >
+                    Sponsor Full Name
+                  </label>
+                  <p
+                    className={`text-xs text-gray-600 mt-1 ${
+                      sponsorConfirmed ? "" : "text-red-500"
+                    }`}
+                  >
+                    {sponsorNameDisplay}
+                  </p>
+                </div>
               )}
             </div>
             {sponsorNameDisplay && (
@@ -343,9 +355,54 @@ const Step1 = forwardRef(({
                   onClick={handleConfirmPlacement}
                 />
               </div>
-              {formik.touched.placement && formik.errors.placement && (
+              {placementNameDisplay && (
+                <div className="flex flex-col w-full">
+                  <label
+                    htmlFor="placementFullName"
+                    className="text-xs font-medium text-gray-700 mb-1"
+                  >
+                    Placement Full Name
+                  </label>
+                  <p
+                    className={`text-xs text-gray-600 mt-1 ${
+                      placementConfirmed ? "" : "text-red-500"
+                    }`}
+                  >
+                    {placementNameDisplay}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex-[2] w-full flex flex-col gap-3">
+              <p className="text--sm md:text-lg">Position</p>
+              <div className="flex w-full justify-between">
+                <button
+                  type="button"
+                  className={`px-8 py-2 rounded-full ${
+                    formik.values.position === "Left"
+                      ? "bg-secondary text-white"
+                      : "bg-white border border-black/50 text-black"
+                  }`}
+                  onClick={() => formik.setFieldValue("position", "Left")}
+                >
+                  Left
+                </button>
+                <button
+                  type="button"
+                  className={`px-8 py-2 rounded-full ${
+                    formik.values.position === "Right"
+                      ? "bg-secondary text-white"
+                      : "bg-white border border-black/50 text-black"
+                  }`}
+                  onClick={() => formik.setFieldValue("position", "Right")}
+                >
+                  Right
+                </button>
+              </div>
+              {formik.touched.position && formik.errors.position && (
                 <p className="text-red-500 text-xs mt-1">
-                  {formik.errors.placement}
+                  {formik.errors.position}
                 </p>
               )}
             </div>
