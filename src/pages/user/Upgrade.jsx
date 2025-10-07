@@ -75,7 +75,7 @@ const Upgrade = () => {
       } else {
         toast.error(
           "An unexpected error occurred while upgrading package. " +
-            error?.response?.data?.message ||
+            error?.response?.data?.error ||
             error?.message ||
             "Please try again later."
         );
