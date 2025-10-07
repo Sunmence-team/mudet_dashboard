@@ -1,9 +1,11 @@
+import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-const PinModal = ({ onClose, onConfirm }) => {
+const PinModal = ({ onClose, onConfirm, user }) => {
   const [pin, setPin] = useState(["", "", "", ""]);
-
+  const [incorrectPin, setIncorrectPin] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (value, index) => {
     if (/^[0-9]?$/.test(value)) {
@@ -17,14 +19,29 @@ const PinModal = ({ onClose, onConfirm }) => {
     }
   };
 
-  const handleConfirm = () => {
-    const pinValue = pin.join("");
-    if (pinValue.length === 4) {
-      sessionStorage.setItem("currentAuth", pinValue);
-      onConfirm(pinValue); // ✅ pass the pin to parent
+  const handleConfirm = async () => {
+    try {
+      const pinValue = pin.join("");
+      if (+pinValue !== +user.pin) {
+        toast.error("Incorrect Pin");
+        setPin(["", "", "", ""]);
+        setIncorrectPin(true);
+        return;
+      }
+      if (pinValue.length === 4) {
+        localStorage.setItem("currentAuth", pinValue);
+        if (pinValue) {
+          setSubmitting(true);
+        }
+        await onConfirm(pinValue); // ✅ pass the pin to parent;
+      } else {
+        toast.error("Please enter a 4-digit PIN");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSubmitting(false);
       setPin(["", "", "", ""]);
-    } else {
-      toast.error("Please enter a 4-digit PIN");
     }
   };
 
@@ -44,7 +61,9 @@ const PinModal = ({ onClose, onConfirm }) => {
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(e.target.value, index)}
-              className="w-12 h-12 text-center text-xl border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className={`w-12 h-12 text-center text-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                incorrectPin ? "border-red-600 border" : "border"
+              }`}
             />
           ))}
         </div>
@@ -52,15 +71,20 @@ const PinModal = ({ onClose, onConfirm }) => {
         <div className="flex justify-between gap-4">
           <button
             onClick={onClose}
-            className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
+            className="flex w-1/2 items-center justify-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-primary/80"
+            className="flex w-1/2 items-center justify-center bg-primary text-white py-2 rounded-lg hover:bg-primary/80"
+            disabled={submitting}
           >
-            Confirm
+            {!submitting ? (
+              <span>Confirm</span>
+            ) : (
+              <Loader2 className="animate-spin" />
+            )}
           </button>
         </div>
       </div>

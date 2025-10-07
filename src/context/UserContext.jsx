@@ -68,7 +68,10 @@ export const UserProvider = ({ children }) => {
       setMiscellaneousDetails(updatedMiscellaneousDetails);
 
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      localStorage.setItem("miscellaneousDetails", JSON.stringify(updatedMiscellaneousDetails));
+      localStorage.setItem(
+        "miscellaneousDetails",
+        JSON.stringify(updatedMiscellaneousDetails)
+      );
     } catch (err) {
       console.error("Failed to refresh user:", err);
       // Optional: logout();

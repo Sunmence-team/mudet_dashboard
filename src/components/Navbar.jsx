@@ -22,19 +22,16 @@ const Navbar = () => {
   const navItems = [
     {
       name: "Dashboard",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/user/overview",
       role: ["user"],
     },
     {
       name: "Dashboard",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/admin/overview",
       role: ["admin"],
     },
     {
       name: "Users",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/admin/users",
       role: ["admin"],
     },
@@ -57,80 +54,96 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
+      name: "Contact",
+      path: "/admin/contact",
+      role: ["admin"],
+    },
+    {
+      name: "Announcements",
+      path: "/admin/announcements",
+      role: ["admin"],
+    },
+    {
+      name: "Stockist",
+      path: "/admin/stockist",
+      role: ["admin"],
+    },
+    {
       name: "Network",
-      // icon: <PiNetwork size={20} />,
       path: "/user/network",
       role: ["user"],
     },
     {
       name: "Profile",
-      // icon: <PiNetwork size={20} />,
       path: "/user/profile",
       role: ["user"],
     },
     {
       name: "Deposit Funds",
-      // icon: <PiNetwork size={20} />,
       path: "/user/deposit",
       role: ["user"],
     },
     {
       name: "Transfer Funds",
-      // icon: <PiNetwork size={20} />,
       path: "/user/transfer",
       role: ["user"],
     },
     {
+      name: "Transactions",
+      path: "/user/transactions",
+      role: ["user"],
+    },
+    {
       name: "Register",
-      // icon: <PiNetwork size={20} />,
       path: "/user/register",
       role: ["user"],
     },
     {
       name: "Products",
-      // icon: <PiNetwork size={20} />,
       path: "/user/products",
       role: ["user"],
     },
     {
       name: "E-Wallet Transfer",
-      // icon: <PiNetwork size={20} />,
       path: "/user/ewallet-transfer",
       role: ["user"],
     },
     {
+      name: "Upgrade Package",
+      path: "/user/upgrade-package",
+      role: ["user"],
+    },
+    {
       name: "Testimonials",
-      // icon: <PiNetwork size={20} />,
       path: "/admin/testimonials",
       role: ["admin"],
     },
     {
       name: "Product Upload",
-      // icon: <PiNetwork size={20} />,
       path: "/admin/product-upload",
       role: ["admin"],
     },
     {
       name: "AllTransactions",
-      // icon: <PiNetwork size={20} />,
       path: "/admin/transactions",
       role: ["user"],
     },
     {
       name: "Stockist",
-      // icon: <PiNetwork size={20} />,
       path: "/user/stockistuser",
       role: ["user"],
     },
     {
       name: "Package Upload",
-      // icon: <PiNetwork size={20} />,
       path: "/admin/package-upload",
       role: ["admin"],
     },
   ];
 
   const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
+  const userName = `${user?.first_name || backUpUser?.first_name} ${
+    user?.last_name || backUpUser?.last_name
+  }`;
 
   return (
     <div>
@@ -162,12 +175,11 @@ const Navbar = () => {
                       : ""
                     }
                                     `}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {name}
-                </NavLink>
-              ))
-            }
+                onClick={() => setIsOpen(false)}
+              >
+                {name}
+              </NavLink>
+            ))}
           </ul>
         </div>
         <div className="flex items-center gap-4">
@@ -187,7 +199,14 @@ const Navbar = () => {
             to={"/user/profile"}
             className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-xl bg-tetiary text-primary"
           >
-            <h3>OD</h3>
+            <h3>
+              {" "}
+              {userName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()}
+            </h3>
           </Link>
         </div>
       </nav>
@@ -214,7 +233,7 @@ const Navbar = () => {
           <ul className="flex flex-col items-center gap-6 overflow-y-scroll no-scrollbar">
             {
               // filteredLinks.map(({ name, path }, index) => (
-              navItems.map(({ name, path }, index) => (
+              filteredLinks.map(({ name, path }, index) => (
                 <NavLink
                   to={path}
                   key={index}
