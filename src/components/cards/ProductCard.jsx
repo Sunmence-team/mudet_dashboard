@@ -4,14 +4,7 @@ import { toast } from "sonner";
 import ProductModal from "../modals/ProductModal";
 
 const ProductCard = ({ product }) => {
-  const {
-    id,
-    product_name,
-    product_image,
-    product_description,
-    product_pv,
-    price,
-  } = product;
+  const { id, product_name, product_image, product_description, product_pv, price } = product;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productQuantity, setProductQuantity] = useState(null);
 
@@ -89,9 +82,7 @@ const ProductCard = ({ product }) => {
           <div className="text-lg font-bold text-primary">
             Price: ₦{price.toLocaleString()}
           </div>
-          <div className="lg:text-base text-sm text-secondary">
-            Pv: {product_pv}
-          </div>
+          <div className="lg:text-base text-sm text-secondary">Pv: {product_pv}</div>
         </div>
 
         <div className="flex flex-col space-y-2">

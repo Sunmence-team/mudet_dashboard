@@ -91,6 +91,7 @@ function App() {
           element={<MainLayout child={<Products />} />}
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
+        <Route path={"/user/stockistuser"} element={<MainLayout child={<StockistUser />} />} />
         <Route
           path={"/user/stockistuser"}
           element={<MainLayout child={<StockistUser />} />}

@@ -1,77 +1,57 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "../../components/cards/ProductCard";
 import { toast } from "sonner";
-import api, { setupInterceptors } from "../../utilities/api"; // ensure this is imported
+import api from "../../utilities/api";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // optional logout handler (you can define what happens on logout)
-  const logout = () => {
-    localStorage.removeItem("token");
-    toast.error("Session expired. Please log in again.");
-    window.location.href = "/login";
-  };
-
-  useEffect(() => {
-    setupInterceptors(logout);
-    fetchProducts();
-  }, []);
-
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      // since baseURL is already set in api.js, just call the endpoint directly
-      const response = await api.get("/api/allproducts");
+      const response = await api.get(`${API_URL}/api/allproducts`)
 
-      console.log("API response:", response.data);
+      console.log(response.data);
 
-      // handle different response shapes safely
-      const productsData = response.data?.data || response.data || [];
-
-      if (Array.isArray(productsData) && productsData.length > 0) {
-        setProducts(productsData);
-      } else {
-        toast.info("No products found.");
+      if (response.status === 200) {
+        setProducts(response.data);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
 
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        "Error loading products";
-
-      // don’t auto logout unless token is invalid
-      if (
-        error.response?.status === 401 ||
-        message.toLowerCase().includes("unauthenticated")
-      ) {
+      if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
         logout();
+        toast.error("Session expired. Please login again.");
       } else {
-        toast.error(message);
+        toast.error(error.response?.data?.message || "Error loading Products");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔄 Loading State
+  useEffect(() => {
+      fetchProducts();
+  }, []);
+
+
+  // loading state UI
   if (loading) {
     return (
       <div className="flex flex-col gap-4 p-6 justify-center items-center min-h-[400px]">
-        <h3 className="text-2xl font-semibold">Loading Products...</h3>
+        <h3 className="text-2xl font-semibold">Loading Products</h3>
         <div className="border-[6px] border-t-transparent border-pryClr animate-spin mx-auto rounded-full w-[80px] h-[80px]"></div>
       </div>
     );
   }
 
-  // 🧩 Product List
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl font-semibold">Products</h2>
-      <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3">
+      <div className="grid lg:grid-cols-4 grid-cols-1 gap-3 sm:grid-cols-2">
         {products.length > 0 ? (
           products.map((product, index) => (
             <ProductCard product={product} key={product.id || index} />

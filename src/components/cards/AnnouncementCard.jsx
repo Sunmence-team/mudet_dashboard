@@ -10,7 +10,7 @@ const AnnouncementCard = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true)
 
   // Generate random color for each announcement
   const getRandomColor = () => {
@@ -27,29 +27,18 @@ const AnnouncementCard = () => {
           setLoading(false);
           return;
         }
-        console.log(
-          `Fetching announcements from: /api/announcements with token: ${token}`
-        );
+        console.log(`Fetching announcements from: /api/announcements with token: ${token}`);
         const response = await api.get("/api/announcements", {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(
-          "Fetched announcements response:",
-          JSON.stringify(response.data, null, 2)
-        );
+        console.log("Fetched announcements response:", JSON.stringify(response.data, null, 2));
         const announcementsData = response.data.data.data || [];
-        console.log(
-          "Raw announcement data array:",
-          JSON.stringify(announcementsData, null, 2)
-        );
+        console.log("Raw announcement data array:", JSON.stringify(announcementsData, null, 2));
         const mappedAnnouncements = announcementsData.map((item, index) => {
-          console.log(
-            `Announcement ${index + 1} start_date:`,
-            item.start_date || "Not found"
-          );
+          console.log(`Announcement ${index + 1} start_date:`, item.start_date || "Not found");
           return {
             id: item.id,
             title: item.title,
@@ -59,30 +48,16 @@ const AnnouncementCard = () => {
             action: "View",
           };
         });
-        console.log(
-          "Mapped announcements:",
-          JSON.stringify(mappedAnnouncements, null, 2)
-        );
+        console.log("Mapped announcements:", JSON.stringify(mappedAnnouncements, null, 2));
         setAnnouncements(mappedAnnouncements);
-        console.log(
-          "Set announcements state:",
-          JSON.stringify(mappedAnnouncements, null, 2)
-        );
+        console.log("Set announcements state:", JSON.stringify(mappedAnnouncements, null, 2));
       } catch (error) {
         console.error("Error fetching announcements:", error);
         if (error.response) {
-          console.log(
-            "Error response:",
-            JSON.stringify(error.response.data, null, 2)
-          );
+          console.log("Error response:", JSON.stringify(error.response.data, null, 2));
           console.log("Error status:", error.response.status);
-          console.log(
-            "Error headers:",
-            JSON.stringify(error.response.headers, null, 2)
-          );
-          toast.error(
-            error.response.data?.message || "Failed to fetch announcements."
-          );
+          console.log("Error headers:", JSON.stringify(error.response.headers, null, 2));
+          toast.error(error.response.data?.message || "Failed to fetch announcements.");
         } else if (error.request) {
           console.log("Error request:", error.request);
           console.log("CORS or network error details:", error.message);
@@ -116,7 +91,7 @@ const AnnouncementCard = () => {
       scrollContainers.forEach((el) => (el.style.overflow = ""));
     };
   }, [selectedAnnouncement]);
-
+  
   const handleView = async (id) => {
     try {
       console.log(`Fetching announcement: /api/announcements/${id}`);
@@ -126,15 +101,9 @@ const AnnouncementCard = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(
-        "View announcement response:",
-        JSON.stringify(response.data, null, 2)
-      );
+      console.log("View announcement response:", JSON.stringify(response.data, null, 2));
       const announcement = response.data.data;
-      console.log(
-        "View announcement start_date:",
-        announcement.start_date || "Not found"
-      );
+      console.log("View announcement start_date:", announcement.start_date || "Not found");
       const mappedAnnouncement = {
         id: announcement.id,
         title: announcement.title,
@@ -147,26 +116,15 @@ const AnnouncementCard = () => {
         created_at: announcement.created_at,
         updated_at: announcement.updated_at,
       };
-      console.log(
-        "Set selected announcement:",
-        JSON.stringify(mappedAnnouncement, null, 2)
-      );
+      console.log("Set selected announcement:", JSON.stringify(mappedAnnouncement, null, 2));
       setSelectedAnnouncement(mappedAnnouncement);
     } catch (error) {
       console.error("Error viewing announcement:", error);
       if (error.response) {
-        console.log(
-          "Error response:",
-          JSON.stringify(error.response.data, null, 2)
-        );
+        console.log("Error response:", JSON.stringify(error.response.data, null, 2));
         console.log("Error status:", error.response.status);
-        console.log(
-          "Error headers:",
-          JSON.stringify(error.response.headers, null, 2)
-        );
-        toast.error(
-          error.response.data?.message || "Failed to view announcement."
-        );
+        console.log("Error headers:", JSON.stringify(error.response.headers, null, 2));
+        toast.error(error.response.data?.message || "Failed to view announcement.");
       } else if (error.request) {
         console.log("Error request:", error.request);
         console.log("CORS or network error details:", error.message);
@@ -187,24 +145,9 @@ const AnnouncementCard = () => {
         <div className="styled-scrollbar space-y-4 max-h-65 overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <svg
-                className="animate-spin h-8 w-8 text-gray-600"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                />
+              <svg className="animate-spin h-8 w-8 text-gray-600" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
             </div>
           ) : announcements.length > 0 ? (
@@ -247,9 +190,7 @@ const AnnouncementCard = () => {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-600 py-4">
-              No announcements available
-            </p>
+            <p className="text-center text-gray-600 py-4">No announcements available</p>
           )}
         </div>
       </div>

@@ -35,26 +35,17 @@ const EwalletTransfer = () => {
         return;
       }
 
-      const response = await api.post(
-        "/api/validate-username",
-        { username: recipientName },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.post("/api/validate-username", { username: recipientName }, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       console.log("Validate username response:", response);
 
-      if (
-        response.data.message === "Username validated successfully" &&
-        response.data.data
-      ) {
-        setRecipientNameDisplay(
-          `${response.data.data.first_name} ${response.data.data.last_name}`
-        );
+      if (response.data.message === "Username validated successfully" && response.data.data) {
+        setRecipientNameDisplay(`${response.data.data.first_name} ${response.data.data.last_name}`);
         setRecipientConfirmed(true);
         setReceiverId(response.data.data.id); // Store receiver_id
         toast.success("Username validated successfully");
@@ -69,11 +60,7 @@ const EwalletTransfer = () => {
       setRecipientNameDisplay("Error validating user");
       setRecipientConfirmed(false);
       setReceiverId(null);
-      toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "Error validating username"
-      );
+      toast.error(error.response?.data?.message || error.message || "Error validating username");
     } finally {
       setValidating(false); // Stop validation loading
     }
@@ -160,20 +147,10 @@ const EwalletTransfer = () => {
     } catch (error) {
       console.error("Error during transfer:", error);
       if (error.response?.data?.errors) {
-        const errorMessages = Object.values(error.response.data.errors)
-          .flat()
-          .join("; ");
-        toast.error(
-          errorMessages ||
-            error.response?.data?.message ||
-            "An error occurred during the transfer"
-        );
+        const errorMessages = Object.values(error.response.data.errors).flat().join("; ");
+        toast.error(errorMessages || error.response?.data?.message || "An error occurred during the transfer");
       } else {
-        toast.error(
-          error.response?.data?.message ||
-            error.message ||
-            "An error occurred during the transfer"
-        );
+        toast.error(error.response?.data?.message || error.message || "An error occurred during the transfer");
       }
     } finally {
       setSubmitting(false);
@@ -182,8 +159,7 @@ const EwalletTransfer = () => {
     }
   };
 
-  const handlePinConfirm = () => {
-    const pin = localStorage.getItem("currentAuth");
+  const handlePinConfirm = (pin) => {
     console.log("PIN received:", pin);
     setPinModal(false); // Close modal immediately
     setPinSubmitting(true); // Start PIN submission loading
@@ -219,8 +195,7 @@ const EwalletTransfer = () => {
     validate: (values) => {
       const errors = {};
       if (!values.amount) errors.amount = "Required";
-      else if (values.amount <= 0)
-        errors.amount = "Amount must be greater than 0";
+      else if (values.amount <= 0) errors.amount = "Amount must be greater than 0";
       if (!values.recipientName) errors.recipientName = "Required";
       return errors;
     },
@@ -295,13 +270,12 @@ const EwalletTransfer = () => {
                     className="text-sm font-medium text-gray-700 mb-1"
                   >
                     Recipient Username
-                    {formik.touched.recipientName &&
-                      formik.errors.recipientName && (
-                        <span className="text-red-500 text-xs">
-                          {" "}
-                          - {formik.errors.recipientName}
-                        </span>
-                      )}
+                    {formik.touched.recipientName && formik.errors.recipientName && (
+                      <span className="text-red-500 text-xs">
+                        {" "}
+                        - {formik.errors.recipientName}
+                      </span>
+                    )}
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -318,8 +292,7 @@ const EwalletTransfer = () => {
                       }}
                       onBlur={formik.handleBlur}
                       className={`h-12 px-4 py-2 border w-full ${
-                        formik.touched.recipientName &&
-                        formik.errors.recipientName
+                        formik.touched.recipientName && formik.errors.recipientName
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-lg focus:ring-pryClr focus:border-pryClr`}
@@ -327,9 +300,7 @@ const EwalletTransfer = () => {
                     <button
                       type="button"
                       onClick={handleConfirmRecipient}
-                      disabled={
-                        !formik.values.recipientName || submitting || validating
-                      }
+                      disabled={!formik.values.recipientName || submitting || validating}
                       className="bg-primary text-white px-4 py-2 rounded-lg disabled:bg-gray-400"
                     >
                       {validating ? (
@@ -377,9 +348,7 @@ const EwalletTransfer = () => {
                       value={recipientNameDisplay}
                       disabled
                       className={`h-12 px-4 py-2 border w-full ${
-                        recipientConfirmed
-                          ? "border-gray-300"
-                          : "border-red-500"
+                        recipientConfirmed ? "border-gray-300" : "border-red-500"
                       } rounded-lg bg-gray-100`}
                     />
                   </div>
@@ -427,7 +396,6 @@ const EwalletTransfer = () => {
         <PinModal
           onClose={() => setPinModal(false)}
           onConfirm={handlePinConfirm}
-          user={activeUser}
         />
       )}
     </>
