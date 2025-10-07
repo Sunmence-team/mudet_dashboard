@@ -4,11 +4,12 @@ import PackageCard from "../../components/cards/PackageCard";
 import OverviewCard from "../../components/cards/OverviewCard";
 import AnnouncementCard from "../../components/cards/AnnouncementCard";
 import MembersCard from "../../components/cards/MembersCard";
+import { useUser } from "../../context/UserContext";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Overview = () => {
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const { user } = useUser();
   const firstName = user.first_name || "User";
 
   const topWallets = [

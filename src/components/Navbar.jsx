@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
 
 const Navbar = () => {
-  const backUpUser = JSON.parse(localStorage.getItem("user"));
   const { user } = useUser();
   const cart = JSON.parse(localStorage.getItem("carts")) || [];
   const [isOpen, setIsOpen] = useState(false);
@@ -23,110 +22,110 @@ const Navbar = () => {
   const navItems = [
     {
       name: "Dashboard",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/user/overview",
       role: ["user"],
     },
     {
       name: "Dashboard",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/admin/overview",
       role: ["admin"],
     },
     {
       name: "Users",
-      // icon: <MdOutlineDashboard size={20} />,
       path: "/admin/users",
       role: ["admin"],
     },
     {
+      name: "Contact",
+      path: "/admin/contact",
+      role: ["admin"],
+    },
+    {
+      name: "Announcements",
+      path: "/admin/announcements",
+      role: ["admin"],
+    },
+    {
+      name: "Stockist",
+      path: "/admin/stockist",
+      role: ["admin"],
+    },
+    {
       name: "Network",
-      // icon: <PiNetwork size={20} />,
       path: "/user/network",
       role: ["user"],
     },
     {
       name: "Profile",
-      // icon: <PiNetwork size={20} />,
       path: "/user/profile",
       role: ["user"],
     },
     {
       name: "Deposit Funds",
-      // icon: <PiNetwork size={20} />,
       path: "/user/deposit",
       role: ["user"],
     },
     {
       name: "Transfer Funds",
-      // icon: <PiNetwork size={20} />,
       path: "/user/transfer",
       role: ["user"],
     },
     {
       name: "Transactions",
-      // icon: <PiNetwork size={20} />,
       path: "/user/transactions",
       role: ["user"],
     },
     {
       name: "Register",
-      // icon: <PiNetwork size={20} />,
       path: "/user/register",
       role: ["user"],
     },
     {
       name: "Products",
-      // icon: <PiNetwork size={20} />,
       path: "/user/products",
       role: ["user"],
     },
     {
       name: "E-Wallet Transfer",
-      // icon: <PiNetwork size={20} />,
       path: "/user/ewallet-transfer",
       role: ["user"],
     },
     {
       name: "Upgrade Package",
-      // icon: <PiNetwork size={20} />,
       path: "/user/upgrade-package",
       role: ["user"],
     },
     {
       name: "Testimonials",
-      // icon: <PiNetwork size={20} />,
       path: "/admin/testimonials",
       role: ["admin"],
     },
     {
       name: "Product Upload",
-      // icon: <PiNetwork size={20} />,
       path: "/admin/product-upload",
       role: ["admin"],
     },
     {
       name: "AllTransactions",
-      // icon: <PiNetwork size={20} />,
       path: "/admin/transactions",
-      role: ["admin"],
+      role: ["user"],
+    },
+    {
+      name: "Stockist",
+      path: "/user/stockistuser",
+      role: ["user"],
     },
     {
       name: "Package Upload",
-      // icon: <PiNetwork size={20} />,
       path: "/admin/package-upload",
       role: ["admin"],
     },
   ];
 
+  const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
   const userName = `${user?.first_name || backUpUser?.first_name} ${
     user?.last_name || backUpUser?.last_name
   }`;
-
-  const filteredLinks = navItems.filter(
-    (navItem) =>
-      Array.isArray(navItem.role) && navItem.role.includes(user?.role)
-  );
 
   return (
     <div>
@@ -145,18 +144,18 @@ const Navbar = () => {
             className="object-cover md:block hidden"
           />
           <ul className="md:flex hidden items-center gap-6 overflow-x-scroll no-scrollbar">
-            {filteredLinks.map(({ name, path }, index) => (
-              // navItems.map(({ name, path }, index) => (
-              <NavLink
-                to={path}
-                key={index}
-                className={({ isActive }) => `
+            {
+              filteredLinks.map(({ name, path }, index) => (
+                // navItems.map(({ name, path }, index) => (
+                <NavLink
+                  to={path}
+                  key={index}
+                  className={({ isActive }) => `
                                         nav-links relative font-semibold whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${
-                                          isActive
-                                            ? "active text-primary !font-extrabold"
-                                            : ""
-                                        }
+                                        ${isActive
+                      ? "active text-primary !font-extrabold"
+                      : ""
+                    }
                                     `}
                 onClick={() => setIsOpen(false)}
               >
@@ -195,9 +194,8 @@ const Navbar = () => {
       </nav>
 
       <nav
-        className={`absolute top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${
-          isOpen ? "slide-in" : "slide-out"
-        }`}
+        className={`absolute top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${isOpen ? "slide-in" : "slide-out"
+          }`}
       >
         <div className="flex flex-col h-[calc(100%-40px-24px)] w-full md:gap-6 gap-3">
           <div className="flex flex-row-reverse items-center justify-between ">
@@ -223,11 +221,10 @@ const Navbar = () => {
                   key={index}
                   className={({ isActive }) => `
                                         nav-links relative font-medium whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${
-                                          isActive
-                                            ? "active text-primary !font-extrabold"
-                                            : ""
-                                        }
+                                        ${isActive
+                      ? "active text-primary !font-extrabold"
+                      : ""
+                    }
                                     `}
                   onClick={() => setIsOpen(false)}
                 >
