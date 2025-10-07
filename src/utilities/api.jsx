@@ -14,8 +14,8 @@ const api = axios.create({
 export const setupInterceptors = (logout) => {
   api.interceptors.request.use(
     (config) => {
-      // const token = localStorage.getItem("token");
-      const token = "88|mJjADwVH1TeszXxqAnPTigaGAdUvjzs6jRPoapkqc5c91b30"; 
+      const token = localStorage.getItem("token");
+      // const token = "299|DjwCPLWXGsVUT4k1J3iresKm3LQtB8AOWw75FB220532ee86"; 
      if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
