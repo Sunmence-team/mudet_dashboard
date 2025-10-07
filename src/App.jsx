@@ -56,6 +56,7 @@ function App() {
           path={"/admin/stockist"}
           element={<MainLayout child={<Stockist />} />}
         />
+        
         <Route
           path={"/user/profile"}
           element={<MainLayout child={<Profile />} />}

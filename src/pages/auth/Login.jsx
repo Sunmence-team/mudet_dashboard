@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage, useFormik } from "formik";
 import * as Yup from "yup";
 import assets from "../../assets/assets";
@@ -7,8 +7,9 @@ import axios from "axios";
 import { toast } from "sonner";
 import api from "../../utilities/api";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const loginSchema = Yup.object().shape({
   username: Yup.string()
@@ -19,27 +20,26 @@ const loginSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-
 const Login = () => {
   const { login } = useUser();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
       rememberMe: false,
     },
     validationSchema: loginSchema,
     onSubmit: async (values, { setSubmitting }) => {
-      console.log('Form submitted:', values);
+      console.log("Form submitted:", values);
       try {
-        const response = await api.post(`/api/login`, values)
-         console.log("Login response data:", response.data);
+        const response = await api.post(`/api/login`, values);
+        console.log("Login response data:", response.data);
         if (response.status === 200) {
-          const { token, role, user } = response.data; // <-- make sure backend sends `user`
+          const { token, role, user } = response.data;
 
-          // Save token + user to localStorage
           localStorage.setItem("token", token);
           localStorage.setItem("user", JSON.stringify(user));
 
@@ -53,25 +53,21 @@ const Login = () => {
             }, 2000);
           }, 1000);
         }
-
       } catch (err) {
-        console.error('Error during logging in:', err);
+        console.error("Error during logging in:", err);
         if (axios.isAxiosError(err) && err.response && err.response.status === 401) {
-          toast.error(err.response.data.message || 'Validation error. Please check your inputs.');
+          toast.error(err.response.data.message || "Validation error. Please check your inputs.");
         } else {
-          toast.error('An unexpected error occurred while logging in. ' + err?.response?.data?.message || err?.message || "Please try again later.");
-          console.error('Error during logging in:', err);
+          toast.error("An unexpected error occurred while logging in. " + err?.response?.data?.message || err?.message || "Please try again later.");
+          console.error("Error during logging in:", err);
         }
       } finally {
         setTimeout(() => {
-          setSubmitting(false)
-        }, 2000)
+          setSubmitting(false);
+        }, 2000);
       }
     },
   });
-
-
-
 
   return (
     <div className="min-h-screen flex">
@@ -136,20 +132,27 @@ const Login = () => {
                   ) : null}
                 </div>
 
-                <div>
+                <div className="relative">
                   <label htmlFor="password" className="block text-gray-800 font-medium mb-2">
                     Password
                   </label>
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.password}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pryClr transition duration-300 bg-white"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pryClr transition duration-300 bg-white pr-10"
                     placeholder="Enter your password"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+                  </button>
                   {formik.touched.password && formik.errors.password ? (
                     <p className="text-red-600 text-sm mt-1.5">
                       {formik.errors.password}
@@ -182,7 +185,7 @@ const Login = () => {
                   disabled={formik.isSubmitting}
                   className="w-full bg-primary hover:bg-primary text-white font-medium py-3 rounded-lg transition duration-300 disabled:opacity-50 shadow-lg"
                 >
-                  {formik.isSubmitting ? 'Logging in...' : 'Login'}
+                  {formik.isSubmitting ? "Logging in..." : "Login"}
                 </button>
               </form>
             </div>
@@ -191,7 +194,7 @@ const Login = () => {
 
         {/* Desktop form section - unchanged */}
         <div className="hidden md:flex w-full h-full items-center justify-center bg-gray-50 md:bg-white md:rounded-l-3xl md:shadow-lg py-8 md:py-0">
-          <div className="w-full  p-8">
+          <div className="w-full p-8">
             <h2 className="text-3xl font-bold mb-6 text-gray-900 text-center md:text-left">
               Login
             </h2>
@@ -217,20 +220,27 @@ const Login = () => {
                 ) : null}
               </div>
 
-              <div>
+              <div className="relative">
                 <label htmlFor="password" className="block text-gray-800 font-medium mb-2">
                   Password
                 </label>
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pryClr transition duration-300 bg-white"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pryClr transition duration-300 bg-white pr-10"
                   placeholder="Enter your password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+                </button>
                 {formik.touched.password && formik.errors.password ? (
                   <p className="text-red-600 text-sm mt-1.5">
                     {formik.errors.password}
@@ -263,7 +273,7 @@ const Login = () => {
                 disabled={formik.isSubmitting}
                 className="w-full bg-primary hover:bg-primary text-white font-medium py-3 rounded-lg transition duration-300 disabled:opacity-50 shadow-lg"
               >
-                {formik.isSubmitting ? 'Logging in...' : 'Login'}
+                {formik.isSubmitting ? "Logging in..." : "Login"}
               </button>
             </form>
           </div>
