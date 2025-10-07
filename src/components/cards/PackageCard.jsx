@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const PackageCard = () => {
   const { user } = useUser();
-  const backUpUser = JSON.parse(localStorage.getItem("user"));
+  // const backUpUser = JSON.parse(localStorage.getItem("user"));
   const name = `${user.first_name || backUpUser.first_name} ${
     user.last_name || backUpUser.last_name
   }`;
