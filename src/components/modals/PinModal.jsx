@@ -33,7 +33,7 @@ const PinModal = ({ onClose, onConfirm, user }) => {
         if (pinValue) {
           setSubmitting(true);
         }
-        await onConfirm();
+        await onConfirm(pinValue); // ✅ pass the pin to parent;
       } else {
         toast.error("Please enter a 4-digit PIN");
       }
