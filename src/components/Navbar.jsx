@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { IoMdCart } from "react-icons/io";
 import { GoBellFill } from "react-icons/go";
 import assets from "../assets/assets";
@@ -8,15 +8,52 @@ import { IoCloseOutline } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
 import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
+import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
 
 const Navbar = () => {
   const { user } = useUser();
   const cart = JSON.parse(localStorage.getItem("carts")) || [];
   const [isOpen, setIsOpen] = useState(false);
   const [cartItem, setCartItem] = useState(0);
+
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const scrollLeft = () => {
+    scrollRef.current?.scrollBy({ left: -200, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" });
+  };
+
+  // detect if we can scroll in either direction
+  const checkScrollPosition = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    checkScrollPosition(); // initial check
+    el.addEventListener("scroll", checkScrollPosition);
+    window.addEventListener("resize", checkScrollPosition);
+
+    return () => {
+      el.removeEventListener("scroll", checkScrollPosition);
+      window.removeEventListener("resize", checkScrollPosition);
+    };
+  }, []);
+
   useEffect(() => {
     setCartItem(cart.length);
-    console.log(cartItem);
   }, [cart]);
 
   const navItems = [
@@ -33,6 +70,21 @@ const Navbar = () => {
     {
       name: "Users",
       path: "/admin/users",
+      role: ["admin"],
+    },
+    {
+      name: "Contact",
+      path: "/admin/contact",
+      role: ["admin"],
+    },
+    {
+      name: "Announcements",
+      path: "/admin/announcements",
+      role: ["admin"],
+    },
+    {
+      name: "Stockist",
+      path: "/admin/stockist",
       role: ["admin"],
     },
     {
@@ -123,14 +175,12 @@ const Navbar = () => {
   ];
 
   const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
-  const userName = `${user?.first_name || backUpUser?.first_name} ${
-    user?.last_name || backUpUser?.last_name
-  }`;
+  const userName = `${user?.first_name} ${user?.last_name}`;
 
   return (
     <div>
       <nav className="w-full bg-white flex items-center justify-between gap-6 lg:px-8 px-4 md:py-2 py-4 shadow-md">
-        <div className="flex w-[calc(100%-152px-24px)] items-center md:gap-6 gap-3">
+        <div className="flex w-[calc(100%-152px-24px)] items-center md:gap-6 gap-3 overflow-hidden">
           <button
             type="button"
             className="md:hidden block text-2xl"
@@ -138,32 +188,62 @@ const Navbar = () => {
           >
             <HiMiniBars3BottomLeft />
           </button>
+
           <img
             src={assets.logo}
             alt="Mudet_Logo"
             className="object-cover md:block hidden"
           />
-          <ul className="md:flex hidden items-center gap-6 overflow-x-scroll no-scrollbar">
+
+          {/* Scrollable links section */}
+          <div className="relative flex items-center overflow-hidden w-3/4">
+            {/* Left scroll */}
             {
-              filteredLinks.map(({ name, path }, index) => (
-                // navItems.map(({ name, path }, index) => (
+              canScrollLeft && (
+                <button
+                  onClick={scrollLeft}
+                  className="absolute left-0 z-10 bg-tetiary text-primary w-8 h-8 flex items-center justify-center rounded-full shadow-md hover:scale-105 transition"
+                >
+                  <MdKeyboardDoubleArrowLeft />
+                </button>
+              )
+            }
+
+            {/* Links */}
+            <ul
+              ref={scrollRef}
+              className={`md:flex hidden flex-nowrap items-center gap-4 overflow-x-scroll no-scrollbar scroll-smooth flex-1 ${canScrollLeft ? "ps-10" : ""} pe-10`}
+            >
+              {filteredLinks.map(({ name, path }, index) => (
                 <NavLink
                   to={path}
                   key={index}
-                  className={({ isActive }) => `
-                                        nav-links relative font-semibold whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${isActive
-                      ? "active text-primary !font-extrabold"
-                      : ""
-                    }
-                                    `}
-                onClick={() => setIsOpen(false)}
-              >
-                {name}
-              </NavLink>
-            ))}
-          </ul>
+                  className={({ isActive }) =>
+                    `nav-links relative whitespace-nowrap text-black cursor-pointer py-1 ${
+                      isActive ? "active text-primary !font-extrabold text-base" : "font-medium text-sm"
+                    }`
+                  }
+                  onClick={() => setIsOpen(false)}
+                >
+                  {name}
+                </NavLink>
+              ))}
+            </ul>
+
+            {/* Right scroll */}
+            {
+              canScrollRight && (
+                <button
+                  onClick={scrollRight}
+                  className="absolute right-0 z-10 bg-tetiary text-primary w-8 h-8 flex items-center justify-center rounded-full shadow-md hover:scale-105 transition"
+                >
+                  <MdKeyboardDoubleArrowRight />
+                </button>
+              )
+            }
+          </div>
         </div>
+
         <div className="flex items-center gap-4">
           <button className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-xl bg-tetiary text-primary">
             <GoBellFill />
@@ -194,7 +274,7 @@ const Navbar = () => {
       </nav>
 
       <nav
-        className={`absolute top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${isOpen ? "slide-in" : "slide-out"
+        className={`fixed top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${isOpen ? "slide-in" : "slide-out"
           }`}
       >
         <div className="flex flex-col h-[calc(100%-40px-24px)] w-full md:gap-6 gap-3">
@@ -212,7 +292,7 @@ const Navbar = () => {
               className="object-cover w-18 h-18"
             />
           </div>
-          <ul className="flex flex-col items-center gap-6 overflow-y-scroll no-scrollbar">
+          <ul className="flex flex-col items-center gap-4 overflow-y-scroll no-scrollbar">
             {
               // filteredLinks.map(({ name, path }, index) => (
               filteredLinks.map(({ name, path }, index) => (
@@ -234,8 +314,8 @@ const Navbar = () => {
             }
           </ul>
         </div>
-        <div className="flex items-center gap-4">
-          <button className="flex gap-4 justify-center items-center rounded-full font-medium text-xl bg-tetiary text-primary">
+        <div className="flex items-center gap-4 w-full text-center pt-4 border-t border-black/50">
+          <button className="flex gap-4 justify-center items-center mx-auto rounded-full font-medium text-xl bg-tetiary text-primary">
             <IoIosLogOut size={30} />
             <span>Logout</span>
           </button>

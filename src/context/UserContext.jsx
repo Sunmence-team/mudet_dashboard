@@ -18,7 +18,9 @@ export const UserProvider = ({ children }) => {
     try {
       return JSON.parse(value);
     } catch (err) {
-      console.warn(`Invalid JSON in localStorage for key "${key}", clearing it.`);
+      console.warn(
+        `Invalid JSON in localStorage for key "${key}", clearing it.`
+      );
       localStorage.removeItem(key);
       return null;
     }
@@ -34,7 +36,8 @@ export const UserProvider = ({ children }) => {
 
     if (storedToken) setToken(storedToken);
     if (storedUser) setUser(storedUser);
-    if (storedMiscellaneousDetails) setMiscellaneousDetails(storedMiscellaneousDetails);
+    if (storedMiscellaneousDetails)
+      setMiscellaneousDetails(storedMiscellaneousDetails);
   }, []);
 
   const login = async (authToken) => {
@@ -72,6 +75,10 @@ export const UserProvider = ({ children }) => {
         "miscellaneousDetails",
         JSON.stringify(updatedMiscellaneousDetails)
       );
+      localStorage.setItem(
+        "miscellaneousDetails",
+        JSON.stringify(updatedMiscellaneousDetails)
+      );
     } catch (err) {
       console.error("Failed to refresh user:", err);
       // Optional: logout();
@@ -83,30 +90,29 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     const toastId = toast.loading("Logging Out...");
-    try {
-      await axios.put(
-        `${API_URL}/api/logout`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success("Logged out successfully", { id: toastId });
-    } catch (err) {
-      console.error("API Logout failed, clearing local state anyway:", err);
-      toast.error("Logout failed. Please try again.", { id: toastId });
-    } finally {
-      // ✅ Always remove keys (don’t set undefined)
-      // localStorage.removeItem("token");
-      // localStorage.removeItem("user");
-      // localStorage.removeItem("miscellaneousDetails");
+    // try {
+    //   await axios.put(
+    //     `${API_URL}/api/logout`,
+    //     {},
+    //     { headers: { Authorization: `Bearer ${token}` } }
+    //   );
+    //   toast.success("Logged out successfully", { id: toastId });
+    // } catch (err) {
+    //   console.error("API Logout failed, clearing local state anyway:", err);
+    //   toast.error("Logout failed. Please try again.", { id: toastId });
+    // } finally {
+    //   localStorage.removeItem("token");
+    //   localStorage.removeItem("user");
+    //   localStorage.removeItem("miscellaneousDetails");
 
-      // setToken(null);
-      // setUser(null);
-      // setMiscellaneousDetails(null);
+    //   setToken(null);
+    //   setUser(null);
+    //   setMiscellaneousDetails(null);
 
-      // setTimeout(() => {
-      //   // window.location.href = "/login";
-      // }, 100);
-    }
+    //   setTimeout(() => {
+    //     // window.location.href = "/login";
+    //   }, 100);
+    // }
   };
 
   useEffect(() => {

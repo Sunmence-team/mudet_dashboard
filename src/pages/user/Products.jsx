@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "../../components/cards/ProductCard";
 import { toast } from "sonner";
-import api, { setupInterceptors } from "../../utilities/api"; // ensure this is imported
+import api from "../../utilities/api";
+import LazyLoader from "../../components/LazyLoader";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -57,12 +60,16 @@ const Products = () => {
     }
   };
 
-  // 🔄 Loading State
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // loading state UI
   if (loading) {
     return (
-      <div className="flex flex-col gap-4 p-6 justify-center items-center min-h-[400px]">
-        <h3 className="text-2xl font-semibold">Loading Products...</h3>
-        <div className="border-[6px] border-t-transparent border-pryClr animate-spin mx-auto rounded-full w-[80px] h-[80px]"></div>
+      <div className="flex flex-col gap-1 p-6 justify-center items-center min-h-[400px]">
+        <h3 className="text-2xl font-semibold">Loading Products</h3>
+        <LazyLoader width={"50px"} />
       </div>
     );
   }
