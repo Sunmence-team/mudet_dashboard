@@ -10,6 +10,8 @@ import RepurchaseHistory from "./user/stockisttabs/RepurchaseHistory";
 import UpgradeHistory from "./user/stockisttabs/UpgradeHistory";
 import TransactionHistory from "./user/stockisttabs/TransactionHistory";
 import RegistrationHistory from "./user/stockisttabs/RegistrationHistory";
+import { BiSolidMessageEdit } from "react-icons/bi";
+import { Link } from "react-router-dom";
 
 const StockistUser = () => {
   const [stockistChoice, setStockistChoice] = useState("");
@@ -497,7 +499,28 @@ const StockistUser = () => {
         )
       ) : activeUser.stockist_enabled === 0 &&
         activeUser.stockist_active === "pending" ? (
-        <p>pending page</p>
+        <>
+          <div className="flex flex-col translate-y-[4rem] justify-center gap-8  items-center bg-white rounded-lg lg:w-1/2 py-8 mx-auto">
+            <div className="rounded-full p-6 bg-primary/10 text-primary text-4xl lg:text-5xl">
+              <BiSolidMessageEdit />
+            </div>
+            <div className="flex flex-col gap-6 items-center text-center">
+              <h2 className="text-xl lg:text-2xl font-semibold">
+                Stockist Request Status
+              </h2>
+              <p className="text-sm lg:text-base font-medium text-gray-400 lg:w-2/3 md:w-1/3 w-full px-4">
+                Your request is being reviewed by the admin, You will be
+                notified once it has been approved.
+              </p>
+              <Link
+                to={"/user/overview"}
+                className="py-3 px-9 border-0 bg-[#1B6020] text-sm lg:text-base rounded-3xl text-white cursor-pointer font-medium"
+              >
+                Return to Dashboard
+              </Link>
+            </div>
+          </div>
+        </>
       ) : (
         <>
           <div className="w-full flex flex-col gap-4 justify-center">
@@ -507,13 +530,13 @@ const StockistUser = () => {
                 <OverviewCard details={stockistWallet} />
               </div>
 
-              <div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto">
-                <div className="flex border-b rounded-b-lg shadow border-gray-200 bg-gray-50 justify-between">
+              <div className="bg-white rounded-lg shadow border border-gray-200 flex flex-col gap-3">
+                <div className="flex border-b rounded-b-lg shadow border-gray-200 no-scrollbar overflow-x-auto bg-gray-50 justify-between">
                   {tabs.map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`nav-links relative py-3 cursor-pointer px-5 text-sm md:text-base font-medium transition-colors duration-200
+                      className={`nav-links relative py-4 cursor-pointer px-5 text-sm md:text-base font-medium transition-colors duration-200
                     ${
                       activeTab === tab
                         ? "text-primary active bg-white"
@@ -524,7 +547,7 @@ const StockistUser = () => {
                     </button>
                   ))}
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto w-full">
                   {activeTab === "Inventory" ? (
                     <InventoryHistory />
                   ) : activeTab === "Repurchase Order" ? (

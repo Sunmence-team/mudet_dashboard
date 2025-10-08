@@ -10,10 +10,10 @@ const InventoryHistory = () => {
     <table className="w-full border-collapse text-left text-sm">
       <thead className="border-b-[1.5px] border-b-gray-300 cursor-pointer">
         <tr className="">
-          <th className="py-3 px-4 font-medium">S/N</th>
-          <th className="py-3 px-4 font-medium">PRODUCT NAME</th>
-          <th className="py-3 px-4 font-medium text-center">TOTAL LEFT</th>
-          <th className="py-3 px-4 font-medium text-center">TOTAL SOLD</th>
+          <th className="py-3 px-8 font-medium">S/N</th>
+          <th className="py-3 px-8 font-medium">PRODUCT NAME</th>
+          <th className="py-3 px-8 font-medium text-center">TOTAL LEFT</th>
+          <th className="font-medium text-center">TOTAL SOLD</th>
         </tr>
       </thead>
       <tbody>
@@ -22,10 +22,10 @@ const InventoryHistory = () => {
             key={index}
             className={`hover:bg-gray-100 transition border-b-[1.5px] border-b-gray-300 cursor-pointer`}
           >
-            <td className="py-3 px-4">{product.id}</td>
-            <td className="py-3 px-4">{product.name}</td>
-            <td className="py-3 px-4 text-center">{product.totalLeft}</td>
-            <td className="py-3 px-4 text-center">{product.totalSold}</td>
+            <td className="py-3 px-8">{product.id}</td>
+            <td className="py-3 px-8">{product.name}</td>
+            <td className="py-3 px-8 text-center">{product.totalLeft}</td>
+            <td className="py-3 px-8 text-center">{product.totalSold}</td>
           </tr>
         ))}
       </tbody>

@@ -61,6 +61,7 @@ const Upgrade = () => {
       if (res.status === 200) {
         toast.success("Package Upgraded successfully");
         setShowModal(false);
+        refreshUser()
       } else {
         toast.error(res.data.message);
       }
@@ -88,7 +89,7 @@ const Upgrade = () => {
 
   useEffect(() => {
     setCurrentPackage(
-      miscellaneousDetails.planDetails || miscellaneousDetails2.planDetails
+      miscellaneousDetails?.planDetails || miscellaneousDetails2.planDetails
     );
   }, [handleConfirmModal]);
 
@@ -96,11 +97,6 @@ const Upgrade = () => {
     fetchPackages()
   }, [])
   
-
-  useEffect(() => {
-    refreshUser();
-  }, [handleConfirmUpgrade]);
-
   const filterNonCurrentPackage = packages.filter(
     (pkg) => pkg?.id !== currentPackage?.id
   );

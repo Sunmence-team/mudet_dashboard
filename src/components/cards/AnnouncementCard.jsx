@@ -15,7 +15,7 @@ const AnnouncementCard = () => {
 
   // Generate random color for each announcement
   const getRandomColor = () => {
-    const colors = ["#2B7830", "#A9890B", "#6CAE0A"];
+    const colors = ["#2B7830", "#A9890B"];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
