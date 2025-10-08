@@ -18,7 +18,9 @@ export const UserProvider = ({ children }) => {
     try {
       return JSON.parse(value);
     } catch (err) {
-      console.warn(`Invalid JSON in localStorage for key "${key}", clearing it.`);
+      console.warn(
+        `Invalid JSON in localStorage for key "${key}", clearing it.`
+      );
       localStorage.removeItem(key);
       return null;
     }
@@ -34,7 +36,8 @@ export const UserProvider = ({ children }) => {
 
     if (storedToken) setToken(storedToken);
     if (storedUser) setUser(storedUser);
-    if (storedMiscellaneousDetails) setMiscellaneousDetails(storedMiscellaneousDetails);
+    if (storedMiscellaneousDetails)
+      setMiscellaneousDetails(storedMiscellaneousDetails);
   }, []);
 
   const login = async (authToken) => {
@@ -68,6 +71,10 @@ export const UserProvider = ({ children }) => {
       setMiscellaneousDetails(updatedMiscellaneousDetails);
 
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      localStorage.setItem(
+        "miscellaneousDetails",
+        JSON.stringify(updatedMiscellaneousDetails)
+      );
       localStorage.setItem(
         "miscellaneousDetails",
         JSON.stringify(updatedMiscellaneousDetails)

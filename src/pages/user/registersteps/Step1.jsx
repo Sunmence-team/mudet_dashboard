@@ -18,9 +18,9 @@ const Step1 = forwardRef(({
     window.scrollTo(0, 0);
   }, []);
 
-  // 🔥 State for plans
-  const [packages, setPackages] = useState([]);
-  const [loadingPlans, setLoadingPlans] = useState(false);
+    // 🔥 State for plans
+    const [packages, setPackages] = useState([]);
+    const [loadingPlans, setLoadingPlans] = useState(false);
 
   const [selectedPackage, setSelectedPackage] = useState(
     formData.plan || null
@@ -271,7 +271,7 @@ const Step1 = forwardRef(({
       {/* Sponsor / Placement / Position */}
       <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 rounded-lg">
         <p className="text-xl md:text-2xl font-semibold">Sponsor Input</p>
-        <div className="w-full flex flex-col md:flex-row gap-6">
+        <div className="w-full flex flex-col md:flex-row gap-12">
           <div className="flex-[4] w-full flex flex-col gap-3">
             <p className="text--sm md:text-lg">Sponsor</p>
             <div className="w-full mx-auto">
@@ -367,8 +367,8 @@ const Step1 = forwardRef(({
           </div>
 
           <div className="flex-[2] w-full flex flex-col gap-3">
-            <p className="text--sm md:text-lg">Position</p>
-            <div className="flex w-full justify-between">
+            <p className="text-sm md:text-lg">Position</p>
+            <div className="flex w-full gap-6 ustify-between">
               <button
                 type="button"
                 className={`px-8 py-2 rounded-full ${

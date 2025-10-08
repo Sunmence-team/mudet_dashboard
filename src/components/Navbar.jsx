@@ -54,7 +54,6 @@ const Navbar = () => {
 
   useEffect(() => {
     setCartItem(cart.length);
-    console.log(cartItem);
   }, [cart]);
 
   const navItems = [
@@ -71,6 +70,21 @@ const Navbar = () => {
     {
       name: "Users",
       path: "/admin/users",
+      role: ["admin"],
+    },
+    {
+      name: "Contact",
+      path: "/admin/contact",
+      role: ["admin"],
+    },
+    {
+      name: "Announcements",
+      path: "/admin/announcements",
+      role: ["admin"],
+    },
+    {
+      name: "Stockist",
+      path: "/admin/stockist",
       role: ["admin"],
     },
     {
