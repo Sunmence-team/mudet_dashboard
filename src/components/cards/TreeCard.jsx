@@ -1,6 +1,8 @@
 import React from 'react';
 import { Popover } from "@headlessui/react";
 import { useFloating, flip, shift, autoUpdate } from "@floating-ui/react";
+import { BsChevronDown, BsChevronRight } from 'react-icons/bs';
+import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
 
 const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
     const { refs, floatingStyles } = useFloating({
@@ -8,56 +10,50 @@ const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
         whileElementsMounted: autoUpdate,
     });
 
-    console.log("user in card", user)
-
     return (
-        <Popover as="div" className="relative z-1 inline-block text-left w-full">
+        <Popover as="div" className="relative -z-1 inline-block text-left w-full">
             <Popover.Button
                 as="div"
                 title={`View ${user.username} info`}
                 ref={refs.setReference}
-                className="group bg-primary border-x-5 border-secondary text-tetiary cursor-pointer thiscard rounded-full transition-all duration-300 w-[200px] relative text-sm p-2"
+                className="group bg-primary text-tetiary thiscard cursor-pointer rounded-lg transition-all duration-300 w-[200px] min-h-[90px] relative text-sm p-2 pt-6"
             >
-                <div className="flex flex-row gap-3 items-center">
-                    <div className="md:w-11 w-10 md:h-11 h-10 rounded-full border-2 border-[#D9D9D9] bg-[#D9D9D9] text-primary overflow-hidden uppercase font-extrabold flex items-center justify-center">
-                        <h3>{`${user?.fullname?.split(" ")[0].charAt(0)}${user?.fullname?.split(" ")[1]?.charAt(0) || ''}`}</h3>
+                    <div className="absolute -top-1/2 left-1/2 -translate-x-1/2 md:w-18 w-18 md:h-18 h-18 rounded-full border-2 border-primary bg-tetiary overflow-hidden flex items-center justify-center">
+                        <h3 className='text-primary text-2xl uppercase font-extrabold'>{`${user?.fullname?.split(" ")[0].charAt(0)}${user?.fullname?.split(" ")[1]?.charAt(0) || ''}`}</h3>
                     </div>
-                    <div className="">
-                        <h3 className="font-semibold text-center border-b mb-0.5">@{user.username}</h3>
-                        <small className="flex items-center gap-2 font-semibold text-pryClr">
+                    <div className="relative">
+                        <h3 className="font-medium text-center mt-1 capitalize">{user.fullname}</h3>
+                        <small className="flex items-center justify-center gap-2 font-medium text-pryClr">
                             <span>Left: {user.left_count}</span>
                             <hr className='h-3 border-0 border-r-2' />
                             <span>Right: {user.right_count}</span>
                         </small>
+                        {hasChildren && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggle(user.id)
+                                }}
+                                className={`w-12 h-4 mx-auto flex translate-y-2.5 items-center justify-center rounded-t bg-secondary cursor-pointer text-white hover:shadow-md transition-all duration-200`}
+                            >
+                                {isExpanded ? <FaCaretDown size={16} /> : <FaCaretUp size={16} />}
+                            </button>
+                        )}
                     </div>
-                </div>
-                {hasChildren && (
-                    <div className="flex justify-center absolute top-0">
-                        <button
-                            onClick={() => onToggle(user.id)}
-                            className={`p-2 rounded-lg bg-pryClr cursor-pointer text-white hover:shadow-md transition-all duration-200`}
-                        >
-                            click
-                            {/* {isExpanded ? <BsChevronDown size={16} /> : <BsChevronRight size={16} />} */}
-                        </button>
-                    </div>
-                )}
             </Popover.Button>
-            {isExpanded && user.left && <div className="absolute left-[49%] -translate-x-1/2 -bottom-7 h-8 border-[.5px] border-black -z-1"></div>}
-            {isExpanded && user.right && <div className="absolute left-[59%] -translate-x-1/2 -bottom-7 h-8 border-[.5px] border-black -z-1"></div>}
-
+            {isExpanded && user.left && <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 h-8 w-[1px] bg-black/50 -z-1"></div>}
             <Popover.Panel
                 ref={refs.setFloating}
                 style={floatingStyles}
-                className="absolute z-1000 w-[250px] mt-3 px-4 py-2 bg-white border border-gray-200 rounded-md shadow-lg"
+                className="absolute z-2 w-[250px] mt-3 px-4 py-2 bg-tetiary border border-gray-200 rounded-md shadow-lg"
             >
                 {/* Popover content */}
                 <div className="font-semibold text-sm mb-2">User Details</div>
                 <div className="space-y-1 text-xs text-gray-700">
+                    <p><strong>Username:</strong> {user.username}</p>
                     <p><strong>Name:</strong> {user.fullname}</p>
                     <p><strong>Email:</strong> {user.email}</p>
                     <p><strong>Personal PV:</strong> {Number(user?.personal_pv)}</p>
-                    {/* <p><strong>Group PV:</strong> {Number(user.total_pv_left) + Number(user.total_pv_right)} &#40;left:{user.total_pv_left} right:{user.total_pv_right}&#41;</p> */}
                     <p><strong>Package:</strong> {user.plan || "-"}</p>
                     <p><strong>Rank:</strong> {!user.rank ? "No Rank" : user.rank || "-"}</p>
                 </div>
@@ -68,3 +64,28 @@ const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
 }
 
 export default TreeCard
+
+
+
+
+ {/* <div className="flex flex-row gap-3 items-center">
+                    <div className="md:w-11 w-10 md:h-11 h-10 rounded-full border-2 border-[#D9D9D9] bg-[#D9D9D9] text-primary overflow-hidden uppercase font-extrabold flex items-center justify-center">
+                        <h3>{`${user?.fullname?.split(" ")[0].charAt(0)}${user?.fullname?.split(" ")[1]?.charAt(0) || ''}`}</h3>
+                    </div>
+                    <div className="relative pe-1">
+                        <h3 className="font-semibold text-center border-b pb-1 mb-1">@{user.username}</h3>
+                        <small className="flex items-center justify-between gap-2 font-semibold text-pryClr">
+                            <span>Left: {user.left_count}</span>
+                            <hr className='h-3 border-0 border-r-2' />
+                            {hasChildren && (
+                                <button
+                                    onClick={() => onToggle(user.id)}
+                                    className={`w-6 h-6 flex translate-y-2 items-center justify-center rounded-t bg-secondary cursor-pointer text-white hover:shadow-md transition-all duration-200`}
+                                >
+                                    {isExpanded ? <BsChevronDown size={16} /> : <BsChevronDown size={16} />}
+                                </button>
+                            )}
+                            <span>Right: {user.right_count}</span>
+                        </small>
+                    </div>
+                </div> */}

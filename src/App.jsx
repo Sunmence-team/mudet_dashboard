@@ -37,9 +37,9 @@ function App() {
         <Route
           path={"/user/overview"}
           element={
-            <ProtectedRoute
-              element={() => <MainLayout child={<Overview />} />}
-            />
+            <ProtectedRoute>
+              <MainLayout child={<Overview />} />
+            </ProtectedRoute>
           }
         />
         <Route
@@ -105,6 +105,10 @@ function App() {
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
         <Route path={"/user/stockistuser"} element={<MainLayout child={<StockistUser />} />} />
+        <Route
+          path={"/user/stockistuser"}
+          element={<MainLayout child={<StockistUser />} />}
+        />
         <Route
           path={"/user/stockistuser"}
           element={<MainLayout child={<StockistUser />} />}
