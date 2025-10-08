@@ -117,7 +117,7 @@ const Deposit = () => {
       {/* Table container */}
       <div className="overflow-x-auto">
         {/* Header */}
-        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] min-w-[800px] text-center uppercase text-[17px]">
+        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
           <span className="text-start ps-4 w-[15%]">SN</span>
           <span className="text-start w-[25%]">Type</span>
           <span className="w-[20%] text-center">Amount</span>
@@ -126,7 +126,7 @@ const Deposit = () => {
         </div>
 
         {/* Rows */}
-        <div className="space-y-3 min-w-[800px]">
+        <div className="space-y-3 w-full">
           {loading ? (
             <div className="text-center py-4">
               <svg

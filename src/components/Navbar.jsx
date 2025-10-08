@@ -123,8 +123,8 @@ const Navbar = () => {
   ];
 
   const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
-  const userName = `${user?.first_name || backUpUser?.first_name} ${
-    user?.last_name || backUpUser?.last_name
+  const userName = `${user?.first_name} ${
+    user?.last_name
   }`;
 
   return (

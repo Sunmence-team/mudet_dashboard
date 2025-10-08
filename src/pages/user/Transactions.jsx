@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Deposit from "./trans/Deposit";
-import Withdraw from "./trans/Withdraw";
-import EHistory from "./trans/EHistory";
+import Deposit from "./transactions/Deposit";
+import Withdraw from "./transactions/Withdraw";
+import EHistory from "./transactions/EHistory";
 
 const Transactions = () => {
   const [activeTab, setActiveTab] = useState("deposit");
@@ -13,7 +13,7 @@ const Transactions = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-">
+    <div className="w-full max-w-full mx-auto px-4 py-4">
       <h3 className='font-semibold md:text-2xl text-xl'>Transactions</h3>
       {/* Dropdown aligned to the right with modern styling */}
       <div className="flex justify-end mb-8">
