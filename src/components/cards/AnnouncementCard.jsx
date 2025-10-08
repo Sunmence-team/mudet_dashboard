@@ -27,18 +27,17 @@ const AnnouncementCard = () => {
           setLoading(false);
           return;
         }
-        console.log(`Fetching announcements from: /api/announcements with token: ${token}`);
+
         const response = await api.get("/api/announcements", {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("Fetched announcements response:", JSON.stringify(response.data, null, 2));
+
         const announcementsData = response.data.data.data || [];
-        console.log("Raw announcement data array:", JSON.stringify(announcementsData, null, 2));
         const mappedAnnouncements = announcementsData.map((item, index) => {
-          console.log(`Announcement ${index + 1} start_date:`, item.start_date || "Not found");
+          // console.log(`Announcement ${index + 1} start_date:`, item.start_date || "Not found");
           return {
             id: item.id,
             title: item.title,
@@ -48,9 +47,9 @@ const AnnouncementCard = () => {
             action: "View",
           };
         });
-        console.log("Mapped announcements:", JSON.stringify(mappedAnnouncements, null, 2));
+        // console.log("Mapped announcements:", JSON.stringify(mappedAnnouncements, null, 2));
         setAnnouncements(mappedAnnouncements);
-        console.log("Set announcements state:", JSON.stringify(mappedAnnouncements, null, 2));
+        // console.log("Set announcements state:", JSON.stringify(mappedAnnouncements, null, 2));
       } catch (error) {
         console.error("Error fetching announcements:", error);
         if (error.response) {
@@ -95,16 +94,16 @@ const AnnouncementCard = () => {
 
   const handleView = async (id) => {
     try {
-      console.log(`Fetching announcement: /api/announcements/${id}`);
+      // console.log(`Fetching announcement: /api/announcements/${id}`);
       const response = await api.get(`/api/announcements/${id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("View announcement response:", JSON.stringify(response.data, null, 2));
+      // console.log("View announcement response:", JSON.stringify(response.data, null, 2));
       const announcement = response.data.data;
-      console.log("View announcement start_date:", announcement.start_date || "Not found");
+      // console.log("View announcement start_date:", announcement.start_date || "Not found");
       const mappedAnnouncement = {
         id: announcement.id,
         title: announcement.title,
@@ -117,7 +116,7 @@ const AnnouncementCard = () => {
         created_at: announcement.created_at,
         updated_at: announcement.updated_at,
       };
-      console.log("Set selected announcement:", JSON.stringify(mappedAnnouncement, null, 2));
+      // console.log("Set selected announcement:", JSON.stringify(mappedAnnouncement, null, 2));
       setSelectedAnnouncement(mappedAnnouncement);
     } catch (error) {
       console.error("Error viewing announcement:", error);
@@ -155,13 +154,13 @@ const AnnouncementCard = () => {
             announcements.map((item, index) => (
               <div
                 key={index}
-                className="lg:w-[97%] relative bg-white rounded-xl p-4 border border-gray-200 hover:bg-[#000000]/10 cursor-pointer"
+                className="lg:w-[97%] relative bg-white rounded-xl p-4 border border-gray-200 hover:bg-tetiary cursor-pointer"
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 <div
-                  className="absolute left-0 z-[999] top-0 bottom-0 w-3 rounded-t-full rounded-b-full"
-                  style={{ backgroundColor: item.color }}
+                  className={`absolute left-0 z-[999] top-0 bottom-0 w-2 rounded-t-full rounded-b-full ${index%2 === 0 ? "bg-primary" : "bg-secondary"}`}
+                  // style={{ backgroundColor: item.color }}
                 ></div>
                 <div className="flex justify-between items-start pl-4">
                   <div className="flex-1 min-w-0">

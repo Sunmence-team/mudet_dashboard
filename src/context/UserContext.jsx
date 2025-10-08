@@ -83,30 +83,29 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     const toastId = toast.loading("Logging Out...");
-    try {
-      await axios.put(
-        `${API_URL}/api/logout`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success("Logged out successfully", { id: toastId });
-    } catch (err) {
-      console.error("API Logout failed, clearing local state anyway:", err);
-      toast.error("Logout failed. Please try again.", { id: toastId });
-    } finally {
-      // ✅ Always remove keys (don’t set undefined)
-      // localStorage.removeItem("token");
-      // localStorage.removeItem("user");
-      // localStorage.removeItem("miscellaneousDetails");
+    // try {
+    //   await axios.put(
+    //     `${API_URL}/api/logout`,
+    //     {},
+    //     { headers: { Authorization: `Bearer ${token}` } }
+    //   );
+    //   toast.success("Logged out successfully", { id: toastId });
+    // } catch (err) {
+    //   console.error("API Logout failed, clearing local state anyway:", err);
+    //   toast.error("Logout failed. Please try again.", { id: toastId });
+    // } finally {
+    //   localStorage.removeItem("token");
+    //   localStorage.removeItem("user");
+    //   localStorage.removeItem("miscellaneousDetails");
 
-      // setToken(null);
-      // setUser(null);
-      // setMiscellaneousDetails(null);
+    //   setToken(null);
+    //   setUser(null);
+    //   setMiscellaneousDetails(null);
 
-      // setTimeout(() => {
-      //   // window.location.href = "/login";
-      // }, 100);
-    }
+    //   setTimeout(() => {
+    //     // window.location.href = "/login";
+    //   }, 100);
+    // }
   };
 
   useEffect(() => {
