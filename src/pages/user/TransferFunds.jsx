@@ -4,16 +4,14 @@ import { useFormik } from "formik";
 import PinModal from "../../components/modals/PinModal";
 import { toast } from "sonner";
 import api from "../../utilities/api";
-import axios, { isAxiosError } from "axios";
+import axios from "axios";
+import { useUser } from "../../context/UserContext";
 
 const TransferFunds = () => {
   const [activeUser, setActiveuser] = useState({});
   const [pinModal, setPinModal] = useState(false);
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    setActiveuser(user);
-  }, []);
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
+  const { user, refreshUser } = useUser();
 
   const onSubmit = async () => {
     const transactionPin = localStorage.getItem("currentAuth");
@@ -32,6 +30,7 @@ const TransferFunds = () => {
         setPinModal(false);
         formik.resetForm();
         localStorage.removeItem("currentAuth");
+        refreshUser();
       } else {
         toast.error(toast.data.message);
         localStorage.removeItem("currentAuth");
@@ -90,7 +89,7 @@ const TransferFunds = () => {
       type: "wallet",
       walletType: "E-Wallet",
       walletBalance: +activeUser.e_wallet,
-      path: "/admin/",
+      path: "/user/deposit",
       pathName: "Fund Wallet",
       color: "deepGreen",
     },
@@ -98,31 +97,18 @@ const TransferFunds = () => {
       type: "wallet",
       walletType: "Repurchase Wallet",
       walletBalance: +activeUser.purchased_wallet,
-      path: "/admin/",
-      pathName: "Repurchase Wallet",
       color: "gold",
     },
-    {
-      type: "wallet",
-      walletType: "Earning Wallet",
-      walletBalance: +activeUser.earning_wallet,
-      path: "/user/",
-      pathName: "Transfer",
-      color: "lightGreen",
-    },
-    {
-      type: "wallet",
-      walletType: "Incentive Wallet",
-      walletBalance: +activeUser.incentive_wallet,
-      path: "/user/",
-      pathName: "Withdraw",
-    },
   ];
+
+  useEffect(() => {
+    setActiveuser(user || backUpUser);
+  }, [onSubmit]);
   return (
     <>
       <div className="flex flex-col gap-7">
         <h1 className="text-2xl font-semibold text-black">Transfer</h1>
-        <div className="grid lg:grid-cols-2 lg:grid-rows-2 grid-cols-1 gap-4">
+        <div className="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 gap-4">
           {topWallets.map((wallet, index) => (
             <OverviewCard details={wallet} key={index} />
           ))}
@@ -151,11 +137,10 @@ const TransferFunds = () => {
                       </span>
                     )}
                   </label>
-                  <input
+                  <select
                     type="text"
                     id="from"
                     name="from"
-                    placeholder="Select Target Wallet"
                     value={formik.values.from}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -164,7 +149,10 @@ const TransferFunds = () => {
                         ? "border-red-500"
                         : "border-gray-300"
                     } rounded-lg focus:ring-pryClr focus:border-pryClr`}
-                  />
+                  >
+                    <option>Select Target Wallet</option>
+                    <option value="e_wallet">E-wallet</option>
+                  </select>
                 </div>
 
                 <div className="flex flex-col w-full">
@@ -180,7 +168,7 @@ const TransferFunds = () => {
                       </span>
                     )}
                   </label>
-                  <input
+                  <select
                     type="text"
                     id="to"
                     name="to"
@@ -193,7 +181,10 @@ const TransferFunds = () => {
                         ? "border-red-500"
                         : "border-gray-300"
                     } rounded-lg focus:ring-pryClr focus:border-pryClr`}
-                  />
+                  >
+                    <option>Select Destination Wallet</option>
+                    <option value="purchased_wallet">Repurchase Wallet</option>
+                  </select>
                 </div>
 
                 <div className="flex flex-col w-full">

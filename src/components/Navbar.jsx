@@ -54,7 +54,6 @@ const Navbar = () => {
 
   useEffect(() => {
     setCartItem(cart.length);
-    console.log(cartItem);
   }, [cart]);
 
   const navItems = [

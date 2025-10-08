@@ -110,6 +110,10 @@ function App() {
           element={<MainLayout child={<StockistUser />} />}
         />
         <Route
+          path={"/user/stockistuser"}
+          element={<MainLayout child={<StockistUser />} />}
+        />
+        <Route
           path={"/admin/testimonials"}
           element={<MainLayout child={<Testimonials />} />}
         />

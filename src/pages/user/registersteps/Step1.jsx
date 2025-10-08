@@ -18,9 +18,9 @@ const Step1 = forwardRef(({
     window.scrollTo(0, 0);
   }, []);
 
-  // 🔥 State for plans
-  const [packages, setPackages] = useState([]);
-  const [loadingPlans, setLoadingPlans] = useState(false);
+    // 🔥 State for plans
+    const [packages, setPackages] = useState([]);
+    const [loadingPlans, setLoadingPlans] = useState(false);
 
   const [selectedPackage, setSelectedPackage] = useState(
     formData.plan || null
