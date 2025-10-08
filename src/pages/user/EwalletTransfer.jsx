@@ -403,4 +403,3 @@ const EwalletTransfer = () => {
 };
 
 export default EwalletTransfer;
->>>>>>>>> Temporary merge branch 2

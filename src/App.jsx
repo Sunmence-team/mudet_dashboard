@@ -21,17 +21,11 @@ import PackageUpload from "./pages/admin/PackageUpload";
 import TransferFunds from "./pages/user/TransferFunds";
 import EwalletTransfer from "./pages/user/EwalletTransfer";
 import Contact from "./pages/admin/Contact";
-import Announcements from "./pages/admin/Announcements";
 import Stockist from "./pages/admin/Stockist";
 import StockistUser from "./pages/StockistUser";
 import UserTransactions from "./pages/user/UserTransactions";
 import Upgrade from "./pages/user/Upgrade";
-import TransferFunds from "./pages/user/profiletab/TransferFunds";
-import EwalletTransfer from "./pages/user/EwalletTransfer";
-import Contact from "./pages/admin/Contact";
 import Announcements from "./pages/admin/Announcements";
-import Stockist from "./pages/admin/Stockist";
-import StockistUser from "./pages/StockistUser";
 
 function App() {
   return (
