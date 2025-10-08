@@ -21,7 +21,10 @@ const EHistory = () => {
       const response = await api.get(`/api/user/p2p/${userId}?page=${page}`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token || JSON.parse(localStorage.getItem("user") || "{}").token}`,
+          Authorization: `Bearer ${
+            user?.token ||
+            JSON.parse(localStorage.getItem("user") || "{}").token
+          }`,
         },
       });
 
@@ -29,7 +32,7 @@ const EHistory = () => {
         setHistoryData({
           data: response.data.transactions,
           current_page: page,
-          last_page: Math.ceil(response.data.total / 15), // Calculate last_page based on total and per_page
+          last_page: Math.ceil(response.data.total / 15),
           per_page: 15,
           total: response.data.total,
         });
@@ -54,8 +57,12 @@ const EHistory = () => {
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     return {
-      date: date.toLocaleDateString("en-CA"), // YYYY-MM-DD
-      time: date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true }),
+      date: date.toLocaleDateString("en-CA"),
+      time: date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }),
     };
   };
 
@@ -80,15 +87,16 @@ const EHistory = () => {
       {/* Table container with horizontal scroll on md & sm */}
       <div className="overflow-x-auto">
         {/* Header */}
-        <div className="grid grid-cols-4 gap-4 py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] min-w-[600px] text-center uppercase text-xs">
-          <span>Type</span>
-          <span>Amount</span>
-          <span>Status</span>
-          <span>Date</span>
+        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] min-w-[800px] text-center uppercase text-[17px]">
+          <span className="text-start ps-4 w-[15%]">SN</span>
+          <span className="text-start w-[25%]">Type</span>
+          <span className="w-[20%] text-center">Amount</span>
+          <span className="w-[20%] text-center">Status</span>
+          <span className="text-end pe-8 w-[20%]">Date</span>
         </div>
 
         {/* Rows */}
-        <div className="space-y-3 min-w-[600px]">
+        <div className="space-y-3 min-w-[800px]">
           {loading ? (
             <div className="text-center py-4">
               <svg
@@ -121,22 +129,42 @@ const EHistory = () => {
               return (
                 <div
                   key={idx}
-                  className="grid grid-cols-4 gap-4 items-center py-3 bg-white rounded-md shadow-sm text-center text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
+                  className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
                 >
-                  <span className="capitalize px-2 break-words">{item.transaction_type.replace(/_/g, " ")}</span>
-                  <span>₦{parseFloat(item.amount).toLocaleString()}</span>
+                  {/* SN */}
+                  <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
+                    00{idx + 1}
+                  </span>
+
+                  {/* Type */}
+                  <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
+                    {item.transaction_type.replace(/_/g, " ")}
+                  </span>
+
+                  {/* Amount */}
+                  <span className="font-medium text-sm w-[20%] text-center">
+                    ₦{parseFloat(item.amount).toLocaleString()}
+                  </span>
+
                   {/* Status with fixed width pill */}
-                  <span>
+                  <span className="w-[20%] text-center">
                     <div
-                      className={`px-2 py-1 w-[100px] rounded-full text-xs font-medium border mx-auto ${getStatusColor(item.status)}`}
+                      className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border border-black/10 mx-auto ${getStatusColor(
+                        item.status
+                      )}`}
                     >
-                      {item.status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                      {item.status
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (c) => c.toUpperCase())}
                     </div>
                   </span>
+
                   {/* Date + Time stacked */}
-                  <span className="text-[var(--color-primary)] font-bold flex flex-col">
+                  <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
                     <span>{date}</span>
-                    <span className="text-[var(--color-primary)] font-bold">{time}</span>
+                    <span className="text-[var(--color-primary)] font-bold pe-2">
+                      {time}
+                    </span>
                   </span>
                 </div>
               );
@@ -150,7 +178,11 @@ const EHistory = () => {
         <button
           onClick={() => handlePageChange(current_page - 1)}
           disabled={current_page === 1}
-          className={`px-3 py-1 rounded ${current_page === 1 ? "bg-gray-200 opacity-50 cursor-not-allowed" : "bg-gray-200"}`}
+          className={`px-3 py-1 rounded ${
+            current_page === 1
+              ? "bg-gray-200 opacity-50 cursor-not-allowed"
+              : "bg-gray-200"
+          }`}
         >
           ‹
         </button>
@@ -158,7 +190,11 @@ const EHistory = () => {
           <button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`px-3 py-1 rounded ${page === current_page ? "bg-[var(--color-primary)] text-white" : "bg-gray-200"}`}
+            className={`px-3 py-1 rounded ${
+              page === current_page
+                ? "bg-[var(--color-primary)] text-white"
+                : "bg-gray-200"
+            }`}
           >
             {page}
           </button>
@@ -166,7 +202,11 @@ const EHistory = () => {
         <button
           onClick={() => handlePageChange(current_page + 1)}
           disabled={current_page === last_page}
-          className={`px-3 py-1 rounded ${current_page === last_page ? "bg-gray-200 opacity-50 cursor-not-allowed" : "bg-gray-200"}`}
+          className={`px-3 py-1 rounded ${
+            current_page === last_page
+              ? "bg-gray-200 opacity-50 cursor-not-allowed"
+              : "bg-gray-200"
+          }`}
         >
           ›
         </button>

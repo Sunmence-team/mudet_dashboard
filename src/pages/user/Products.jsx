@@ -10,26 +10,50 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // optional logout handler (you can define what happens on logout)
+  const logout = () => {
+    localStorage.removeItem("token");
+    toast.error("Session expired. Please log in again.");
+    window.location.href = "/login";
+  };
+
+  useEffect(() => {
+    setupInterceptors(logout);
+    fetchProducts();
+  }, []);
+
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`${API_URL}/api/allproducts`);
+      // since baseURL is already set in api.js, just call the endpoint directly
+      const response = await api.get("/api/allproducts");
 
-      console.log(response.data);
+      console.log("API response:", response.data);
 
-      if (response.status === 200) {
-        setProducts(response.data);
+      // handle different response shapes safely
+      const productsData = response.data?.data || response.data || [];
+
+      if (Array.isArray(productsData) && productsData.length > 0) {
+        setProducts(productsData);
+      } else {
+        toast.info("No products found.");
       }
     } catch (error) {
       console.error("Error fetching products:", error);
 
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Error loading products";
+
+      // don’t auto logout unless token is invalid
       if (
-        error.response?.data?.message?.toLowerCase().includes("unauthenticated")
+        error.response?.status === 401 ||
+        message.toLowerCase().includes("unauthenticated")
       ) {
         logout();
-        toast.error("Session expired. Please login again.");
       } else {
-        toast.error(error.response?.data?.message || "Error loading Products");
+        toast.error(message);
       }
     } finally {
       setLoading(false);
@@ -50,10 +74,11 @@ const Products = () => {
     );
   }
 
+  // 🧩 Product List
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl font-semibold">Products</h2>
-      <div className="grid lg:grid-cols-4 grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3">
         {products.length > 0 ? (
           products.map((product, index) => (
             <ProductCard product={product} key={product.id || index} />
