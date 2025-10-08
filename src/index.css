@@ -30,7 +30,7 @@ body::-webkit-scrollbar,
 
 .nav-links::after {
   content: "";
-  @apply absolute -bottom-0 left-0 w-0 h-1 bg-primary rounded-full transition-all duration-500;
+  @apply absolute -bottom-0 left-0 w-0 h-[1px] bg-primary rounded-full transition-all duration-500;
 }
 
 .nav-links:hover::after,

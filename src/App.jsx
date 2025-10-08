@@ -37,9 +37,9 @@ function App() {
         <Route
           path={"/user/overview"}
           element={
-            <ProtectedRoute
-              element={() => <MainLayout child={<Overview />} />}
-            />
+            <ProtectedRoute>
+              <MainLayout child={<Overview />} />
+            </ProtectedRoute>
           }
         />
         <Route
