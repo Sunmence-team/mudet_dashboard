@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import api from "../utilities/api";
 import axios from "axios";
@@ -15,6 +15,7 @@ const StockistUser = () => {
   const [stockistChoice, setStockistChoice] = useState("");
   const [requesting, setRequesting] = useState(false);
   const [activeTab, setActiveTab] = useState("Inventory");
+  const [activeUser, setActiveUser] = useState({});
   const tabs = [
     "Inventory",
     "Repurchase Order",
@@ -23,7 +24,7 @@ const StockistUser = () => {
     "Transaction History",
   ];
   const backUpuser = JSON.parse(localStorage.getItem("user"));
-  const { user } = useUser();
+  const { user, refreshUser } = useUser();
   const stockistWallet = {
     type: "wallet",
     walletType: "Stockist Balance",
@@ -52,14 +53,14 @@ const StockistUser = () => {
         const res = await api.post("/api/stockist/request", values);
         if (res.status === 200) {
           toast.success("Stockist request created successfully.");
-          let load;
-          setTimeout(() => {
-            load = toast.loading("Proceeding to payment");
-          }, 300);
+
+          const load = toast.loading("Proceeding to payment");
+
           setTimeout(() => {
             window.open(res.data.authorization_url);
+            toast.dismiss(load);
           }, 2000);
-          toast.dismiss(load);
+          refreshUser();
         } else {
           toast.error("Stockist request failed");
         }
@@ -90,9 +91,14 @@ const StockistUser = () => {
     },
   });
 
+  useEffect(() => {
+    setActiveUser(user || backUpuser);
+  }, []);
+
   return (
     <div className="w-full flex flex-col gap-4 items-cente justify-center">
-      {user?.stockist_enabled === 0 || backUpuser.stockist_enabled === 0 ? (
+      {activeUser.stockist_enabled === 0 &&
+      activeUser.stockist_active === null ? (
         stockistChoice === "" ? (
           <>
             <p className="text-lg font-semibold">Stockist</p>
@@ -489,6 +495,9 @@ const StockistUser = () => {
             </form>
           </>
         )
+      ) : activeUser.stockist_enabled === 0 &&
+        activeUser.stockist_active === "pending" ? (
+        <p>pending page</p>
       ) : (
         <>
           <div className="w-full flex flex-col gap-4 justify-center">

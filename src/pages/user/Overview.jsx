@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SearchInput from "../../components/SearchInput";
 import PackageCard from "../../components/cards/PackageCard";
 import OverviewCard from "../../components/cards/OverviewCard";
@@ -9,7 +9,7 @@ import { useUser } from "../../context/UserContext";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Overview = () => {
-  const { user } = useUser();
+  const { user,refreshUser } = useUser();
   const firstName = user.first_name || "User";
 
   const topWallets = [
@@ -25,16 +25,16 @@ const Overview = () => {
       type: "wallet",
       walletType: "Incentive Wallet",
       walletBalance: parseFloat(user.incentive_wallet || 0),
-      path: "/user/withdraw",
-      pathName: "Withdraw",
+      path: "/user/transactions",
+      pathName: "History",
       color: "gold",
     },
     {
       type: "wallet",
       walletType: "Repurchase Wallet",
       walletBalance: parseFloat(user.purchased_wallet || 0),
-      path: "/user/transfer",
-      pathName: "Repurchase Wallet",
+      path: "/user/products",
+      pathName: "Repurchase Mall",
       color: "lightGreen",
     },
   ];
@@ -69,6 +69,11 @@ const Overview = () => {
       // pathName: "Repurchase Wallet",
     },
   ];
+
+  useEffect(() => {
+    refreshUser()
+  }, [])
+  
 
   return (
     <div className="flex flex-col gap-[2rem]">

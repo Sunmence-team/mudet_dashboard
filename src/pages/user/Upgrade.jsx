@@ -16,8 +16,8 @@ const Upgrade = () => {
   const [fetchingStokist, setFetchingStokist] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
-  const { user } = useUser();
-  const miscellaneousDetails = JSON.parse(
+  const { user, refreshUser, miscellaneousDetails } = useUser();
+  const miscellaneousDetails2 = JSON.parse(
     localStorage.getItem("miscellaneousDetails")
   );
   const fetchPackages = async () => {
@@ -87,9 +87,19 @@ const Upgrade = () => {
   };
 
   useEffect(() => {
-    setCurrentPackage(miscellaneousDetails.planDetails);
-    fetchPackages();
-  }, []);
+    setCurrentPackage(
+      miscellaneousDetails.planDetails || miscellaneousDetails2.planDetails
+    );
+  }, [handleConfirmModal]);
+
+  useEffect(() => {
+    fetchPackages()
+  }, [])
+  
+
+  useEffect(() => {
+    refreshUser();
+  }, [handleConfirmUpgrade]);
 
   const filterNonCurrentPackage = packages.filter(
     (pkg) => pkg?.id !== currentPackage?.id
