@@ -29,14 +29,8 @@ const AnnouncementModal = ({ announcement, onClose }) => {
           {announcement.description}
         </p>
 
-        {announcement.action && (
-          <button
-            onClick={() => navigate("/user/profile")}
-            className="mt-6 w-full bg-primary cursor-pointer text-white py-2 px-4 rounded-lg "
-          >
-            {announcement.action}
-          </button>
-        )}
+        <div>{announcement.image && <img src={announcement.image} alt={announcement.title} className="w-full h-auto rounded-lg mb-4" />}</div>
+
       </div>
     </div>
   );

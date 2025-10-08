@@ -90,7 +90,8 @@ const AnnouncementCard = () => {
       scrollContainers.forEach((el) => (el.style.overflow = ""));
     };
   }, [selectedAnnouncement]);
-  
+
+
   const handleView = async (id) => {
     try {
       // console.log(`Fetching announcement: /api/announcements/${id}`);
