@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
-import { useEffect } from "react";
 
 const PackageCard = () => {
-  const { user } = useUser();
-  // const backUpUser = JSON.parse(localStorage.getItem("user"));
+  const { user, miscellaneousDetails } = useUser();
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
+  const backUpmiscellaneousDetails = JSON.parse(
+    localStorage.getItem("miscellaneousDetails")
+  );
+  console.log;
   const name = `${user.first_name || backUpUser.first_name} ${
     user.last_name || backUpUser.last_name
   }`;
 
   return (
-    <div className="bg-[#FFFFFF] shadow-[2px_2px_3px] shadow-[#000000]/20 rounded-[10px] p-[2.9rem] flex flex-col gap-7 lg:mx-0 mx-auto">
+    <div className="bg-[#FFFFFF] shadow-[2px_2px_3px] shadow-[#000000]/20 rounded-[10px] py-[2.9rem] flex flex-col gap-7 lg:mx-0 mx-auto">
       <div className="flex flex-col gap-2 items-center justify-center">
         <div className="w-17 h-17 flex justify-center items-center rounded-full font-bold text-2xl bg-[#2B7830]/30 text-primary">
           <h3>
@@ -32,7 +35,8 @@ const PackageCard = () => {
             Package:
             <span className="font-semibold">
               {" "}
-              {user.stockist_plan?.slice(0, 5)}...
+              {miscellaneousDetails?.planDetails?.name ||
+                backUpmiscellaneousDetails?.planDetails?.name}
             </span>
           </h4>
           <h4 className="flex gap-1 items-center">
@@ -47,7 +51,7 @@ const PackageCard = () => {
       <div className="mx-auto">
         <Link
           to={"/user/upgrade-package"}
-          className="py-2 px-9 border-0 bg-[#1B6020] rounded-3xl text-white cursor-pointer font-medium"
+          className="py-3 px-9 border-0 bg-[#1B6020] rounded-3xl text-white cursor-pointer font-medium"
         >
           Upgrade
         </Link>

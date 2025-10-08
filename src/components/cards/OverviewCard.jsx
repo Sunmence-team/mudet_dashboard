@@ -1,6 +1,6 @@
 import { Users } from "lucide-react";
 import React from "react";
-import { BiWallet } from "react-icons/bi";
+import { IoWallet } from "react-icons/io5";
 import { CgArrowRight } from "react-icons/cg";
 import { Link } from "react-router-dom";
 
@@ -19,13 +19,13 @@ const OverviewCard = ({ details }) => {
   const textColor = bgColor === "#ffffff" ? "#000000" : "#ffffff";
   return (
     <div
-      className="flex flex-col rounded-[10px] px-4 py-4 gap-3 shadow"
+      className="flex flex-col rounded-[10px] px-4 py-[14px] gap-3 shadow"
       style={{ backgroundColor: bgColor, color: textColor }}
     >
       <div className="flex flex-col items-start text-sm lg:text-base font-light">
         <h3>{walletType}</h3>
         <div className="flex gap-2 items-center">
-          {type === "wallet" && <BiWallet size={25} />}
+          {type === "wallet" && <IoWallet size={25} />}
           {type === "wallet" ? (
             <h2 className="text-base lg:text-2xl font-semibold">
               ₦{walletBalance.toLocaleString()}
@@ -45,18 +45,22 @@ const OverviewCard = ({ details }) => {
         to={path}
         className="flex gap-1 items-center flex-row-reverse group"
       >
-        <div
-          className="p-1 rounded-[50%] text-center"
-          style={{
-            color: bgColor,
-            backgroundColor: bgColor === "#ffffff" ? "#2B7830" : "white",
-          }}
-        >
-          <CgArrowRight className={`rotate-[-45deg]`} />
-        </div>
-        <p className="group-hover:underline lg:text-sm text-xs font-light">
-          {pathName}
-        </p>
+        {pathName ? (
+          <>
+            <div
+              className="p-1 rounded-[50%] text-center"
+              style={{
+                color: bgColor,
+                backgroundColor: bgColor === "#ffffff" ? "#2B7830" : "white",
+              }}
+            >
+              <CgArrowRight className={`rotate-[-45deg]`} />
+            </div>
+            <p className="group-hover:underline lg:text-sm text-xs font-light">
+              {pathName}
+            </p>
+          </>
+        ) : null}
       </Link>
     </div>
   );

@@ -292,7 +292,8 @@ const EwalletTransfer = () => {
                       }}
                       onBlur={formik.handleBlur}
                       className={`h-12 px-4 py-2 border w-full ${
-                        formik.touched.recipientName && formik.errors.recipientName
+                        formik.touched.recipientName &&
+                        formik.errors.recipientName
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-lg focus:ring-pryClr focus:border-pryClr`}

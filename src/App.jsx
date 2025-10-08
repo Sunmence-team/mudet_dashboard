@@ -21,10 +21,10 @@ import PackageUpload from "./pages/admin/PackageUpload";
 import TransferFunds from "./pages/user/TransferFunds";
 import EwalletTransfer from "./pages/user/EwalletTransfer";
 import Contact from "./pages/admin/Contact";
-import Announcements from "./pages/admin/Announcements";
 import Stockist from "./pages/admin/Stockist";
 import StockistUser from "./pages/StockistUser";
 import Upgrade from "./pages/user/Upgrade";
+import Announcements from "./pages/admin/Announcements";
 
 function App() {
   return (
@@ -36,9 +36,9 @@ function App() {
         <Route
           path={"/user/overview"}
           element={
-            <ProtectedRoute
-              element={() => <MainLayout child={<Overview />} />}
-            />
+            <ProtectedRoute>
+              <MainLayout child={<Overview />} />
+            </ProtectedRoute>
           }
         />
         <Route
@@ -49,6 +49,19 @@ function App() {
           path={"/admin/users"}
           element={<MainLayout child={<Users />} />}
         />
+        <Route
+          path={"/admin/contact"}
+          element={<MainLayout child={<Contact />} />}
+        />
+        <Route
+          path={"/admin/announcements"}
+          element={<MainLayout child={<Announcements />} />}
+        />
+        <Route
+          path={"/admin/stockist"}
+          element={<MainLayout child={<Stockist />} />}
+        />
+        
         <Route
           path={"/admin/contact"}
           element={<MainLayout child={<Contact />} />}
@@ -91,6 +104,10 @@ function App() {
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
         <Route path={"/user/stockistuser"} element={<MainLayout child={<StockistUser />} />} />
+        <Route
+          path={"/user/stockistuser"}
+          element={<MainLayout child={<StockistUser />} />}
+        />
         <Route
           path={"/user/stockistuser"}
           element={<MainLayout child={<StockistUser />} />}
