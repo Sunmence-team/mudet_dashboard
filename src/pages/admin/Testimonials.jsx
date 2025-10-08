@@ -33,7 +33,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Fetched testimonials:", JSON.stringify(response.data, null, 2));
+      // console.log("Fetched testimonials:", JSON.stringify(response.data, null, 2));
       setTestimonials(response.data.data?.data || []);
     } catch (error) {
       console.error("Error fetching testimonials:", error);
@@ -72,49 +72,42 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
         }
 
         const payload = new FormData();
-        payload.append("full_name", values.name);
+        payload.append("full_name", values.name.trim());
         payload.append("rating", values.rating);
         payload.append("comment", values.comment);
         payload.append("image", values.image);
 
-        console.log("Submitting testimonial with payload:");
-        for (let [key, value] of payload.entries()) {
-          console.log(`${key}: ${value instanceof File ? value.name : value}`);
-        }
+        const url = isEditing
+          ? `/api/testimonial/update/${editingId}`
+          : "/api/testimonial/create";
 
-        const url = isEditing ? `/api/testimonial/update/${editingId}` : "/api/testimonial/create";
         const response = await api.post(url, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         });
 
-        console.log("Testimonial response:", JSON.stringify(response.data, null, 2));
-
         if (response.data.status === "success") {
-          toast.success(response.data.message || "Testimonial created/updated successfully");
-          updateFormData(values);
-          if (isEditing) {
-            setEditingId(null);
-            setIsEditing(false);
-            formik.resetForm();
-          } else {
-            nextStep();
-          }
+          toast.success(response.data.message || "Testimonial created successfully");
           fetchTestimonials();
+          formik.resetForm();
+          setIsEditing(false);
         } else {
-          toast.error(response.data.message || "Failed to create/update testimonial.");
+          toast.error(response.data.message || "Failed to create testimonial.");
         }
       } catch (error) {
         console.error("Error submitting testimonial:", error);
-        const errorMessage = error.response?.data?.errors?.image
-          ? error.response.data.errors.image.join(", ")
-          : error.response?.data?.message || error.message || "Failed to create/update testimonial.";
-        toast.error(errorMessage);
+        const msg =
+          error.response?.data?.message ||
+          error.response?.data?.errors?.image?.join(", ") ||
+          "Failed to create testimonial.";
+        toast.error(msg);
       } finally {
         setLoadingSubmit(false);
       }
     },
+
   });
 
   useImperativeHandle(ref, () => ({
