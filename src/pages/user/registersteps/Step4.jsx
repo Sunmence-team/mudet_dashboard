@@ -110,23 +110,23 @@ const Step4 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData },
       <div className="bg-white border border-black/10 w-full h-full flex flex-col justify-between gap-6 p-4 md:p-8 rounded-lg">
         <p className="text-xl md:text-2xl font-semibold">Registration Overview</p>
         <div className="w-full grid grid-cols-3 gap-y-8">
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Package</p>
             <p className="font-semibold">{overviewData?.plan?.name || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Sponsor</p>
             <p className="font-semibold">{getFullName(overviewData?.sponsor)}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">PV</p>
             <p className="font-semibold">{overviewData?.plan?.point_value || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Leg</p>
             <p className="font-semibold">{overviewData?.leg || overviewData?.["0"]?.step_1?.leg || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Placement</p>
             <p className="font-semibold">{getFullName(overviewData?.placement)}</p>
           </div>
@@ -141,40 +141,43 @@ const Step4 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData },
       <div className="bg-white border border-black/10 w-full h-full flex flex-col justify-between gap-6 p-4 md:p-8 rounded-lg">
         <p className="text-xl md:text-2xl font-semibold">Personal Information</p>
         <div className="w-full grid grid-cols-3 gap-y-8">
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">First Name</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.first_name || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Last Name</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.last_name || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Gender</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.gender || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Country</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.country || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">State</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.state || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">City</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.city || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Email</p>
-            <p className="font-semibold break-all">{overviewData?.["0"]?.step_2?.email || "Not provided"}</p>
+            <p className="font-semibold break-words whitespace-normal">
+              {overviewData?.["0"]?.step_2?.email || "Not provided"}
+            </p>
           </div>
 
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Number</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.mobile || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Date of Birth</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.date_of_birth || "Not provided"}</p>
           </div>
@@ -183,11 +186,11 @@ const Step4 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData },
       <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
         <p className="text-xl md:text-2xl font-semibold">Login Information</p>
         <div className="w-full flex justify-between">
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Username</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_3?.username || "Not provided"}</p>
           </div>
-          <div className="flex flex-col gap-1 text-sm md:text-xl">
+          <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Password</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_3?.password || "Not provided"}</p>
           </div>

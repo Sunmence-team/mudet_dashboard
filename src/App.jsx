@@ -117,7 +117,7 @@ function App() {
           element={<MainLayout child={<Testimonials />} />}
         />
         <Route
-          path={"/user/transaction"}
+          path={"/user/transactions"}
           element={<MainLayout child={<Transactions />} />}
         />
         <Route
@@ -132,10 +132,6 @@ function App() {
         <Route
           path={"/admin/users"}
           element={<MainLayout child={<AllUsers />} />}
-        />
-        <Route
-          path={"/user/transactions"}
-          element={<MainLayout child={<Transactions />} />}
         />
         <Route
           path={"/user/upgrade-package"}

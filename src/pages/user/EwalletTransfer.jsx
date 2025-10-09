@@ -3,30 +3,29 @@ import OverviewCard from "../../components/cards/OverviewCard";
 import { useFormik } from "formik";
 import PinModal from "../../components/modals/PinModal";
 import { toast } from "sonner";
-import { useUser } from "../../context/UserContext";
 import api from "../../utilities/api";
+import { useUser } from "../../context/UserContext";
 
 const EwalletTransfer = () => {
   const { token, user } = useUser();
   const [activeUser, setActiveUser] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [validating, setValidating] = useState(false); // Track validation loading
+  const [validating, setValidating] = useState(false);
   const [pinModal, setPinModal] = useState(false);
-  const [pinSubmitting, setPinSubmitting] = useState(false); // Track PIN submission
+  const [pinSubmitting, setPinSubmitting] = useState(false);
   const [recipientNameDisplay, setRecipientNameDisplay] = useState("");
   const [recipientConfirmed, setRecipientConfirmed] = useState(false);
-  const [receiverId, setReceiverId] = useState(null); // Store receiver_id from validate-username response
-  const [buttonClicked, setButtonClicked] = useState(false); // Track Confirm Transfer button click
+  const [receiverId, setReceiverId] = useState(null);
+  const [buttonClicked, setButtonClicked] = useState(false);
 
   useEffect(() => {
-    // Use user from context if available, else fall back to localStorage
     setActiveUser(user || JSON.parse(localStorage.getItem("user") || "{}"));
   }, [user]);
 
-  // Function to validate recipient's username using POST /api/validate-username
+  // Validate recipient's username
   const fetchRecipientName = async (recipientName) => {
     try {
-      setValidating(true); // Start validation loading
+      setValidating(true);
       if (!token) {
         toast.error("No authentication token found. Please log in.");
         setRecipientNameDisplay("Authentication required");
@@ -47,7 +46,7 @@ const EwalletTransfer = () => {
       if (response.data.message === "Username validated successfully" && response.data.data) {
         setRecipientNameDisplay(`${response.data.data.first_name} ${response.data.data.last_name}`);
         setRecipientConfirmed(true);
-        setReceiverId(response.data.data.id); // Store receiver_id
+        setReceiverId(response.data.data.id);
         toast.success("Username validated successfully");
       } else {
         setRecipientNameDisplay("User not found");
@@ -62,7 +61,7 @@ const EwalletTransfer = () => {
       setReceiverId(null);
       toast.error(error.response?.data?.message || error.message || "Error validating username");
     } finally {
-      setValidating(false); // Stop validation loading
+      setValidating(false);
     }
   };
 
@@ -75,28 +74,26 @@ const EwalletTransfer = () => {
     }
   };
 
-  // Handle API call for transfer using POST /api/p2p
+  // Handle API call for transfer
   const handleTransfer = async (pin) => {
     try {
+      setPinSubmitting(true);
       setSubmitting(true);
+
       if (!token) {
-        toast.error("No authentication token found. Please log in.");
-        return;
+        throw new Error("No authentication token found. Please log in.");
       }
 
       if (!receiverId) {
-        toast.error("Recipient not validated. Please validate the username.");
-        return;
+        throw new Error("Recipient not validated. Please validate the username.");
       }
 
       if (!activeUser.id) {
-        toast.error("User ID not found. Please log in again.");
-        return;
+        throw new Error("User ID not found. Please log in again.");
       }
 
       if (!pin || pin.trim() === "") {
-        toast.error("Please enter a valid transaction PIN.");
-        return;
+        throw new Error("Please enter a valid transaction PIN.");
       }
 
       console.log("Transfer payload:", {
@@ -128,8 +125,7 @@ const EwalletTransfer = () => {
 
       if (
         response.data.ok &&
-        response.data.message ===
-          "e_wallet_transfer transfer completed successfully."
+        response.data.message === "e_wallet_transfer transfer completed successfully."
       ) {
         toast.success("Transfer completed successfully");
         setActiveUser((prev) => ({
@@ -140,51 +136,60 @@ const EwalletTransfer = () => {
         setRecipientNameDisplay("");
         setRecipientConfirmed(false);
         setReceiverId(null);
+        setPinModal(false);
+        localStorage.removeItem("currentAuth");
       } else {
-        console.error("Transfer failed:", response.data.message);
-        toast.error(response.data.message || "Transfer failed");
+        throw new Error(response.data.message || "Transfer failed");
       }
     } catch (error) {
       console.error("Error during transfer:", error);
+      const errorMessage = error.response?.data?.message || error.message || "An error occurred during the transfer";
       if (error.response?.data?.errors) {
         const errorMessages = Object.values(error.response.data.errors).flat().join("; ");
-        toast.error(errorMessages || error.response?.data?.message || "An error occurred during the transfer");
+        toast.error(errorMessages || errorMessage);
       } else {
-        toast.error(error.response?.data?.message || error.message || "An error occurred during the transfer");
+        toast.error(errorMessage);
       }
     } finally {
       setSubmitting(false);
-      setButtonClicked(false); // Reset buttonClicked to allow new submission
-      setPinSubmitting(false); // Stop PIN submission loading
+      setPinSubmitting(false);
+      setButtonClicked(false);
+      localStorage.removeItem("currentAuth");
     }
   };
 
+  // Handle PIN confirmation
   const handlePinConfirm = (pin) => {
     console.log("PIN received:", pin);
-    setPinModal(false); // Close modal immediately
-    setPinSubmitting(true); // Start PIN submission loading
     if (!pin || pin.trim() === "") {
-      toast.error("Please enter a valid PIN in the modal.");
+      toast.error("Please enter a valid PIN.");
       setPinSubmitting(false);
       return;
     }
-    // Optionally validate PIN against userPin from backend, similar to Deposit.jsx
-    const userPin = activeUser?.pin;
-    if (userPin && pin !== userPin) {
-      toast.error("Incorrect PIN. Please try again.");
-      setPinSubmitting(false);
-      return;
-    }
+    localStorage.setItem("currentAuth", pin);
     handleTransfer(pin);
   };
 
+  // Handle PIN modal close
+  const handlePinClose = () => {
+    setPinModal(false);
+    setButtonClicked(false);
+    localStorage.removeItem("currentAuth");
+  };
+
+  // Handle form submission
   const onSubmit = () => {
     if (!recipientConfirmed) {
       handleConfirmRecipient();
       return;
     }
-    setPinModal(true);
-    setButtonClicked(true); // Mark button as clicked
+    const transactionPin = localStorage.getItem("currentAuth");
+    if (!transactionPin) {
+      setPinModal(true);
+      setButtonClicked(true);
+      return;
+    }
+    handleTransfer(transactionPin);
   };
 
   const formik = useFormik({
@@ -395,8 +400,9 @@ const EwalletTransfer = () => {
       </div>
       {pinModal && (
         <PinModal
-          onClose={() => setPinModal(false)}
+          onClose={handlePinClose}
           onConfirm={handlePinConfirm}
+          user={activeUser}
         />
       )}
     </>
