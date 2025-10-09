@@ -78,11 +78,13 @@ const ProductCard = ({ product }) => {
           />
         </div>
 
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 text-justify">
-          {product_name}
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          {product_name?.slice(0, 25)}...
         </h3>
         <p className="text-sm text-gray-600 mb-4 text-justify leading-relaxed">
-          {product_description.slice(0, 80)}...
+          {product_description.length > 80 &&
+            `${product_description?.slice(0, 80)}...`}{" "}
+          {product_description.length < 80 && product_description}
         </p>
 
         <div className="flex justify-between mb-4 items-center">
@@ -95,13 +97,13 @@ const ProductCard = ({ product }) => {
         </div>
 
         <div className="flex flex-col space-y-2">
-          <div className="flex justify-between items-center gap-1">
+          <div className="flex justify-between items-center gap-1 overflow-scroll no-scrollbar">
             <button
               onClick={onAddToCart}
               disabled={productQuantity ? true : false}
               className={`${
                 productQuantity ? "w-2/3" : "w-full"
-              } bg-primary cursor-pointer flex items-center justify-center gap-2 text-white font-medium text-sm py-3 px-4 rounded-full transition-colors`}
+              } bg-primary cursor-pointer flex items-center justify-center gap-2 text-white font-medium text-sm py-3 px-4 rounded-full transition-colors whitespace-nowrap`}
             >
               <ShoppingCart size={15} />
               Add to cart

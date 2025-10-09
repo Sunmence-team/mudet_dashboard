@@ -9,15 +9,9 @@ import LazyLoader from "../LazyLoader";
 const AnnouncementCard = () => {
   const { token } = useUser();
   const [announcements, setAnnouncements] = useState([]);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  // Generate random color for each announcement
-  const getRandomColor = () => {
-    const colors = ["#2B7830", "#A9890B"];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -42,8 +36,8 @@ const AnnouncementCard = () => {
             title: item.title,
             description: item.message,
             date: item.start_date,
-            color: getRandomColor(),
-            action: "View",
+            image: item.image,
+            action: "View Attachement",
           };
         });
         setAnnouncements(mappedAnnouncements);
@@ -78,81 +72,6 @@ const AnnouncementCard = () => {
     fetchAnnouncements();
   }, [token]);
 
-  useEffect(() => {
-    const scrollContainers = document.querySelectorAll(
-      'body, html, [class*="overflow-y-auto"], [class*="overflow-scroll"]'
-    );
-
-    if (selectedAnnouncement) {
-      scrollContainers.forEach((el) => (el.style.overflow = "hidden"));
-    } else {
-      scrollContainers.forEach((el) => (el.style.overflow = ""));
-    }
-
-    return () => {
-      scrollContainers.forEach((el) => (el.style.overflow = ""));
-    };
-  }, [selectedAnnouncement]);
-
-  const handleView = async (id) => {
-    try {
-      console.log(`Fetching announcement: /api/announcements/${id}`);
-      const response = await api.get(`/api/announcements/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(
-        "View announcement response:",
-        JSON.stringify(response.data, null, 2)
-      );
-      const announcement = response.data.data;
-      console.log(
-        "View announcement start_date:",
-        announcement.start_date || "Not found"
-      );
-      const mappedAnnouncement = {
-        id: announcement.id,
-        title: announcement.title,
-        description: announcement.message,
-        date: announcement.start_date,
-        color: getRandomColor(),
-        action: "View Attachement",
-        image:announcement.image,
-        // image: announcement.image ? `https://mudetrealsolution.com/api/public/storage/${announcement.image}` : null,
-        end_date: announcement.end_date,
-        created_at: announcement.created_at,
-        updated_at: announcement.updated_at,
-      };
-
-      setSelectedAnnouncement(mappedAnnouncement);
-    } catch (error) {
-      console.error("Error viewing announcement:", error);
-      if (error.response) {
-        console.log(
-          "Error response:",
-          JSON.stringify(error.response.data, null, 2)
-        );
-        console.log("Error status:", error.response.status);
-        console.log(
-          "Error headers:",
-          JSON.stringify(error.response.headers, null, 2)
-        );
-        toast.error(
-          error.response.data?.message || "Failed to view announcement."
-        );
-      } else if (error.request) {
-        console.log("Error request:", error.request);
-        console.log("CORS or network error details:", error.message);
-        toast.error("CORS or network error: Unable to view announcement.");
-      } else {
-        console.log("Error message:", error.message);
-        toast.error("Failed to view announcement: " + error.message);
-      }
-    }
-  };
-
   return (
     <>
       <div className="bg-white rounded-2xl shadow p-5 mx-auto border-gray-300 border">
@@ -166,13 +85,15 @@ const AnnouncementCard = () => {
             announcements.map((item, index) => (
               <div
                 key={index}
-                className="lg:w-[97%] relative bg-white rounded-xl p-4 border border-gray-200 hover:bg-[#000000]/10 cursor-pointer"
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
+                className="lg:w-[97%] relative bg-white rounded-xl p-4 border border-gray-200 hover:bg-[#EFF7F0] cursor-pointer"
+                onMouseOver={() => setSelectedAnnouncement(item)}
+                onClick={() => setIsModalOpen(true)}
               >
                 <div
-                  className="absolute left-0 z-[999] top-0 bottom-0 w-3 rounded-t-full rounded-b-full"
-                  style={{ backgroundColor: item.color }}
+                  className="absolute left-0 top-0 bottom-0 w-3 rounded-t-full rounded-b-full"
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#2B7830" : "#A9890B",
+                  }}
                 ></div>
                 <div className="flex justify-between items-start pl-4">
                   <div className="flex-1 min-w-0">
@@ -184,11 +105,8 @@ const AnnouncementCard = () => {
                     </p>
                   </div>
                   <div className="flex-shrink-0 ml-4 font-semibold">
-                    {hoveredIndex === index ? (
-                      <div
-                        className="text-sm text-black font-medium hover:text-primary/90 flex items-center hover:underline group"
-                        onClick={() => handleView(item.id)}
-                      >
+                    {selectedAnnouncement.id === item.id ? (
+                      <div className="text-sm text-black font-medium hover:text-primary/90 flex items-center hover:underline group">
                         View
                         <CgArrowRight className="rotate-[-45deg] text-base group-hover:underline" />
                       </div>
@@ -209,11 +127,10 @@ const AnnouncementCard = () => {
         </div>
       </div>
 
-      {selectedAnnouncement && (
+      {isModalOpen && (
         <AnnouncementModal
           announcement={selectedAnnouncement}
-          isOpen={!!selectedAnnouncement}
-          onClose={() => setSelectedAnnouncement(null)}
+          onClose={() => setIsModalOpen(false)}
         />
       )}
     </>

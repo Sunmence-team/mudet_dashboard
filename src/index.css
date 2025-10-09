@@ -67,34 +67,39 @@ body::-webkit-scrollbar,
   animation: slide-out 0.5s forwards;
 }
 
+.canva-ref {
+  -webkit-overflow-scrolling: touch;
+}
+
 .thiscard {
   box-shadow: 2px 2px 5px #0000001a, -2px -2px 5px #0000001a;
 }
 .children-card {
   position: relative;
+  z-index: 1;
 }
 
 .children-card.left-card::after {
   content: "";
   position: absolute;
-  top: -20px;
-  left: 50%;
-  width: calc(50% + 15px);
-  height: 50px;
+  top: -80px;
+  left: calc(50% + 12px);
+  width: calc(50% + 12px);
+  height: 70px;
   border: 0.5px solid #000000;
-  border-width: 2px 0px 0px 2px;
+  border-width: 1px 0px 0px 1px;
   z-index: -1;
 }
 
 .children-card.right-card::after {
   content: "";
   position: absolute;
-  top: -20px;
-  right: 50%;
-  width: calc(49.2%);
-  height: 50px;
+  top: -80px;
+  right: calc(50% + 12px);
+  width: calc(50% + 12px);
+  height: 70px;
   border: 0.5px solid #000000;
-  border-width: 2px 2px 0px 0px;
+  border-width: 1px 1px 0px 0px;
   z-index: -1;
 }
 

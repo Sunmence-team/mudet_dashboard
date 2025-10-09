@@ -292,7 +292,7 @@ const Navbar = () => {
               className="object-cover w-18 h-18"
             />
           </div>
-          <ul className="flex flex-col items-center gap-6 overflow-y-scroll no-scrollbar">
+          <ul className="flex flex-col items-center gap-4 overflow-y-scroll no-scrollbar">
             {
               // filteredLinks.map(({ name, path }, index) => (
               filteredLinks.map(({ name, path }, index) => (
@@ -314,8 +314,8 @@ const Navbar = () => {
             }
           </ul>
         </div>
-        <div className="flex items-center gap-4">
-          <button className="flex gap-4 justify-center items-center rounded-full font-medium text-xl bg-tetiary text-primary">
+        <div className="flex items-center gap-4 w-full text-center pt-4 border-t border-black/50">
+          <button className="flex gap-4 justify-center items-center mx-auto rounded-full font-medium text-xl bg-tetiary text-primary">
             <IoIosLogOut size={30} />
             <span>Logout</span>
           </button>
