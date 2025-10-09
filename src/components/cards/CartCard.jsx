@@ -8,85 +8,88 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
 
   return (
     <>
-      <div className="lg:flex sm:hidden md:flex hidden w-full bg-white border border-gray-300 rounded-2xl py-3 px-4 justify-between items-center flex-row">
-        <div className="flex lg:flex-row flex-col gap-4 lg:items-center">
+      {/* Desktop / Tablet View */}
+      <div className="hidden md:flex w-full bg-white border border-gray-200 rounded-2xl p-4 justify-between items-center shadow-sm hover:shadow-md transition-all">
+        <div className="flex items-center gap-4 min-w-0">
           <img
             src={`${IMAGE_URL}/${product_image}`}
             alt={product_name}
-            className="bg-gray-200 pt-3 px-4 rounded-[8px] h-20 object-contain"
+            className="bg-gray-100 rounded-lg w-20 h-20 object-contain flex-shrink-0"
           />
-          <h1 className="text-base font-semibold">{product_name}</h1>
+          <h1 className="text-base font-semibold text-gray-800 truncate max-w-[180px]">
+            {product_name}
+          </h1>
         </div>
 
         <div className="flex items-center gap-3 font-medium">
           <button
             onClick={() => onRemoveFromCart(id)}
-            className="border border-gray-400 py-1 px-2 rounded-2xl cursor-pointer text-2xl"
-            disabled={quantity === 1 ? true : false}
-            title={quantity === 1 ? "Disabled" : "Deduct Quantity"}
+            className="border border-gray-400 py-1 px-4 rounded-2xl cursor-pointer text-2xl"
+            disabled={quantity === 1}
           >
             -
           </button>
-          <span>{quantity}</span>
+          <span className="min-w-[24px] text-center">{quantity}</span>
           <button
             onClick={() => onAddToCart(product)}
-            className="border border-gray-400 py-1 px-2 rounded-2xl cursor-pointer text-2xl"
-            title="Add More Quantity"
+            className="border border-gray-400 py-1 px-4 rounded-2xl cursor-pointer text-2xl"
           >
             +
           </button>
         </div>
 
-        <div className="font-semibold">
-          <h4>₦{(price*quantity).toLocaleString()}</h4>
-        </div>
+        <h4 className="font-semibold text-gray-900 whitespace-nowrap">
+          ₦{(price * quantity).toLocaleString()}
+        </h4>
 
-        <div className="text-primary font-extrabold">
-          <BsTrashFill
-            className="cursor-pointer"
-            onClick={() => onDelete(id)}
-            title="Remove Product"
-          />
-        </div>
+        <BsTrashFill
+          className="text-primary cursor-pointer text-lg hover:text-red-600"
+          onClick={() => onDelete(id)}
+          title="Remove Product"
+        />
       </div>
 
-      <div className="sm:flex md:hidden lg:hidden flex bg-white border border-gray-300 rounded-2xl py-3 px-4 justify-between items-start flex-row gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-center gap-3 font-medium">
-            <button
-              onClick={() => onRemoveFromCart(id)}
-              className="border border-gray-400 py-1 px-2 rounded-2xl cursor-pointer text-2xl"
-              disabled={quantity === 1 ? true : false}
-            >
-              -
-            </button>
-            <span>{quantity}</span>
-            <button
-              onClick={() => onAddToCart(product)}
-              className="border border-gray-400 py-1 px-2 rounded-2xl cursor-pointer text-2xl"
-            >
-              +
-            </button>
-          </div>
-          <div className="flex flex-row gap-2 lg:items-center">
-            <div className="h-[10%]">
-              <img
-                src={`${IMAGE_URL}/${product_image}`}
-                alt={product_name}
-                className="bg-gray-200 pt-3 px-4 rounded-[8px] h-full w-full object-cover"
-              />
-            </div>
-            <div className="flex flex-col gap-3">
-              <h1 className="text-base font-semibold">{product_name}</h1>
-              <h4>₦{(price*quantity).toLocaleString()}</h4>
-            </div>
-          </div>
-        </div>
-        <div className="text-primary font-extrabold">
+      {/* Mobile View */}
+      <div className="flex md:hidden w-full bg-white border border-gray-200 rounded-2xl p-4 flex-col gap-3 shadow-sm hover:shadow-md transition-all">
+        <div className="flex items-center justify-between">
+          <h1 className="text-base font-semibold text-gray-800 max-w-[70%]">
+            {product_name}
+          </h1>
           <BsTrashFill
-            className="cursor-pointer"
+            className="text-primary cursor-pointer text-lg hover:text-red-600"
             onClick={() => onDelete(id)}
           />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <img
+            src={`${IMAGE_URL}/${product_image}`}
+            alt={product_name}
+            className="bg-gray-100 rounded-lg w-20 h-20 object-contain"
+          />
+
+          <div className="flex-1 flex flex-col justify-between gap-2">
+            <h4 className="font-semibold text-gray-900">
+              ₦{(price * quantity).toLocaleString()}
+            </h4>
+
+            <div className="flex items-center gap-3 font-medium">
+              <button
+                onClick={() => onRemoveFromCart(id)}
+                className="border border-gray-400 py-1 px-3 rounded-lg text-lg hover:bg-gray-100 disabled:opacity-50"
+                disabled={quantity === 1}
+              >
+                -
+              </button>
+              <span className="min-w-[24px] text-center">{quantity}</span>
+              <button
+                onClick={() => onAddToCart(product)}
+                className="border border-gray-400 py-1 px-3 rounded-lg text-lg hover:bg-gray-100"
+              >
+                +
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>
