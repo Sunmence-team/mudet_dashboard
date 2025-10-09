@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
+import PaginationControls from "../../../utilities/PaginationControls"; // 👈 adjust the path as needed
 
 const EHistory = () => {
   const { user } = useUser();
@@ -84,7 +85,7 @@ const EHistory = () => {
 
   return (
     <div className="bg-[var(--color-tetiary)]">
-      {/* Table container with horizontal scroll on md & sm */}
+      {/* Table container */}
       <div className="overflow-x-auto">
         {/* Header */}
         <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] min-w-[800px] text-center uppercase text-[17px]">
@@ -131,22 +132,15 @@ const EHistory = () => {
                   key={idx}
                   className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
                 >
-                  {/* SN */}
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
                     00{idx + 1}
                   </span>
-
-                  {/* Type */}
                   <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
                     {item.transaction_type.replace(/_/g, " ")}
                   </span>
-
-                  {/* Amount */}
                   <span className="font-medium text-sm w-[20%] text-center">
                     ₦{parseFloat(item.amount).toLocaleString()}
                   </span>
-
-                  {/* Status with fixed width pill */}
                   <span className="w-[20%] text-center">
                     <div
                       className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border border-black/10 mx-auto ${getStatusColor(
@@ -158,8 +152,6 @@ const EHistory = () => {
                         .replace(/\b\w/g, (c) => c.toUpperCase())}
                     </div>
                   </span>
-
-                  {/* Date + Time stacked */}
                   <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
                     <span>{date}</span>
                     <span className="text-[var(--color-primary)] font-bold pe-2">
@@ -173,44 +165,14 @@ const EHistory = () => {
         </div>
       </div>
 
-      {/* Pagination (only shows if more than one page) */}
+      {/* ✅ Pagination Component */}
       {last_page > 1 && (
-        <div className="flex justify-center mt-4 gap-2">
-          <button
-            onClick={() => handlePageChange(current_page - 1)}
-            disabled={current_page === 1}
-            className={`px-3 py-1 rounded ${
-              current_page === 1
-                ? "bg-gray-200 opacity-50 cursor-not-allowed"
-                : "bg-gray-200"
-            }`}
-          >
-            ‹
-          </button>
-          {Array.from({ length: last_page }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`px-3 py-1 rounded ${
-                page === current_page
-                  ? "bg-[var(--color-primary)] text-white"
-                  : "bg-gray-200"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(current_page + 1)}
-            disabled={current_page === last_page}
-            className={`px-3 py-1 rounded ${
-              current_page === last_page
-                ? "bg-gray-200 opacity-50 cursor-not-allowed"
-                : "bg-gray-200"
-            }`}
-          >
-            ›
-          </button>
+        <div className="mt-4">
+          <PaginationControls
+            currentPage={current_page}
+            totalPages={last_page}
+            setCurrentPage={handlePageChange}
+          />
         </div>
       )}
     </div>

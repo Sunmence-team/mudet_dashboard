@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const RepurchaseWallet = () => {
   const { user } = useUser();
@@ -19,8 +20,8 @@ const RepurchaseWallet = () => {
     per_page: 10,
     total: 1,
   });
-
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -48,10 +49,31 @@ const RepurchaseWallet = () => {
     }
   };
 
-  const { data: repurchases } = repurchaseData;
+  const { data: repurchases, last_page, per_page } = repurchaseData;
+
+  // Fetch data when page changes
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchRepurchases = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get("/repurchases", {
+          params: { userId: user.id, page: currentPage },
+        });
+        setRepurchaseData(response.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRepurchases();
+  }, [currentPage, user]);
 
   return (
-    <div className="bg-[var(--color-tetiary)]">
+    <div className="bg-[var(--color-tetiary)] p-4 rounded-md">
       {/* Table container */}
       <div className="overflow-x-auto">
         {/* Header */}
@@ -94,15 +116,15 @@ const RepurchaseWallet = () => {
           ) : (
             repurchases.map((item, idx) => {
               const { date, time } = formatDateTime(item.created_at);
-              const sn = idx + 1 < 10 ? `00${idx + 1}` : `0${idx + 1}`;
+              const sn = idx + 1 + (currentPage - 1) * per_page;
               return (
                 <div
-                  key={idx}
+                  key={item.id}
                   className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
                 >
                   {/* SN */}
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                    {sn}
+                    {sn < 10 ? `00${sn}` : sn < 100 ? `0${sn}` : sn}
                   </span>
 
                   {/* Bonus Type */}
@@ -140,6 +162,17 @@ const RepurchaseWallet = () => {
             })
           )}
         </div>
+
+        {/* Pagination */}
+        {last_page > 1 && (
+          <div className="mt-4">
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={last_page}
+              setCurrentPage={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

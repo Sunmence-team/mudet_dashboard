@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const WithdrawHistory = () => {
   // Static array of withdrawals
@@ -109,54 +110,14 @@ const WithdrawHistory = () => {
       </div>
 
       {/* Pagination */}
+      {/* Pagination */}
       {lastPage > 1 && (
-        <div className="flex justify-center items-center gap-2 py-6">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 rounded transition ${
-              currentPage === 1
-                ? "bg-gray-200 opacity-50 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            ‹
-          </button>
-
-          {Array.from({ length: lastPage }, (_, i) => i + 1)
-            .filter(
-              (page) =>
-                page === 1 ||
-                page === lastPage ||
-                (page >= currentPage - 2 && page <= currentPage + 2)
-            )
-            .map((page, i, arr) => (
-              <React.Fragment key={page}>
-                {i > 0 && arr[i - 1] !== page - 1 && <span>...</span>}
-                <button
-                  onClick={() => handlePageChange(page)}
-                  className={`px-3 py-1 rounded transition ${
-                    page === currentPage
-                      ? "bg-[var(--color-primary)] text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-                >
-                  {page}
-                </button>
-              </React.Fragment>
-            ))}
-
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === lastPage}
-            className={`px-3 py-1 rounded transition ${
-              currentPage === lastPage
-                ? "bg-gray-200 opacity-50 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            ›
-          </button>
+        <div className="mt-6 flex justify-center">
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={lastPage}
+            setCurrentPage={handlePageChange}
+          />
         </div>
       )}
     </div>

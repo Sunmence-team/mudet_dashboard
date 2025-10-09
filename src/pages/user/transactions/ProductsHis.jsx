@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { FiEye } from "react-icons/fi";
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const ProductsHis = () => {
-  // Static array of products
   const productsArray = [
     {
       sn: "001",
@@ -60,7 +60,6 @@ const ProductsHis = () => {
     },
   ];
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
   const lastPage = Math.ceil(productsArray.length / perPage);
@@ -72,13 +71,11 @@ const ProductsHis = () => {
     }
   };
 
-  // Get current page items
   const currentProducts = productsArray.slice(
     (currentPage - 1) * perPage,
     currentPage * perPage
   );
 
-  // Status color
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case "available":
@@ -90,9 +87,7 @@ const ProductsHis = () => {
     }
   };
 
-  // Modal state
   const [selectedRow, setSelectedRow] = useState(null);
-
   const handleViewClick = (row) => setSelectedRow(row);
   const closeModal = () => setSelectedRow(null);
 
@@ -124,12 +119,8 @@ const ProductsHis = () => {
               <span className="capitalize px-2 break-words text-sm text-start w-[20%]">
                 {row.productName}
               </span>
-              <span className="text-sm text-center w-[15%] pe-8">
-                {row.productId}
-              </span>
-              <span className="font-medium text-sm w-[15%] text-center pe-15">
-                {row.price}
-              </span>
+              <span className="text-sm text-center w-[15%] pe-8">{row.productId}</span>
+              <span className="font-medium text-sm w-[15%] text-center pe-15">{row.price}</span>
               <span
                 className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border border-black/10 mx-auto text-center ${getStatusColor(
                   row.status
@@ -137,14 +128,10 @@ const ProductsHis = () => {
               >
                 {row.status}
               </span>
-              <span className="w-[15%] text-center text-sm font-medium ps-9">
-                {row.stockist}
-              </span>
+              <span className="w-[15%] text-center text-sm font-medium ps-9">{row.stockist}</span>
               <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-center w-[15%] ps-5">
                 <span>{row.dateTime.date}</span>
-                <span className="text-[var(--color-primary)] font-bold">
-                  {row.dateTime.time}
-                </span>
+                <span className="text-[var(--color-primary)] font-bold">{row.dateTime.time}</span>
               </span>
               <span className="w-[5%] text-center">
                 <FiEye
@@ -157,55 +144,14 @@ const ProductsHis = () => {
         </div>
       </div>
 
-      {/* Pagination */}
+      {/* ✅ Pagination */}
       {lastPage > 1 && (
-        <div className="flex justify-center items-center gap-2 py-6">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 rounded transition ${
-              currentPage === 1
-                ? "bg-gray-200 opacity-50 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            ‹
-          </button>
-
-          {Array.from({ length: lastPage }, (_, i) => i + 1)
-            .filter(
-              (page) =>
-                page === 1 ||
-                page === lastPage ||
-                (page >= currentPage - 2 && page <= currentPage + 2)
-            )
-            .map((page, i, arr) => (
-              <React.Fragment key={page}>
-                {i > 0 && arr[i - 1] !== page - 1 && <span>...</span>}
-                <button
-                  onClick={() => handlePageChange(page)}
-                  className={`px-3 py-1 rounded transition ${
-                    page === currentPage
-                      ? "bg-[var(--color-primary)] text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-                >
-                  {page}
-                </button>
-              </React.Fragment>
-            ))}
-
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === lastPage}
-            className={`px-3 py-1 rounded transition ${
-              currentPage === lastPage
-                ? "bg-gray-200 opacity-50 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            ›
-          </button>
+        <div className="mt-4">
+          <PaginationControls
+            currentPage={currentPage} // correct
+            totalPages={lastPage}     // correct
+            setCurrentPage={handlePageChange}
+          />
         </div>
       )}
 
@@ -213,40 +159,16 @@ const ProductsHis = () => {
       {selectedRow && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-white w-[90%] max-w-md rounded-2xl shadow-lg p-6 relative">
-            <h2 className="text-xl font-semibold text-[var(--color-primary)] mb-4">
-              Product Details
-            </h2>
-
+            <h2 className="text-xl font-semibold text-[var(--color-primary)] mb-4">Product Details</h2>
             <div className="space-y-2 text-[15px]">
-              <p>
-                <span className="font-semibold">S/N:</span> {selectedRow.sn}
-              </p>
-              <p>
-                <span className="font-semibold">Product Name:</span>{" "}
-                {selectedRow.productName}
-              </p>
-              <p>
-                <span className="font-semibold pe-2">Product ID:</span>{" "}
-                {selectedRow.productId}
-              </p>
-              <p>
-                <span className="font-semibold">Price:</span>{" "}
-                {selectedRow.price}
-              </p>
-              <p>
-                <span className="font-semibold">Status:</span>{" "}
-                {selectedRow.status}
-              </p>
-              <p>
-                <span className="font-semibold ps-3 bore">Stockist:</span>{" "}
-                {selectedRow.stockist}
-              </p>
-              <p>
-                <span className="font-semibold">Date:</span>{" "}
-                {selectedRow.dateTime.date} ({selectedRow.dateTime.time})
-              </p>
+              <p><span className="font-semibold">S/N:</span> {selectedRow.sn}</p>
+              <p><span className="font-semibold">Product Name:</span> {selectedRow.productName}</p>
+              <p><span className="font-semibold pe-2">Product ID:</span> {selectedRow.productId}</p>
+              <p><span className="font-semibold">Price:</span> {selectedRow.price}</p>
+              <p><span className="font-semibold">Status:</span> {selectedRow.status}</p>
+              <p><span className="font-semibold ps-3 bore">Stockist:</span> {selectedRow.stockist}</p>
+              <p><span className="font-semibold">Date:</span> {selectedRow.dateTime.date} ({selectedRow.dateTime.time})</p>
             </div>
-
             <button
               onClick={closeModal}
               className="mt-5 w-full py-2 rounded-lg bg-[var(--color-primary)] text-white font-semibold hover:bg-opacity-90"

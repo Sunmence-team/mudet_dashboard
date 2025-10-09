@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useUser } from "../../../context/UserContext";
-import api from "../../../utilities/api";
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const EarningWallet = () => {
   const { user } = useUser();
@@ -62,7 +62,17 @@ const EarningWallet = () => {
     }
   };
 
-  const { data: earnings } = earningData;
+  const { data: earnings, current_page, last_page } = earningData;
+
+  // 👇 Handler for page change
+  const handlePageChange = (page) => {
+    // Here you would fetch real data from your API for the selected page
+    // For now, we just update the state to demonstrate pagination
+    setEarningData((prev) => ({
+      ...prev,
+      current_page: page,
+    }));
+  };
 
   return (
     <div className="bg-[var(--color-tetiary)]">
@@ -80,29 +90,7 @@ const EarningWallet = () => {
         {/* Rows */}
         <div className="space-y-3 w-full">
           {loading ? (
-            <div className="text-center py-4">
-              <svg
-                className="animate-spin h-8 w-8 mx-auto text-[var(--color-primary)]"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              <span className="text-black/60">Loading...</span>
-            </div>
+            <div className="text-center py-4">Loading...</div>
           ) : earnings.length === 0 ? (
             <div className="text-center py-4">No earning records found.</div>
           ) : (
@@ -113,22 +101,15 @@ const EarningWallet = () => {
                   key={idx}
                   className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
                 >
-                  {/* SN */}
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
                     00{idx + 1}
                   </span>
-
-                  {/* Bonus Type */}
                   <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
                     {item.transaction_type.replace(/_/g, " ")}
                   </span>
-
-                  {/* Amount */}
                   <span className="font-medium text-sm w-[20%] text-center">
                     ₦{parseFloat(item.amount).toLocaleString()}
                   </span>
-
-                  {/* Status */}
                   <span className="w-[20%] text-center">
                     <div
                       className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border-black/10 border mx-auto ${getStatusColor(
@@ -140,8 +121,6 @@ const EarningWallet = () => {
                         .replace(/\b\w/g, (c) => c.toUpperCase())}
                     </div>
                   </span>
-
-                  {/* Date & Time */}
                   <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
                     <span>{date}</span>
                     <span className="text-[var(--color-primary)] font-bold pe-2">
@@ -154,6 +133,17 @@ const EarningWallet = () => {
           )}
         </div>
       </div>
+
+      {/* ✅ Pagination */}
+      {last_page > 1 && (
+        <div className="mt-4">
+          <PaginationControls
+            currentPage={current_page}
+            totalPages={last_page}
+            setCurrentPage={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };
