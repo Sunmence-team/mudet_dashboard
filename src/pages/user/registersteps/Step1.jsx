@@ -5,6 +5,7 @@ import api from "../../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 import { CiSearch } from "react-icons/ci";
+import { Lock } from "lucide-react";
 
 const Step1 = forwardRef(({
   prevStep,
@@ -14,7 +15,10 @@ const Step1 = forwardRef(({
   setFormValidity,
   setSubmitting,
 }, ref) => {
-  const { token } = useUser();
+  const { token, user } = useUser();
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
+  const walletBalance = parseFloat(user?.e_wallet || backUpUser?.e_wallet);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -359,7 +363,7 @@ const Step1 = forwardRef(({
 
           <div className="flex-[2] w-full flex flex-col gap-3">
             <p className="text-sm md:text-lg">Position</p>
-            <div className="flex w-full gap-6 ustify-between">
+            <div className="flex w-full gap-6 justify-between">
               <button
                 type="button"
                 className={`px-8 py-2 rounded-full ${formik.values.position === "Left"
@@ -397,28 +401,44 @@ const Step1 = forwardRef(({
         ) : packages.length > 0 ? (
           <div className="w-full overflow-x-auto styled-scrollbar mt-8 pb-4">
             <div className="flex gap-6 min-w-max">
-              {packages.map((pkg, index) => (
-                <div
-                  key={pkg.id || index}
-                  className={`w-[270px] md:w-[300px] border border-black/10 flex flex-col rounded-2xl cursor-pointer ${selectedPackage === pkg.id ? "border-primary" : ""}`}
-                  onClick={() => setSelectedPackage(pkg.id)}
-                >
-                  <div className={`w-full h-18 rounded-t-2xl flex items-center justify-center text-white text-center ${index % 2 === 0 ? "bg-primary" : "bg-secondary"}`}>
-                    <p className="text-xl md:text-2xl font-bold capitalize">{pkg.name} package</p>
+              {packages.map((pkg, index) => {
+                const isLockedByFunds = +pkg.price > walletBalance;
+                return (
+                  <div
+                    key={pkg.id || index}
+                    className={`w-[270px] md:w-[300px] relative border border-black/10 flex flex-col rounded-2xl cursor-pointer ${selectedPackage === pkg.id ? "border-primary" : ""}`}
+                    onClick={() => {
+                      if (isLockedByFunds) {
+                        toast.info("Insufficient funds to select this package");
+                      } else {
+                        setSelectedPackage(pkg.id);
+                      }
+                    }}
+                  >
+                    <div className={`w-full h-18 rounded-t-2xl flex items-center justify-center text-white text-center ${index % 2 === 0 ? "bg-primary" : "bg-secondary"}`}>
+                      <p className="text-xl md:text-2xl font-bold capitalize">{pkg.name} package</p>
+                    </div>
+                    <div className="py-6 flex flex-col gap-4 items-center justify-center">
+                      <p className="text-3xl md:text-4xl font-bold">
+                        {pkg.price}
+                        <span className="text-sm font-light text-black/50">
+                          NGN
+                        </span>
+                      </p>
+                      <p className="text-black/70 text-[12px]">
+                        Point Value: {pkg.point_value || pkg.pointValue} pv
+                      </p>
+                      {isLockedByFunds && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center backdrop-blur-xs bg-black/40 rounded-2xl z-10">
+                          <Lock className="text-white w-10 h-10 mb-2 animate-pulse" />
+                          <p className="text-white font-semibold text-lg">Locked</p>
+                          <p className="text-white font-semibold text-sm text-center">Insufficient Funds</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="py-6 flex flex-col gap-4 items-center justify-center">
-                    <p className="text-3xl md:text-4xl font-bold">
-                      {pkg.price}
-                      <span className="text-sm font-light text-black/50">
-                        NGN
-                      </span>
-                    </p>
-                    <p className="text-black/70 text-[12px]">
-                      Point Value: {pkg.point_value || pkg.pointValue} pv
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ) : (

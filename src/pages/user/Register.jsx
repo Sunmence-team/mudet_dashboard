@@ -168,7 +168,7 @@ const Register = () => {
                 className={`flex items-center flex-1 relative px-4 py-2 min-w-[180px]
                   ${isCompleted || isActive
                     ? "bg-primary text-white"
-                    : "bg-primary/40 text-gray-500"}
+                    : "bg-primary/10 text-gray-500"}
                   ${index === 0 ? "rounded-l-full" : ""}
                   ${index === steps.length - 1 ? "rounded-r-full" : ""}
                 `}
@@ -183,7 +183,8 @@ const Register = () => {
                 >
                   <span className="text-base font-bold">{stepNumber}</span>
                 </div>
-                <span className="ml-10 text-xs font-medium whitespace-nowrap">{step}</span>
+                <span className="ml-18 text-xs md:text-sm font-medium whitespace-nowrap">{step}</span>
+
               </div>
             );
           })}
