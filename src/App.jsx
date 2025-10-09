@@ -136,7 +136,7 @@ function App() {
         />
         <Route
           path={"/user/transactions"}
-          element={<MainLayout child={<UserTransactions />} />}
+          element={<MainLayout child={<Transactions />} />}
         />
         <Route
           path={"/user/upgrade-package"}
