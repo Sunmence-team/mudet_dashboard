@@ -15,7 +15,6 @@ import Testimonials from "./pages/admin/Testimonials";
 import ProductUpload from "./pages/admin/ProductUpload";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./utilities/ProtectRoute";
-import AllUsers from "./pages/admin/AllUsers";
 import Transactions from "./pages/user/Transactions";
 import PackageUpload from "./pages/admin/PackageUpload";
 import TransferFunds from "./pages/user/TransferFunds";
@@ -129,10 +128,6 @@ function App() {
           element={<MainLayout child={<PackageUpload />} />}
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
-        <Route
-          path={"/admin/users"}
-          element={<MainLayout child={<AllUsers />} />}
-        />
         <Route
           path={"/user/upgrade-package"}
           element={<MainLayout child={<Upgrade />} />}

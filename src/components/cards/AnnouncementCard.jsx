@@ -100,7 +100,7 @@ const AnnouncementCard = () => {
                     <h3 className="font-semibold text-gray-900 mb-1 truncate">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-gray-600 leading-relaxed">
+                    <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
                       {item.description}
                     </p>
                   </div>
