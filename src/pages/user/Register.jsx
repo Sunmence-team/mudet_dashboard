@@ -104,8 +104,8 @@ const Register = () => {
                 key={index}
                 ref={(el) => (stepRefs.current[index] = el)}
                 className={`flex items-center flex-1 relative px-4 py-2 min-w-[180px]
-                  ${isCompleted || isActive ? "bg-primary text-white" : "bg-primary/40 text-gray-500"}
-                  ${index === 0 ? "rounded-l-full" : ""}
+                  ${isCompleted || isActive ? "bg-primary text-white pl-18" : "bg-primary/40 text-gray-500"}
+                  ${index === 0 ? "rounded-l-full " : ""}
                   ${index === steps.length - 1 ? "rounded-r-full" : ""}
                 `}
               >
