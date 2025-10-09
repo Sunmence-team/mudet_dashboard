@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const RepurchaseWallet = () => {
   const { user } = useUser();
@@ -8,26 +9,19 @@ const RepurchaseWallet = () => {
     data: [
       {
         id: 1,
-        transaction_type: "repurchase_bonus",
+        transaction_type: "From-Ewallet",
         amount: "12000",
-        status: "success",
+        status: "successful",
         created_at: "2025-10-07T14:20:00Z",
-      },
-      {
-        id: 2,
-        transaction_type: "repurchase_commission",
-        amount: "8500",
-        status: "pending",
-        created_at: "2025-10-06T10:45:00Z",
       },
     ],
     current_page: 1,
     last_page: 1,
     per_page: 10,
-    total: 2,
+    total: 1,
   });
-
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -43,7 +37,7 @@ const RepurchaseWallet = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "success":
+      case "successful":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
       case "failed":
         return "bg-[#c51236]/20 text-red-600";
@@ -55,16 +49,37 @@ const RepurchaseWallet = () => {
     }
   };
 
-  const { data: repurchases } = repurchaseData;
+  const { data: repurchases, last_page, per_page } = repurchaseData;
+
+  // Fetch data when page changes
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchRepurchases = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get("/repurchases", {
+          params: { userId: user.id, page: currentPage },
+        });
+        setRepurchaseData(response.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRepurchases();
+  }, [currentPage, user]);
 
   return (
-    <div className="bg-[var(--color-tetiary)]">
+    <div className="bg-[var(--color-tetiary)] p-4 rounded-md">
       {/* Table container */}
       <div className="overflow-x-auto">
         {/* Header */}
         <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
           <span className="text-start ps-4 w-[15%]">SN</span>
-          <span className="text-start w-[25%]">Type</span>
+          <span className="text-start w-[25%]">Bonus Type</span>
           <span className="w-[20%] text-center">Amount</span>
           <span className="w-[20%] text-center">Status</span>
           <span className="text-end pe-8 w-[20%]">Date</span>
@@ -101,17 +116,18 @@ const RepurchaseWallet = () => {
           ) : (
             repurchases.map((item, idx) => {
               const { date, time } = formatDateTime(item.created_at);
+              const sn = idx + 1 + (currentPage - 1) * per_page;
               return (
                 <div
-                  key={idx}
+                  key={item.id}
                   className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
                 >
                   {/* SN */}
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                    00{idx + 1}
+                    {sn < 10 ? `00${sn}` : sn < 100 ? `0${sn}` : sn}
                   </span>
 
-                  {/* Type */}
+                  {/* Bonus Type */}
                   <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
                     {item.transaction_type.replace(/_/g, " ")}
                   </span>
@@ -146,6 +162,17 @@ const RepurchaseWallet = () => {
             })
           )}
         </div>
+
+        {/* Pagination */}
+        {last_page > 1 && (
+          <div className="mt-4">
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={last_page}
+              setCurrentPage={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

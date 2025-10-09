@@ -21,10 +21,6 @@ const Profile = () => {
   const { user, miscellaneousDetails } = useUser();
   const name = `${user?.first_name} ${user?.last_name}`;
 
-  console.log("miscellaneousDetails", miscellaneousDetails)
-  console.log("miscellaneousDetails.planDetails", miscellaneousDetails?.planDetails)
-  console.log("miscellaneousDetails.planDetails?.name", miscellaneousDetails?.planDetails?.name)
-
   const tabs = [
     { key: "password", label: "Password Reset" },
     { key: "pin", label: "Pin Reset" },
