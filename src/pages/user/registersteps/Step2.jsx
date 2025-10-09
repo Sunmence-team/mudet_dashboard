@@ -314,7 +314,7 @@ const Step2 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
             </div>
             <div className="flex flex-col w-full">
               <label htmlFor="date_of_birth" className="text-sm font-medium text-gray-700 mb-1">
-                Date of Birth (YYYY-MM-DD){" "}
+                Date of Birth(YYYY-MM-DD){" "}
                 {formik.touched.date_of_birth && formik.errors.date_of_birth && (
                   <span className="text-red-500 text-xs"> - {formik.errors.date_of_birth}</span>
                 )}
