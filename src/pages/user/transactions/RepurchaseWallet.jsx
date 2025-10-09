@@ -8,23 +8,16 @@ const RepurchaseWallet = () => {
     data: [
       {
         id: 1,
-        transaction_type: "repurchase_bonus",
+        transaction_type: "From-Ewallet",
         amount: "12000",
-        status: "success",
+        status: "successful",
         created_at: "2025-10-07T14:20:00Z",
-      },
-      {
-        id: 2,
-        transaction_type: "repurchase_commission",
-        amount: "8500",
-        status: "pending",
-        created_at: "2025-10-06T10:45:00Z",
       },
     ],
     current_page: 1,
     last_page: 1,
     per_page: 10,
-    total: 2,
+    total: 1,
   });
 
   const [loading, setLoading] = useState(false);
@@ -43,7 +36,7 @@ const RepurchaseWallet = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "success":
+      case "successful":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
       case "failed":
         return "bg-[#c51236]/20 text-red-600";
@@ -64,7 +57,7 @@ const RepurchaseWallet = () => {
         {/* Header */}
         <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
           <span className="text-start ps-4 w-[15%]">SN</span>
-          <span className="text-start w-[25%]">Type</span>
+          <span className="text-start w-[25%]">Bonus Type</span>
           <span className="w-[20%] text-center">Amount</span>
           <span className="w-[20%] text-center">Status</span>
           <span className="text-end pe-8 w-[20%]">Date</span>
@@ -101,6 +94,7 @@ const RepurchaseWallet = () => {
           ) : (
             repurchases.map((item, idx) => {
               const { date, time } = formatDateTime(item.created_at);
+              const sn = idx + 1 < 10 ? `00${idx + 1}` : `0${idx + 1}`;
               return (
                 <div
                   key={idx}
@@ -108,10 +102,10 @@ const RepurchaseWallet = () => {
                 >
                   {/* SN */}
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                    00{idx + 1}
+                    {sn}
                   </span>
 
-                  {/* Type */}
+                  {/* Bonus Type */}
                   <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
                     {item.transaction_type.replace(/_/g, " ")}
                   </span>

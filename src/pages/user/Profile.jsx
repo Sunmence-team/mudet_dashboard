@@ -57,7 +57,7 @@ const Profile = () => {
           <p className="text-gray-500 text-sm">@{activeUser.username}</p>
 
           <div className="mt-4 space-y-2 w-full">
-            <div className="border-y-2 p-3 border-black/30">
+            <div className="border-y-1 p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   EMAIL:
@@ -65,7 +65,7 @@ const Profile = () => {
                 {activeUser.email}
               </p>
             </div>
-            <div className="border-b-2 p-3 border-black/30">
+            <div className="border-b-1 p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   USERNAME:
@@ -73,7 +73,7 @@ const Profile = () => {
                 {activeUser.username}
               </p>
             </div>
-            <div className="border-b-2 p-3 border-black/30">
+            <div className="border-b-1 p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   PACKAGE:
@@ -81,7 +81,7 @@ const Profile = () => {
                 {activeUser.plan ? activeUser.stockist_plan : "None"}
               </p>
             </div>
-            <div className="border-b-2 p-3 border-black/30">
+            <div className="border-b-1 p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   CURRENT RANK:
