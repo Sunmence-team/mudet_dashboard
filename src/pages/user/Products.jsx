@@ -22,8 +22,6 @@ const Products = () => {
       });
 
       console.log("Products reposne", response )
-
-      // handle different response shapes safely
       const productsData = response.data?.data || response.data || [];
 
       if (Array.isArray(productsData) && productsData.length > 0) {
@@ -53,7 +51,7 @@ const Products = () => {
     return (
       <div className="flex flex-col gap-1 p-6 justify-center items-center min-h-[400px]">
         <h3 className="text-2xl font-semibold">Loading Products</h3>
-        <LazyLoader width={"50px"} />
+        <LazyLoader color={"green"} width={"50px"} />
       </div>
     );
   }

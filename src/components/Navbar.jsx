@@ -9,12 +9,14 @@ import { IoIosLogOut } from "react-icons/io";
 import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
+import { useCart } from "../context/CartProvider";
 
 const Navbar = () => {
   const { user } = useUser();
-  const cart = JSON.parse(localStorage.getItem("carts")) || [];
+  const { cart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
-  const [cartItem, setCartItem] = useState(0);
+  const cartItem = cart.length;
+
 
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -51,10 +53,6 @@ const Navbar = () => {
       window.removeEventListener("resize", checkScrollPosition);
     };
   }, []);
-
-  useEffect(() => {
-    setCartItem(cart.length);
-  }, [cart]);
 
   const navItems = [
     {

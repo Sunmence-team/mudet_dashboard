@@ -1,19 +1,21 @@
 import React from "react";
 import { BsTrashFill } from "react-icons/bs";
 
+const IMAGE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
+
 const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
-  const { id, title, imageSrc, quantity, price } = product;
+  const { id, product_name, product_image, quantity, price } = product;
 
   return (
     <>
       <div className="lg:flex sm:hidden md:flex hidden w-full bg-white border border-gray-300 rounded-2xl py-3 px-4 justify-between items-center flex-row">
         <div className="flex lg:flex-row flex-col gap-4 lg:items-center">
           <img
-            src={imageSrc}
-            alt={title}
+            src={`${IMAGE_URL}/${product_image}`}
+            alt={product_name}
             className="bg-gray-200 pt-3 px-4 rounded-[8px] h-20 object-contain"
           />
-          <h1 className="text-base font-semibold">{title}</h1>
+          <h1 className="text-base font-semibold">{product_name}</h1>
         </div>
 
         <div className="flex items-center gap-3 font-medium">
@@ -36,7 +38,7 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
         </div>
 
         <div className="font-semibold">
-          <h4>₦{price.toLocaleString()}</h4>
+          <h4>₦{(price*quantity).toLocaleString()}</h4>
         </div>
 
         <div className="text-primary font-extrabold">
@@ -69,14 +71,14 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
           <div className="flex flex-row gap-2 lg:items-center">
             <div className="h-[10%]">
               <img
-                src={imageSrc}
-                alt={title}
+                src={`${IMAGE_URL}/${product_image}`}
+                alt={product_name}
                 className="bg-gray-200 pt-3 px-4 rounded-[8px] h-full w-full object-cover"
               />
             </div>
             <div className="flex flex-col gap-3">
-              <h1 className="text-base font-semibold">{title}</h1>
-              <h4>₦{price.toLocaleString()}</h4>
+              <h1 className="text-base font-semibold">{product_name}</h1>
+              <h4>₦{(price*quantity).toLocaleString()}</h4>
             </div>
           </div>
         </div>
