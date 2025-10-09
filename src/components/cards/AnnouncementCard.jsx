@@ -5,31 +5,38 @@ import api from "../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
 import LazyLoader from "../LazyLoader";
+import PaginationControls from "../../utilities/PaginationControls";
 
-const AnnouncementCard = () => {
+const AnnouncementCard = ({ style, refresh, pagination=false }) => {
   const { token } = useUser();
   const [announcements, setAnnouncements] = useState([]);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
 
-  useEffect(() => {
-    const fetchAnnouncements = async () => {
-      try {
-        if (!token) {
-          toast.error("No authentication token found. Please log in.");
-          console.log("No token provided");
-          setLoading(false);
-          return;
-        }
+  const fetchAnnouncements = async () => {
+    setLoading(true)
+    try {
+      if (!token) {
+        toast.error("No authentication token found. Please log in.");
+        console.log("No token provided");
+        setLoading(false);
+        return;
+      }
 
-        const response = await api.get("/api/announcements", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const announcementsData = response.data.data.data || [];
+      const response = await api.get("/api/announcements", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: {page: currentPage, }
+      });
+      console.log("response:", response);
+      if (response.status === 200) {
+        const { data, current_page, last_page } = response.data.data
+        const announcementsData = data || [];
         const mappedAnnouncements = announcementsData.map((item) => {
           return {
             id: item.id,
@@ -41,36 +48,40 @@ const AnnouncementCard = () => {
           };
         });
         setAnnouncements(mappedAnnouncements);
-      } catch (error) {
-        console.error("Error fetching announcements:", error);
-        if (error.response) {
-          console.log(
-            "Error response:",
-            JSON.stringify(error.response.data, null, 2)
-          );
-          console.log("Error status:", error.response.status);
-          console.log(
-            "Error headers:",
-            JSON.stringify(error.response.headers, null, 2)
-          );
-          toast.error(
-            error.response.data?.message || "Failed to fetch announcements."
-          );
-        } else if (error.request) {
-          console.log("Error request:", error.request);
-          console.log("CORS or network error details:", error.message);
-          toast.error("CORS or network error: Unable to fetch announcements.");
-        } else {
-          console.log("Error message:", error.message);
-          toast.error("Failed to fetch announcements: " + error.message);
-        }
-      } finally {
-        setLoading(false);
+        setCurrentPage(current_page);
+        setLastPage(last_page);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+      if (error.response) {
+        console.log(
+          "Error response:",
+          JSON.stringify(error.response.data, null, 2)
+        );
+        console.log("Error status:", error.response.status);
+        console.log(
+          "Error headers:",
+          JSON.stringify(error.response.headers, null, 2)
+        );
+        toast.error(
+          error.response.data?.message || "Failed to fetch announcements."
+        );
+      } else if (error.request) {
+        console.log("Error request:", error.request);
+        console.log("CORS or network error details:", error.message);
+        toast.error("CORS or network error: Unable to fetch announcements.");
+      } else {
+        console.log("Error message:", error.message);
+        toast.error("Failed to fetch announcements: " + error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchAnnouncements();
-  }, [token]);
+  }, [refresh, token, currentPage]);
 
   return (
     <>
@@ -78,7 +89,7 @@ const AnnouncementCard = () => {
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
           Announcement Board
         </h2>
-        <div className="styled-scrollbar space-y-4 max-h-65 overflow-y-auto">
+        <div className={`styled-scrollbar space-y-4 max-h-65 ${style} overflow-y-auto`}>
           {loading ? (
             <LazyLoader />
           ) : announcements.length > 0 ? (
@@ -100,7 +111,7 @@ const AnnouncementCard = () => {
                     <h3 className="font-semibold text-gray-900 mb-1 truncate">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-gray-600 leading-relaxed">
+                    <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
                       {item.description}
                     </p>
                   </div>
@@ -124,6 +135,17 @@ const AnnouncementCard = () => {
               No announcements available
             </p>
           )}
+        </div>
+        <div className="mt-4">
+          {
+            pagination && (
+              <PaginationControls 
+                currentPage={currentPage}
+                totalPages={lastPage}
+                setCurrentPage={setCurrentPage}
+              />
+            )
+          }
         </div>
       </div>
 

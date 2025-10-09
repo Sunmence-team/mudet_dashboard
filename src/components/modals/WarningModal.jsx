@@ -18,13 +18,15 @@ const WarningModal = ({
         <div className="flex justify-end gap-4">
           <button
             onClick={negativeAction}
-            className="px-4 py-2 bg-primary/90 text-white rounded hover:bg-primary cursor-pointer transition"
+            disabled={isPositive}
+            className="px-4 py-2 bg-primary/90 text-white rounded hover:bg-primary cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={positiveAction}
-            className="px-4 py-2 bg-red-600 text-white rounded cursor-pointer hover:bg-red-700 transition"
+            disabled={isPositive}
+            className="px-4 py-2 bg-red-600 text-white rounded cursor-pointer hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPositive ? <Loader2 className="animate-spin" /> : "Confirm"}
           </button>

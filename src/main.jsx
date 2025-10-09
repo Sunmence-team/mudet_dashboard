@@ -14,6 +14,6 @@ createRoot(document.getElementById('root')).render(
           <App />
         </Router>
       </CartProvider>
-    </UserProvider>,
+    </UserProvider>
   </StrictMode>,
 )
