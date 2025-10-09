@@ -18,13 +18,14 @@ const Upgrade = () => {
   const [showModal, setShowModal] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
   const { user, refreshUser, miscellaneousDetails } = useUser();
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
   const miscellaneousDetails2 = JSON.parse(
     localStorage.getItem("miscellaneousDetails")
   );
   const wallet = {
     type: "wallet",
     walletType: "E-Wallet",
-    walletBalance: parseFloat(user.e_wallet || 0),
+    walletBalance: parseFloat(user?.e_wallet || backUpUser?.e_wallet),
     path: "/user/deposit",
     pathName: "Fund Wallet",
     color: "gold",
@@ -120,20 +121,25 @@ const Upgrade = () => {
               <h2 className="text-xl lg:text-2xl font-semibold">
                 Current Package
               </h2>
-              <div className="p-4 lg:p-8 flex justify-between w-full bg-primary text-white rounded-lg">
-                <div className="flex flex-col gap-3">
-                  <h3 className="text-base lg:text-2xl font-medium capitalize">
-                    {currentPackage?.name}
-                  </h3>
-                  <p className="text-xs lg:text-base lg:font-medium">
-                    Point Value: {currentPackage?.point_value}PV
-                  </p>
+              <div className="flex lg:flex-row lg:justify-between gap-4 w-full flex-col">
+                <div className="px-4 lg:px-8 py-8 flex justify-between lg:w-[75%] bg-primary text-white rounded-lg">
+                  <div className="flex flex-col gap-3">
+                    <h3 className="text-base lg:text-2xl font-medium capitalize">
+                      {currentPackage?.name}
+                    </h3>
+                    <p className="text-xs lg:text-base lg:font-medium">
+                      Point Value: {currentPackage?.point_value}PV
+                    </p>
+                  </div>
+                  <div>
+                    <h2 className="text-base lg:text-3xl font-medium">
+                      {Number(currentPackage.price)?.toLocaleString()}
+                      <span className="text-[10px] lg:text-sm">NGN</span>
+                    </h2>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-base lg:text-3xl font-medium">
-                    {Number(currentPackage.price)?.toLocaleString()}
-                    <span className="text-[10px] lg:text-sm">NGN</span>
-                  </h2>
+                <div className="lg:w-[25%]">
+                  <OverviewCard details={wallet} />
                 </div>
               </div>
             </>
@@ -168,9 +174,11 @@ const Upgrade = () => {
                     <Loader2 className="animate-spin" size={30} />
                   </div>
                 ) : (
-                  filterNonCurrentPackage
-                    .reverse()
-                    .map((pkg, index) => (
+                  filterNonCurrentPackage.reverse().map((pkg, index) => {
+                    const isLockedByPrice =
+                      +pkg?.price < +currentPackage?.price;
+                    const isLockedByFunds = +user?.e_wallet < +pkg?.price;
+                    return (
                       <div
                         key={index}
                         className={`w-full relative cursor-pointer lg:w-[300px] md:w-[350px] border border-black/10 flex flex-col rounded-2xl ${selectedPackage === pkg.id ? "border-primary" : ""
@@ -243,13 +251,7 @@ const Upgrade = () => {
           <div className="bg-white rounded-lg w-[90%] max-w-md p-6 flex flex-col gap-4">
             <h2 className="text-xl font-semibold mb-2">Confirm Upgrade</h2>
             <div className="flex flex-col gap-3">
-              <label className="text-sm font-medium">Package ID</label>
-              <input
-                type="text"
-                value={+selectedPackage}
-                disabled
-                className="w-full border px-3 py-2 rounded-md bg-gray-100 cursor-not-allowed"
-              />
+    
 
               <label className="text-sm font-medium mt-2">
                 Select Stockist
@@ -262,14 +264,16 @@ const Upgrade = () => {
               >
                 <option value="">
                   {fetchingStokist
-                    ? "Fetching Stockists ID..."
-                    : "-- Select Stockist ID --"}
+                    ? "Fetching Stockists..."
+                    : "-- Select Stockist --"}
                 </option>
-                {stockists.map((stk) => (
-                  <option key={stk.id} value={stk.id}>
-                    {stk.stockist}
-                  </option>
-                ))}
+                {stockists.map((stk) => {
+                  return (
+                    <option key={stk.id} value={stk.id}>
+                      {stk.first_name}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
