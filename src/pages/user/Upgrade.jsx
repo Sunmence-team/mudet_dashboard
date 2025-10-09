@@ -85,9 +85,9 @@ const Upgrade = () => {
       } else {
         toast.error(
           "An unexpected error occurred while upgrading package. " +
-            error?.response?.data?.error ||
-            error?.message ||
-            "Please try again later."
+          error?.response?.data?.error ||
+          error?.message ||
+          "Please try again later."
         );
         console.error("Error during upgrading package:", error);
       }
@@ -164,72 +164,64 @@ const Upgrade = () => {
               <div className="flex gap-6 lg:flex-row flex-col min-w-max pb-5">
                 {fetchingPackage ? (
                   <div className="flex flex-col items-center justify-center w-full">
-                    <h2 className="text-xl font-medium">
-                      Loading available packages...
-                    </h2>
+                    <h2 className="text-xl font-medium">Loading available packages...</h2>
                     <Loader2 className="animate-spin" size={30} />
                   </div>
                 ) : (
-                  filterNonCurrentPackage.reverse().map((pkg, index) => (
-                    <div
-                      key={index}
-                      className={`w-full relative cursor-pointer lg:w-[300px] md:w-[350px] border border-black/10 flex flex-col rounded-2xl ${
-                        selectedPackage === pkg.id ? "border-primary" : ""
-                      }`}
-                      onClick={() =>
-                        +pkg.price < currentPackage.price
-                          ? toast.info(
-                              "Oops! you can't upgrade to a package lower to your current package."
-                            )
-                          : setSelectedPackage(pkg.id)
-                      }
-                    >
-                      {/* Header */}
+                  filterNonCurrentPackage
+                    .reverse()
+                    .map((pkg, index) => (
                       <div
-                        className={`w-full h-16 ${
-                          index % 2 === 0 ? "bg-primary" : "bg-secondary"
-                        } rounded-t-2xl flex items-center justify-center text-white text-center`}
+                        key={index}
+                        className={`w-full relative cursor-pointer lg:w-[300px] md:w-[350px] border border-black/10 flex flex-col rounded-2xl ${selectedPackage === pkg.id ? "border-primary" : ""
+                          }`}
+                        onClick={() =>
+                          +pkg.price < currentPackage.price
+                            ? toast.info(
+                              "Oops! you can't upgrade to a package lower than your current package."
+                            )
+                            : setSelectedPackage(pkg.id)
+                        }
                       >
-                        <p className="text-lg md:text-2xl font-bold capitalize">
-                          {pkg.name} package
-                        </p>
-                      </div>
+                        {/* Header */}
+                        <div
+                          className={`w-full h-16 ${index % 2 === 0 ? "bg-primary" : "bg-secondary"
+                            } rounded-t-2xl flex items-center justify-center text-white text-center`}
+                        >
+                          <p className="text-lg md:text-2xl font-bold capitalize">
+                            {pkg.name} package
+                          </p>
+                        </div>
 
-                      {/* Body */}
-                      <div className="py-6 flex flex-col gap-3 items-center justify-center">
-                        <p className="text-2xl md:text-4xl font-bold">
-                          {pkg.price}
-                          <span className="text-sm font-light text-black/50">
-                            {" "}
-                            NGN
-                          </span>
-                        </p>
-                        <p className="text-black/70 text-sm">
-                          Point Value: {pkg.point_value}
-                          PV{" "}
-                        </p>
+                        {/* Body */}
+                        <div className="py-6 flex flex-col gap-3 items-center justify-center">
+                          <p className="text-2xl md:text-4xl font-bold">
+                            {pkg.price}
+                            <span className="text-sm font-light text-black/50"> NGN</span>
+                          </p>
+                          <p className="text-black/70 text-sm">
+                            Point Value: {pkg.point_value}PV
+                          </p>
 
-                        {+pkg.price < +currentPackage.price && (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center backdrop-blur-sm bg-black/55 rounded-2xl z-10">
-                            <Lock className="text-white w-10 h-10 mb-2 animate-pulse" />
-                            <p className="text-white font-semibold text-lg">
-                              Locked
-                            </p>
-                          </div>
-                        )}
+                          {+pkg.price < +currentPackage.price && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center backdrop-blur-sm bg-black/55 rounded-2xl z-10">
+                              <Lock className="text-white w-10 h-10 mb-2 animate-pulse" />
+                              <p className="text-white font-semibold text-lg">Locked</p>
+                            </div>
+                          )}
 
                           {/* Get Started button visible only on mobile */}
                           <button
                             className="bg-primary text-white px-4 py-2 rounded-lg mt-2 block md:hidden"
-                            onClick={() => setSelectedPackage(pkg.name)}
+                            onClick={() => setSelectedPackage(pkg.id)}
                           >
                             Get Started
                           </button>
                         </div>
                       </div>
-                    );
-                  })
+                    ))
                 )}
+
               </div>
             </div>
 
