@@ -12,15 +12,17 @@ const Step1 = forwardRef(({
   formData = {},
   updateFormData,
   setFormValidity,
+  setSubmitting, // ✅ add this
 }, ref) => {
+
   const { token } = useUser();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-    // 🔥 State for plans
-    const [packages, setPackages] = useState([]);
-    const [loadingPlans, setLoadingPlans] = useState(false);
+  // 🔥 State for plans
+  const [packages, setPackages] = useState([]);
+  const [loadingPlans, setLoadingPlans] = useState(false);
 
   const [selectedPackage, setSelectedPackage] = useState(
     formData.plan || null
@@ -37,8 +39,6 @@ const Step1 = forwardRef(({
   const [placementConfirmed, setPlacementConfirmed] = useState(false);
   const [placementId, setPlacementId] = useState(null);
   const [validatingPlacement, setValidatingPlacement] = useState(false);
-
-  const [submitting, setSubmitting] = useState(false);
 
   // ✅ Validation
   const validationSchema = Yup.object().shape({
@@ -57,16 +57,20 @@ const Step1 = forwardRef(({
     onSubmit: async (values) => {
       if (!sponsorConfirmed) {
         toast.error("Please validate the sponsor username");
+        setSubmitting(false); // ✅ reset loader
         return;
       }
       if (!placementConfirmed) {
         toast.error("Please validate the placement username");
+        setSubmitting(false); // ✅ reset loader
         return;
       }
       if (!selectedPackage) {
         toast.error("Please select a package");
+        setSubmitting(false); // ✅ reset loader
         return;
       }
+
 
       setSubmitting(true);
       try {
@@ -117,12 +121,8 @@ const Step1 = forwardRef(({
         }
       } catch (error) {
         console.error("Error during Step 1 submission:", error);
-        if (error.response?.data?.errors) {
-          const errorMessages = Object.values(error.response.data.errors).flat().join("; ");
-          toast.error(errorMessages || error.response?.data?.message || "An error occurred during Step 1 submission");
-        } else {
-          toast.error(error.response?.data?.message || error.message || "An error occurred during Step 1 submission");
-        }
+        toast.error(error.response?.data?.message || error.message || "Error submitting");
+        setSubmitting(false); // ✅ reset loader on error
       } finally {
         setSubmitting(false);
       }
@@ -310,9 +310,8 @@ const Step1 = forwardRef(({
                 >
                   Sponsor Full Name
                 </label>
-                <p className={`text-xs text-gray-600 mt-1 ${
-                  sponsorConfirmed ? "" : "text-red-500"
-                }`}>
+                <p className={`text-xs text-gray-600 mt-1 ${sponsorConfirmed ? "" : "text-red-500"
+                  }`}>
                   {sponsorNameDisplay}
                 </p>
               </div>
@@ -357,9 +356,8 @@ const Step1 = forwardRef(({
                 >
                   Placement Full Name
                 </label>
-                <p className={`text-xs text-gray-600 mt-1 ${
-                  placementConfirmed ? "" : "text-red-500"
-                }`}>
+                <p className={`text-xs text-gray-600 mt-1 ${placementConfirmed ? "" : "text-red-500"
+                  }`}>
                   {placementNameDisplay}
                 </p>
               </div>
@@ -371,22 +369,20 @@ const Step1 = forwardRef(({
             <div className="flex w-full gap-6 ustify-between">
               <button
                 type="button"
-                className={`px-8 py-2 rounded-full ${
-                  formik.values.position === "Left"
-                    ? "bg-secondary text-white"
-                    : "bg-white border border-black/50 text-black"
-                }`}
+                className={`px-8 py-2 rounded-full ${formik.values.position === "Left"
+                  ? "bg-secondary text-white"
+                  : "bg-white border border-black/50 text-black"
+                  }`}
                 onClick={() => formik.setFieldValue("position", "Left")}
               >
                 Left
               </button>
               <button
                 type="button"
-                className={`px-8 py-2 rounded-full ${
-                  formik.values.position === "Right"
-                    ? "bg-secondary text-white"
-                    : "bg-white border border-black/50 text-black"
-                }`}
+                className={`px-8 py-2 rounded-full ${formik.values.position === "Right"
+                  ? "bg-secondary text-white"
+                  : "bg-white border border-black/50 text-black"
+                  }`}
                 onClick={() => formik.setFieldValue("position", "Right")}
               >
                 Right
@@ -412,12 +408,11 @@ const Step1 = forwardRef(({
               {packages.map((pkg, index) => (
                 <div
                   key={pkg.id || index}
-                  className={`w-[270px] md:w-[300px] border border-black/10 flex flex-col rounded-2xl cursor-pointer ${
-                    selectedPackage === pkg.id ? "border-primary" : ""
-                  }`}
+                  className={`w-[270px] md:w-[300px] border border-black/10 flex flex-col rounded-2xl cursor-pointer ${selectedPackage === pkg.id ? "border-primary" : ""
+                    }`}
                   onClick={() => setSelectedPackage(pkg.id)}
                 >
-                  <div className={`w-full h-18 rounded-t-2xl flex items-center justify-center text-white text-center ${index%2 === 0 ? "bg-primary" : "bg-secondary"}`}>
+                  <div className={`w-full h-18 rounded-t-2xl flex items-center justify-center text-white text-center ${index % 2 === 0 ? "bg-primary" : "bg-secondary"}`}>
                     <p className="text-xl md:text-2xl font-bold capitalize">{pkg.name} package</p>
                   </div>
                   <div className="py-6 flex flex-col gap-4 items-center justify-center">

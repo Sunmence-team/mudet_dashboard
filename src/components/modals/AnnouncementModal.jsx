@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 
 const AnnouncementModal = ({ announcement, onClose }) => {
-  const { isattachement, setIsAttachement } = useState(false);
+  const [isattachement, setIsAttachement] = useState(false);
+  const imageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL;
+  console.log(announcement);
 
   return (
     <div className="fixed inset-0 backdrop-blur-xs bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -25,7 +27,11 @@ const AnnouncementModal = ({ announcement, onClose }) => {
 
         {isattachement ? (
           <>
-            <img src={announcement.image} alt={announcement.title} />
+            <img
+              src={`${imageBaseUrl}/${announcement.image}`}
+              alt={announcement.title}
+              className="border border-gray-300 rounded-lg"
+            />
           </>
         ) : (
           <>
@@ -34,16 +40,15 @@ const AnnouncementModal = ({ announcement, onClose }) => {
             <p className="text-sm text-gray-700 leading-relaxed">
               {announcement.description}
             </p>
+            {announcement.image && announcement.action && (
+              <button
+                className="mt-6 w-full bg-primary cursor-pointer text-white py-2 px-4 rounded-lg "
+                onClick={() => setIsAttachement(!isattachement)}
+              >
+                {announcement.action}
+              </button>
+            )}
           </>
-        )}
-
-        {announcement.action && (
-          <button
-            className="mt-6 w-full bg-primary cursor-pointer text-white py-2 px-4 rounded-lg "
-            onClick={() => setIsAttachement(!isattachement)}
-          >
-            {announcement.action}
-          </button>
         )}
       </div>
     </div>

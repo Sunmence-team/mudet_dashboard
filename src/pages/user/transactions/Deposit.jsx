@@ -3,6 +3,8 @@ import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import LazyLoader from "../../../components/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
+import LazyLoader from "../../../components/LazyLoader";
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const Deposit = () => {
   const { user } = useUser();

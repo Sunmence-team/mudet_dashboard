@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utilities/api";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import { useUser } from "../../context/UserContext";
 import axios from "axios";
 import { toast } from "sonner";
@@ -61,7 +61,7 @@ const Upgrade = () => {
       if (res.status === 200) {
         toast.success("Package Upgraded successfully");
         setShowModal(false);
-        refreshUser()
+        refreshUser();
       } else {
         toast.error(res.data.message);
       }
@@ -94,9 +94,9 @@ const Upgrade = () => {
   }, [handleConfirmModal]);
 
   useEffect(() => {
-    fetchPackages()
-  }, [])
-  
+    fetchPackages();
+  }, []);
+
   const filterNonCurrentPackage = packages.filter(
     (pkg) => pkg?.id !== currentPackage?.id
   );
@@ -113,7 +113,7 @@ const Upgrade = () => {
               </h2>
               <div className="p-4 lg:p-8 flex justify-between w-full bg-primary text-white rounded-lg">
                 <div className="flex flex-col gap-3">
-                  <h3 className="text-base lg:text-2xl font-medium">
+                  <h3 className="text-base lg:text-2xl font-medium capitalize">
                     {currentPackage?.name}
                   </h3>
                   <p className="text-xs lg:text-base lg:font-medium">
@@ -152,7 +152,7 @@ const Upgrade = () => {
 
             {/* Packages */}
             <div className="w-full overflow-x-auto mt-8 styled-scrollbar">
-              <div className="flex gap-6 lg:flex-row flex-col min-w-max">
+              <div className="flex gap-6 lg:flex-row flex-col min-w-max pb-5">
                 {fetchingPackage ? (
                   <div className="flex flex-col items-center justify-center w-full">
                     <h2 className="text-xl font-medium">
@@ -164,21 +164,25 @@ const Upgrade = () => {
                   filterNonCurrentPackage.reverse().map((pkg, index) => (
                     <div
                       key={index}
-                      className={`w-full cursor-pointer lg:w-[300px] md:w-[350px] border border-black/10 flex flex-col rounded-2xl ${
+                      className={`w-full relative cursor-pointer lg:w-[300px] md:w-[350px] border border-black/10 flex flex-col rounded-2xl ${
                         selectedPackage === pkg.id ? "border-primary" : ""
                       }`}
-                      onClick={() => setSelectedPackage(pkg.id)}
+                      onClick={() =>
+                        +pkg.price < currentPackage.price
+                          ? toast.info(
+                              "Oops! you can't upgrade to a package lower to your current package."
+                            )
+                          : setSelectedPackage(pkg.id)
+                      }
                     >
                       {/* Header */}
                       <div
                         className={`w-full h-16 ${
-                          pkg.name.includes("Package")
-                            ? "bg-primary"
-                            : "bg-secondary"
+                          index % 2 === 0 ? "bg-primary" : "bg-secondary"
                         } rounded-t-2xl flex items-center justify-center text-white text-center`}
                       >
-                        <p className="text-lg md:text-2xl font-bold">
-                          {pkg.name}
+                        <p className="text-lg md:text-2xl font-bold capitalize">
+                          {pkg.name} package
                         </p>
                       </div>
 
@@ -195,6 +199,15 @@ const Upgrade = () => {
                           Point Value: {pkg.point_value}
                           PV{" "}
                         </p>
+
+                        {+pkg.price < +currentPackage.price && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center backdrop-blur-sm bg-black/55 rounded-2xl z-10">
+                            <Lock className="text-white w-10 h-10 mb-2 animate-pulse" />
+                            <p className="text-white font-semibold text-lg">
+                              Locked
+                            </p>
+                          </div>
+                        )}
 
                         {/* Get Started button visible only on mobile */}
                         <button

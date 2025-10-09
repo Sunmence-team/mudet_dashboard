@@ -6,7 +6,7 @@ import api from "../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
 
-const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, setFormValidity }, ref) => {
+const Testimonials = forwardRef(({ formData = {}, setFormValidity }, ref) => {
   const { token } = useUser();
   const [testimonials, setTestimonials] = useState([]);
   const [loadingTestimonials, setLoadingTestimonials] = useState(true);
@@ -47,6 +47,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
     name: Yup.string().required("Name is required").min(2, "Name must be at least 2 characters"),
     rating: Yup.number().required("Rating is required").min(1, "Rating must be at least 1").max(5, "Rating must not exceed 5"),
     comment: Yup.string().required("Comment is required"),
+    position: Yup.string().required("Position is required"),
     image: Yup.mixed()
       .required("Image is required")
       .test("fileType", "Image must be a JPEG, PNG, or JPG file", (value) => {
@@ -188,41 +189,55 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
   return (
     <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
       <form onSubmit={formik.handleSubmit} className="w-full flex flex-col gap-4">
-        <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
-          <p className="text-xl md:text-2xl font-semibold">{isEditing ? "Update Testimonial" : "Create Testimonial"}</p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex flex-col w-full sm:w-1/2">
-              <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">
-                Name {formik.touched.name && formik.errors.name && <span className="text-red-500 text-xs"> - {formik.errors.name}</span>}
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border w-full ${formik.touched.name && formik.errors.name ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
-              />
-            </div>
-            <div className="flex flex-col w-full sm:w-1/2">
-              <label htmlFor="rating" className="text-sm font-medium text-gray-700 mb-1">
-                Rating {formik.touched.rating && formik.errors.rating && <span className="text-red-500 text-xs"> - {formik.errors.rating}</span>}
-              </label>
-              <input
-                type="number"
-                id="rating"
-                name="rating"
-                value={formik.values.rating}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                min="1"
-                max="5"
-                className={`h-12 px-4 py-2 border w-full ${formik.touched.rating && formik.errors.rating ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
-              />
-            </div>
+        <div className="bg-white border border-black/10 w-full grid md:grid-cols-2 grid-cols-1 gap-6 p-4 md:p-8 rounded-lg">
+          <p className="text-xl md:text-2xl md:col-span-2 col-span-1 font-semibold">{isEditing ? "Update Testimonial" : "Create Testimonial"}</p>
+          <div className="flex flex-col w-full md:col-span-2 col-span-1">
+            <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">
+              Name {formik.touched.name && formik.errors.name && <span className="text-red-500 text-xs"> - {formik.errors.name}</span>}
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-12 px-4 py-2 border w-full ${formik.touched.name && formik.errors.name ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+            />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full ">
+            <label htmlFor="rating" className="text-sm font-medium text-gray-700 mb-1">
+              Rating {formik.touched.rating && formik.errors.rating && <span className="text-red-500 text-xs"> - {formik.errors.rating}</span>}
+            </label>
+            <input
+              type="number"
+              id="rating"
+              name="rating"
+              value={formik.values.rating}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              min="1"
+              max="5"
+              className={`h-12 px-4 py-2 border w-full ${formik.touched.rating && formik.errors.rating ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+            />
+          </div>
+          <div className="flex flex-col w-full ">
+            <label htmlFor="position" className="text-sm font-medium text-gray-700 mb-1">
+              Position {formik.touched.position && formik.errors.position && <span className="text-red-500 text-xs"> - {formik.errors.position}</span>}
+            </label>
+            <input
+              type="text"
+              id="position"
+              name="position"
+              value={formik.values.position}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              min="1"
+              max="5"
+              className={`h-12 px-4 py-2 border w-full ${formik.touched.position && formik.errors.position ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+            />
+          </div>
+          <div className="flex flex-col md:col-span-2 col-span-1">
             <label htmlFor="comment" className="text-sm font-medium text-gray-700 mb-1">
               Comment {formik.touched.comment && formik.errors.comment && <span className="text-red-500 text-xs"> - {formik.errors.comment}</span>}
             </label>
@@ -232,10 +247,10 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
               value={formik.values.comment}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className={`h-24 px-4 py-2 border w-full ${formik.touched.comment && formik.errors.comment ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              className={`h-32 resize-none styled-scrollbar px-4 py-2 border w-full ${formik.touched.comment && formik.errors.comment ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col md:col-span-2 col-span-1">
             <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
               Image {formik.touched.image && formik.errors.image && <span className="text-red-500 text-xs"> - {formik.errors.image}</span>}
             </label>
@@ -268,17 +283,19 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
               </div>
             </div>
           </div>
-          <button
-            type="submit"
-            disabled={loadingSubmit}
-            className={`px-6 py-2 rounded-full w-full sm:w-auto ${loadingSubmit ? "bg-primary/50 cursor-not-allowed" : "bg-primary hover:bg-primary/90"} text-white flex items-center justify-center`}
-          >
-            {loadingSubmit ? (
-              <FaSpinner className="animate-spin h-5 w-5 text-white" />
-            ) : (
-              isEditing ? "Update Testimonial" : "Create Testimonial"
-            )}
-          </button>
+          <div className="md:col-span-2 col-span-1">
+            <button
+              type="submit"
+              disabled={loadingSubmit}
+              className={`px-6 py-2 rounded-full w-full ${loadingSubmit ? "bg-primary/50 cursor-not-allowed" : "bg-primary hover:bg-primary/90"} text-white flex items-center justify-center`}
+            >
+              {loadingSubmit ? (
+                <FaSpinner className="animate-spin h-5 w-5 text-white" />
+              ) : (
+                isEditing ? "Update Testimonial" : "Create Testimonial"
+              )}
+            </button>
+          </div>
         </div>
       </form>
 
