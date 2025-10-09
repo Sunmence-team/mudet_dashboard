@@ -107,3 +107,8 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+table{
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}

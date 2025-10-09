@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
+import LazyLoader from "../../../components/LazyLoader";
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const Deposit = () => {
   const { user } = useUser();
@@ -117,7 +119,7 @@ const Deposit = () => {
       {/* Table container */}
       <div className="overflow-x-auto">
         {/* Header */}
-        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] min-w-[800px] text-center uppercase text-[17px]">
+        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
           <span className="text-start ps-4 w-[15%]">SN</span>
           <span className="text-start w-[25%]">Type</span>
           <span className="w-[20%] text-center">Amount</span>
@@ -126,29 +128,10 @@ const Deposit = () => {
         </div>
 
         {/* Rows */}
-        <div className="space-y-3 min-w-[800px]">
+        <div className="space-y-3 w-full">
           {loading ? (
             <div className="text-center py-4">
-              <svg
-                className="animate-spin h-8 w-8 mx-auto text-[var(--color-primary)]"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
+              <LazyLoader/>
               <span className="text-black/60">Loading...</span>
             </div>
           ) : deposits.length === 0 ? (
@@ -203,44 +186,16 @@ const Deposit = () => {
         </div>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-4 gap-2">
-        <button
-          onClick={() => handlePageChange(current_page - 1)}
-          disabled={current_page === 1}
-          className={`px-3 py-1 rounded ${
-            current_page === 1
-              ? "bg-gray-200 opacity-50 cursor-not-allowed"
-              : "bg-gray-200"
-          }`}
-        >
-          ‹
-        </button>
-        {Array.from({ length: last_page }, (_, i) => i + 1).map((page) => (
-          <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            className={`px-3 py-1 rounded ${
-              page === current_page
-                ? "bg-[var(--color-primary)] text-white"
-                : "bg-gray-200"
-            }`}
-          >
-            {page}
-          </button>
-        ))}
-        <button
-          onClick={() => handlePageChange(current_page + 1)}
-          disabled={current_page === last_page}
-          className={`px-3 py-1 rounded ${
-            current_page === last_page
-              ? "bg-gray-200 opacity-50 cursor-not-allowed"
-              : "bg-gray-200"
-          }`}
-        >
-          ›
-        </button>
-      </div>
+      {/* Pagination - only show if more than 1 page */}
+      {last_page > 1 && (
+  <div className="mt-6 flex justify-center">
+    <PaginationControls
+      currentPage={current_page}
+      totalPages={last_page}
+      setCurrentPage={handlePageChange}
+    />
+  </div>
+)}
     </div>
   );
 };
