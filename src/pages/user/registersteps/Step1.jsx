@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { CiSearch } from "react-icons/ci";
 import api from "../../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
+import { CiSearch } from "react-icons/ci";
 
 const Step1 = forwardRef(({
   prevStep,
@@ -12,35 +12,25 @@ const Step1 = forwardRef(({
   formData = {},
   updateFormData,
   setFormValidity,
-  setSubmitting, // ✅ add this
+  setSubmitting,
 }, ref) => {
-
   const { token } = useUser();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // 🔥 State for plans
   const [packages, setPackages] = useState([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
-
-  const [selectedPackage, setSelectedPackage] = useState(
-    formData.plan || null
-  );
-
-  // States for sponsor validation
+  const [selectedPackage, setSelectedPackage] = useState(formData.plan || null);
   const [sponsorNameDisplay, setSponsorNameDisplay] = useState("");
   const [sponsorConfirmed, setSponsorConfirmed] = useState(false);
   const [sponsorId, setSponsorId] = useState(null);
   const [validatingSponsor, setValidatingSponsor] = useState(false);
-
-  // States for placement validation
   const [placementNameDisplay, setPlacementNameDisplay] = useState("");
   const [placementConfirmed, setPlacementConfirmed] = useState(false);
   const [placementId, setPlacementId] = useState(null);
   const [validatingPlacement, setValidatingPlacement] = useState(false);
 
-  // ✅ Validation
   const validationSchema = Yup.object().shape({
     sponsor: Yup.string().required("Sponsor is required"),
     placement: Yup.string().required("Placement is required"),
@@ -57,26 +47,26 @@ const Step1 = forwardRef(({
     onSubmit: async (values) => {
       if (!sponsorConfirmed) {
         toast.error("Please validate the sponsor username");
-        setSubmitting(false); // ✅ reset loader
-        return;
+        setSubmitting(false);
+        return false;
       }
       if (!placementConfirmed) {
         toast.error("Please validate the placement username");
-        setSubmitting(false); // ✅ reset loader
-        return;
+        setSubmitting(false);
+        return false;
       }
       if (!selectedPackage) {
         toast.error("Please select a package");
-        setSubmitting(false); // ✅ reset loader
-        return;
+        setSubmitting(false);
+        return false;
       }
-
 
       setSubmitting(true);
       try {
         if (!token) {
           toast.error("No authentication token found. Please log in.");
-          return;
+          setSubmitting(false);
+          return false;
         }
 
         const payload = {
@@ -115,25 +105,33 @@ const Step1 = forwardRef(({
             session_id: response.data.session_id,
           });
           nextStep();
+          return true;
         } else {
           console.error("Step 1 failed:", response.data.message);
           toast.error(response.data.message || "Step 1 submission failed");
+          setSubmitting(false);
+          return false;
         }
       } catch (error) {
         console.error("Error during Step 1 submission:", error);
         toast.error(error.response?.data?.message || error.message || "Error submitting");
-        setSubmitting(false); // ✅ reset loader on error
-      } finally {
         setSubmitting(false);
+        return false;
       }
     },
   });
 
   useImperativeHandle(ref, () => ({
-    submit: formik.submitForm,
+    submit: async () => {
+      const errors = await formik.validateForm();
+      if (Object.keys(errors).length > 0) {
+        setSubmitting(false);
+        return false;
+      }
+      return formik.submitForm();
+    },
   }));
 
-  // Function to validate sponsor's username using POST /api/validate-username
   const fetchSponsor = async (username) => {
     try {
       setValidatingSponsor(true);
@@ -174,7 +172,6 @@ const Step1 = forwardRef(({
     }
   };
 
-  // Function to validate placement's username using POST /api/validate-username
   const fetchPlacement = async (username) => {
     try {
       setValidatingPlacement(true);
@@ -215,7 +212,6 @@ const Step1 = forwardRef(({
     }
   };
 
-  // Handle confirm sponsor (triggered by search icon)
   const handleConfirmSponsor = () => {
     if (formik.values.sponsor) {
       fetchSponsor(formik.values.sponsor);
@@ -224,7 +220,6 @@ const Step1 = forwardRef(({
     }
   };
 
-  // Handle confirm placement (triggered by search icon)
   const handleConfirmPlacement = () => {
     if (formik.values.placement) {
       fetchPlacement(formik.values.placement);
@@ -233,13 +228,13 @@ const Step1 = forwardRef(({
     }
   };
 
-  // ✅ Fetch plans dynamically
   useEffect(() => {
     const fetchPlans = async () => {
       setLoadingPlans(true);
       try {
         if (!token) {
           toast.error("No authentication token found. Please log in.");
+          setSubmitting(false);
           return;
         }
         const response = await api.get("/api/plans/all", {
@@ -248,8 +243,10 @@ const Step1 = forwardRef(({
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("Plans fetched successfully:", response.data); // Debug log
-        setPackages(response.data.data.data || []); // Adjust path if needed based on actual response structure
+        console.log("Plans fetched successfully:", response.data);
+        // Reverse packages to display last one first (lowest price first)
+        const sortedPackages = (response.data.data.data || []).reverse();
+        setPackages(sortedPackages);
       } catch (error) {
         console.error("Error fetching plans:", error);
         toast.error("Failed to load plans.");
@@ -261,14 +258,12 @@ const Step1 = forwardRef(({
     fetchPlans();
   }, [token]);
 
-  // ✅ Update form validity dynamically
   useEffect(() => {
     setFormValidity(formik.isValid && formik.dirty && selectedPackage !== null && sponsorConfirmed && placementConfirmed);
   }, [formik.isValid, formik.dirty, selectedPackage, sponsorConfirmed, placementConfirmed, setFormValidity]);
 
   return (
     <div className="w-full h-full flex flex-col gap-8 items-center justify-center">
-      {/* Sponsor / Placement / Position */}
       <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 rounded-lg">
         <p className="text-xl md:text-2xl font-semibold">Sponsor Input</p>
         <div className="w-full flex flex-col md:flex-row gap-12">
@@ -310,8 +305,7 @@ const Step1 = forwardRef(({
                 >
                   Sponsor Full Name
                 </label>
-                <p className={`text-xs text-gray-600 mt-1 ${sponsorConfirmed ? "" : "text-red-500"
-                  }`}>
+                <p className={`text-xs text-gray-600 mt-1 ${sponsorConfirmed ? "" : "text-red-500"}`}>
                   {sponsorNameDisplay}
                 </p>
               </div>
@@ -356,8 +350,7 @@ const Step1 = forwardRef(({
                 >
                   Placement Full Name
                 </label>
-                <p className={`text-xs text-gray-600 mt-1 ${placementConfirmed ? "" : "text-red-500"
-                  }`}>
+                <p className={`text-xs text-gray-600 mt-1 ${placementConfirmed ? "" : "text-red-500"}`}>
                   {placementNameDisplay}
                 </p>
               </div>
@@ -397,7 +390,6 @@ const Step1 = forwardRef(({
         </div>
       </div>
 
-      {/* Package Selection */}
       <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 rounded-lg">
         <p className="text-xl md:text-2xl font-semibold">Pick Your Package</p>
         {loadingPlans ? (
@@ -408,8 +400,7 @@ const Step1 = forwardRef(({
               {packages.map((pkg, index) => (
                 <div
                   key={pkg.id || index}
-                  className={`w-[270px] md:w-[300px] border border-black/10 flex flex-col rounded-2xl cursor-pointer ${selectedPackage === pkg.id ? "border-primary" : ""
-                    }`}
+                  className={`w-[270px] md:w-[300px] border border-black/10 flex flex-col rounded-2xl cursor-pointer ${selectedPackage === pkg.id ? "border-primary" : ""}`}
                   onClick={() => setSelectedPackage(pkg.id)}
                 >
                   <div className={`w-full h-18 rounded-t-2xl flex items-center justify-center text-white text-center ${index % 2 === 0 ? "bg-primary" : "bg-secondary"}`}>
@@ -436,7 +427,6 @@ const Step1 = forwardRef(({
       </div>
 
       <form onSubmit={formik.handleSubmit}>
-        {/* No hidden button needed */}
       </form>
     </div>
   );

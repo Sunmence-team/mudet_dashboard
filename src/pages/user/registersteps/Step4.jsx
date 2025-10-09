@@ -109,7 +109,7 @@ const Step4 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData },
     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
       <div className="bg-white border border-black/10 w-full h-full flex flex-col justify-between gap-6 p-4 md:p-8 rounded-lg">
         <p className="text-xl md:text-2xl font-semibold">Registration Overview</p>
-        <div className="w-full grid grid-cols-3 gap-y-8">
+        <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-y-8">
           <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">Package</p>
             <p className="font-semibold">{overviewData?.plan?.name || "Not provided"}</p>
@@ -140,7 +140,7 @@ const Step4 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData },
       </div>
       <div className="bg-white border border-black/10 w-full h-full flex flex-col justify-between gap-6 p-4 md:p-8 rounded-lg">
         <p className="text-xl md:text-2xl font-semibold">Personal Information</p>
-        <div className="w-full grid grid-cols-3 gap-y-8">
+        <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-y-8">
           <div className="flex flex-col gap-1 text-sm md:text-base">
             <p className="font-medium">First Name</p>
             <p className="font-semibold">{overviewData?.["0"]?.step_2?.first_name || "Not provided"}</p>

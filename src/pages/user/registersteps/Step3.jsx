@@ -32,8 +32,15 @@ const Step3 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
     },
     validationSchema,
     onSubmit: async (values) => {
+      // Check if form is valid before proceeding
+      const isValid = await formik.validateForm();
+      if (Object.keys(isValid).length > 0) {
+        setSubmitting(false);
+        toast.error("Please correct the form errors before proceeding");
+        return;
+      }
+
       setSubmitting(true);
-      // Log the form data in the desired format
       const logData = {
         success: true,
         message: "Step 3 completed successfully",
@@ -48,6 +55,7 @@ const Step3 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
       try {
         if (!token) {
           toast.error("No authentication token found. Please log in.");
+          setSubmitting(false);
           return;
         }
 
@@ -74,12 +82,14 @@ const Step3 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
           nextStep();
         } else {
           toast.error(response.data.message || "Step 3 submission failed");
+          setSubmitting(false);
         }
       } catch (error) {
         console.error("Error during Step 3 submission:", error);
         toast.error(
           error.response?.data?.message || error.message || "An error occurred during Step 3 submission"
         );
+        setSubmitting(false);
       } finally {
         setSubmitting(false);
       }
