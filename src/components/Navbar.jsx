@@ -133,7 +133,7 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "Transactions",
+      name: "AllTransactions",
       path: "/user/transactions",
       role: ["user"],
     },

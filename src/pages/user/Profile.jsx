@@ -17,9 +17,13 @@ import { Link } from "react-router-dom";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("password");
+  const backupUser = JSON.parse(localStorage.getItem("user"));
   const [activeUser, setActiveuser] = useState({});
-  const { user, miscellaneousDetails } = useUser();
-  const name = `${user?.first_name} ${user?.last_name}`;
+  const { user } = useUser();
+  const backUpUser = JSON.parse(localStorage.getItem("user"));
+  const name = `${user?.first_name || backUpUser?.first_name} ${
+    user?.last_name || backUpUser?.last_name
+  }`;
 
   const tabs = [
     { key: "password", label: "Password Reset" },
@@ -30,7 +34,7 @@ const Profile = () => {
   ];
 
   useEffect(() => {
-    setActiveuser(user);
+    setActiveuser(user || backupUser);
   }, []);
 
   return (

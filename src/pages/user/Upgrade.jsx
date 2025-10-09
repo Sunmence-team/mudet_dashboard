@@ -5,6 +5,7 @@ import { Loader2, Lock } from "lucide-react";
 import { useUser } from "../../context/UserContext";
 import axios from "axios";
 import { toast } from "sonner";
+import OverviewCard from "../../components/cards/OverviewCard";
 
 const Upgrade = () => {
   const [currentPackage, setCurrentPackage] = useState(null);
@@ -20,6 +21,14 @@ const Upgrade = () => {
   const miscellaneousDetails2 = JSON.parse(
     localStorage.getItem("miscellaneousDetails")
   );
+  const wallet = {
+    type: "wallet",
+    walletType: "E-Wallet",
+    walletBalance: parseFloat(user.e_wallet || 0),
+    path: "/user/deposit",
+    pathName: "Fund Wallet",
+    color: "gold",
+  };
   const fetchPackages = async () => {
     setFetchingPackage(true);
     try {
@@ -209,16 +218,17 @@ const Upgrade = () => {
                           </div>
                         )}
 
-                        {/* Get Started button visible only on mobile */}
-                        <button
-                          className="bg-primary text-white px-4 py-2 rounded-lg mt-2 block md:hidden"
-                          onClick={() => setSelectedPackage(pkg.name)}
-                        >
-                          Get Started
-                        </button>
+                          {/* Get Started button visible only on mobile */}
+                          <button
+                            className="bg-primary text-white px-4 py-2 rounded-lg mt-2 block md:hidden"
+                            onClick={() => setSelectedPackage(pkg.name)}
+                          >
+                            Get Started
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
