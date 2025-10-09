@@ -117,6 +117,10 @@ function App() {
           element={<MainLayout child={<Testimonials />} />}
         />
         <Route
+          path={"/user/transaction"}
+          element={<MainLayout child={<Transactions />} />}
+        />
+        <Route
           path={"/admin/product-upload"}
           element={<MainLayout child={<ProductUpload />} />}
         />

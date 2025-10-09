@@ -2,87 +2,32 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 
-const Deposit = () => {
+const RepurchaseWallet = () => {
   const { user } = useUser();
-  const [depositsData, setDepositsData] = useState({
-    data: [],
+  const [repurchaseData, setRepurchaseData] = useState({
+    data: [
+      {
+        id: 1,
+        transaction_type: "repurchase_bonus",
+        amount: "12000",
+        status: "success",
+        created_at: "2025-10-07T14:20:00Z",
+      },
+      {
+        id: 2,
+        transaction_type: "repurchase_commission",
+        amount: "8500",
+        status: "pending",
+        created_at: "2025-10-06T10:45:00Z",
+      },
+    ],
     current_page: 1,
     last_page: 1,
-    per_page: 15,
-    total: 0,
+    per_page: 10,
+    total: 2,
   });
-  const [loading, setLoading] = useState(true);
 
-  const userId = user?.id;
-
-  const fetchDeposits = async (page = 1) => {
-    setLoading(true);
-    try {
-      if (!userId) {
-        console.error("User ID is undefined. Please log in.");
-        setDepositsData({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          per_page: 15,
-          total: 0,
-        });
-        return;
-      }
-
-      const response = await api.get(
-        `/api/users/${userId}/fund-e-wallets?page=${page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              user?.token ||
-              JSON.parse(localStorage.getItem("user") || "{}").token
-            }`,
-          },
-        }
-      );
-
-      if (response.data.ok) {
-        setDepositsData({
-          data: response.data.data.data || [],
-          current_page: page,
-          last_page: Math.ceil((response.data.data.total || 0) / 15),
-          per_page: 15,
-          total: response.data.data.total || 0,
-        });
-      } else {
-        setDepositsData({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          per_page: 15,
-          total: 0,
-        });
-      }
-    } catch (err) {
-      console.error("Error fetching deposits:", err);
-      setDepositsData({
-        data: [],
-        current_page: 1,
-        last_page: 1,
-        per_page: 15,
-        total: 0,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDeposits();
-  }, []);
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= depositsData.last_page) {
-      fetchDeposits(page);
-    }
-  };
+  const [loading, setLoading] = useState(false);
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -110,7 +55,7 @@ const Deposit = () => {
     }
   };
 
-  const { data: deposits, current_page, last_page } = depositsData;
+  const { data: repurchases } = repurchaseData;
 
   return (
     <div className="bg-[var(--color-tetiary)]">
@@ -151,10 +96,10 @@ const Deposit = () => {
               </svg>
               <span className="text-black/60">Loading...</span>
             </div>
-          ) : deposits.length === 0 ? (
-            <div className="text-center py-4">No deposits found.</div>
+          ) : repurchases.length === 0 ? (
+            <div className="text-center py-4">No repurchase records found.</div>
           ) : (
-            deposits.map((item, idx) => {
+            repurchases.map((item, idx) => {
               const { date, time } = formatDateTime(item.created_at);
               return (
                 <div
@@ -202,49 +147,8 @@ const Deposit = () => {
           )}
         </div>
       </div>
-
-      {/* Pagination - only show if more than 1 page */}
-      {last_page > 1 && (
-        <div className="flex justify-center mt-4 gap-2">
-          <button
-            onClick={() => handlePageChange(current_page - 1)}
-            disabled={current_page === 1}
-            className={`px-3 py-1 rounded ${
-              current_page === 1
-                ? "bg-gray-200 opacity-50 cursor-not-allowed"
-                : "bg-gray-200"
-            }`}
-          >
-            ‹
-          </button>
-          {Array.from({ length: last_page }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`px-3 py-1 rounded ${
-                page === current_page
-                  ? "bg-[var(--color-primary)] text-white"
-                  : "bg-gray-200"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(current_page + 1)}
-            disabled={current_page === last_page}
-            className={`px-3 py-1 rounded ${
-              current_page === last_page
-                ? "bg-gray-200 opacity-50 cursor-not-allowed"
-                : "bg-gray-200"
-            }`}
-          >
-            ›
-          </button>
-        </div>
-      )}
     </div>
   );
 };
 
-export default Deposit;
+export default RepurchaseWallet;

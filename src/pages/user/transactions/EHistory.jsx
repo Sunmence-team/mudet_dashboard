@@ -173,44 +173,46 @@ const EHistory = () => {
         </div>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-4 gap-2">
-        <button
-          onClick={() => handlePageChange(current_page - 1)}
-          disabled={current_page === 1}
-          className={`px-3 py-1 rounded ${
-            current_page === 1
-              ? "bg-gray-200 opacity-50 cursor-not-allowed"
-              : "bg-gray-200"
-          }`}
-        >
-          ‹
-        </button>
-        {Array.from({ length: last_page }, (_, i) => i + 1).map((page) => (
+      {/* Pagination (only shows if more than one page) */}
+      {last_page > 1 && (
+        <div className="flex justify-center mt-4 gap-2">
           <button
-            key={page}
-            onClick={() => handlePageChange(page)}
+            onClick={() => handlePageChange(current_page - 1)}
+            disabled={current_page === 1}
             className={`px-3 py-1 rounded ${
-              page === current_page
-                ? "bg-[var(--color-primary)] text-white"
+              current_page === 1
+                ? "bg-gray-200 opacity-50 cursor-not-allowed"
                 : "bg-gray-200"
             }`}
           >
-            {page}
+            ‹
           </button>
-        ))}
-        <button
-          onClick={() => handlePageChange(current_page + 1)}
-          disabled={current_page === last_page}
-          className={`px-3 py-1 rounded ${
-            current_page === last_page
-              ? "bg-gray-200 opacity-50 cursor-not-allowed"
-              : "bg-gray-200"
-          }`}
-        >
-          ›
-        </button>
-      </div>
+          {Array.from({ length: last_page }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-3 py-1 rounded ${
+                page === current_page
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(current_page + 1)}
+            disabled={current_page === last_page}
+            className={`px-3 py-1 rounded ${
+              current_page === last_page
+                ? "bg-gray-200 opacity-50 cursor-not-allowed"
+                : "bg-gray-200"
+            }`}
+          >
+            ›
+          </button>
+        </div>
+      )}
     </div>
   );
 };

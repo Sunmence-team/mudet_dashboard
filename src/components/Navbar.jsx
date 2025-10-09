@@ -157,11 +157,11 @@ const Navbar = () => {
       path: "/admin/product-upload",
       role: ["admin"],
     },
-    {
-      name: "AllTransactions",
-      path: "/admin/transactions",
-      role: ["user"],
-    },
+    // {
+    //   name: "AllTransactions",
+    //   path: "/admin/transactions",
+    //   role: ["user"],
+    // },
     {
       name: "Stockist",
       path: "/user/stockistuser",
