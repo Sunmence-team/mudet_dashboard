@@ -1,48 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import CartCard from "../../components/cards/CartCard";
 import CartNotFound from "../../components/CartNotFound";
 import SummaryCard from "../../components/cards/SummaryCard";
 import { useUser } from "../../context/UserContext";
+import { useCart } from "../../context/CartProvider";
+import { toast } from "sonner";
 
 const Cart = () => {
-  const [cartProducts, setCartProducts] = useState([]);
   const {user} = useUser()
+  const { cart, addToCart, decrementFromCart, removeFromCart } = useCart();
 
-  useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("carts")) || [];
-    setCartProducts(storedCart);
-  }, []);
+  console.log("cart", cart)
 
-  const handleAddToCart = (product) => {
-    const updatedCart = cartProducts.map((item) =>
-      item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-    );
-    localStorage.setItem("carts", JSON.stringify(updatedCart));
-    setCartProducts(updatedCart);
+  const handleAdd = (product) => {
+    addToCart(product);
+    toast.success(`${product.product_name} added to cart`);
   };
 
-  const handleRemoveFromCart = (id) => {
-    const updatedCart = cartProducts
-      .map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-      .filter((item) => item.quantity > 0);
-    localStorage.setItem("carts", JSON.stringify(updatedCart));
-    setCartProducts(updatedCart);
+  const handleDecrement = (product) => {
+    decrementFromCart(product.id);
+    toast.success(`${product.product_name} quantity decreased`);
   };
 
-  const handleDelete = (id) => {
-    const updatedCart = cartProducts.filter((item) => item.id !== id);
-    localStorage.setItem("carts", JSON.stringify(updatedCart));
-    setCartProducts(updatedCart);
+  const handleRemove = (product) => {
+    removeFromCart(product?.id);
+    toast.success(`${product.product_name} removed from cart`);
   };
 
 
   return (
     <>
-      {cartProducts.length === 0 ? (
+      {cart.length === 0 ? (
         <div className="w-full mx-auto">
           <CartNotFound />
         </div>
@@ -51,18 +39,18 @@ const Cart = () => {
           <h2 className="text-xl font-semibold">Cart</h2>
           <div className="flex w-full justify-between lg:items-start gap-6 lg:flex-row flex-col">
             <div className="flex flex-col gap-5 lg:w-2/3 sm:w-full">
-              {cartProducts.map((product) => (
+              {cart.map((product) => (
                 <CartCard
                   key={product.id}
                   product={product}
-                  onAddToCart={handleAddToCart}
-                  onRemoveFromCart={handleRemoveFromCart}
-                  onDelete={handleDelete}
+                  onAddToCart={() => handleAdd(product)}
+                  onRemoveFromCart={() => handleDecrement(product)}
+                  onDelete={() => handleRemove(product)}
                 />
               ))}
             </div>
             <div className="lg:w-1/3 w-full">
-              <SummaryCard items={cartProducts.length} subtotal={cartProducts} user={user}/>
+              <SummaryCard items={cart.length} subtotal={cart} user={user}/>
             </div>
           </div>
         </div>

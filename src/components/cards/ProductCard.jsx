@@ -1,7 +1,10 @@
-import { ShoppingCart } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import ProductModal from "../modals/ProductModal";
+import { useCart } from "../../context/CartProvider";
+
+const IMAGE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
 
 const ProductCard = ({ product }) => {
   const {
@@ -12,59 +15,25 @@ const ProductCard = ({ product }) => {
     product_pv,
     price,
   } = product;
+  const { cart, addToCart, decrementFromCart, removeFromCart } = useCart();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [productQuantity, setProductQuantity] = useState(null);
+  const existingItem = cart.find((item) => item.id === product.id);
+  console.log("existingItem", existingItem)
+  const productQuantity = existingItem ? existingItem.quantity : null;
 
-  // Load quantity for this product when component mounts
-  useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("carts")) || [];
-    const existingItem = cart.find((item) => item.id === id);
-    setProductQuantity(existingItem ? existingItem.quantity : null);
-  }, [id]);
-
-  const onAddToCart = () => {
-    try {
-      const cart = JSON.parse(localStorage.getItem("carts")) || [];
-      const existingIndex = cart.findIndex((item) => item.id === id);
-
-      if (existingIndex !== -1) {
-        cart[existingIndex].quantity += 1;
-      } else {
-        cart.push({ ...product, quantity: 1 });
-      }
-
-      localStorage.setItem("carts", JSON.stringify(cart));
-      setProductQuantity(cart.find((item) => item.id === id)?.quantity || null);
-
-      toast.success(`${product_name} added to cart`);
-    } catch (error) {
-      console.error(error);
-      toast.error(`Unable to add ${title} to cart`);
-    }
+  const handleAdd = (product) => {
+    addToCart(product);
+    toast.success(`${product.product_name} added to cart`);
+  };
+  
+  const handleDecrement = (product) => {
+    decrementFromCart(product.id);
+    toast.success(`${product.product_name} quantity decreased`);
   };
 
-  const onRemoveFromCart = () => {
-    try {
-      const cart = JSON.parse(localStorage.getItem("carts")) || [];
-      const existingIndex = cart.findIndex((item) => item.id === id);
-
-      if (existingIndex !== -1) {
-        if (cart[existingIndex].quantity > 1) {
-          cart[existingIndex].quantity -= 1;
-        } else {
-          cart.splice(existingIndex, 1);
-        }
-      }
-
-      localStorage.setItem("carts", JSON.stringify(cart));
-      const updatedItem = cart.find((item) => item.id === id);
-      setProductQuantity(updatedItem ? updatedItem.quantity : null);
-
-      toast.success(`${title} removed from cart`);
-    } catch (error) {
-      console.error(error);
-      toast.error(`Unable to remove ${title} from cart`);
-    }
+  const handleRemove = () => {
+    removeFromCart(product.id);
+    toast.success(`${product.product_name} removed from cart`);
   };
 
   return (
@@ -72,17 +41,19 @@ const ProductCard = ({ product }) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <div className="flex justify-center mb-4">
           <img
-            src={product_image}
+            src={`${IMAGE_URL}/${product_image}`}
             alt={product_name}
             className="h-48 object-contain rounded-md bg-gray-100 w-full"
           />
         </div>
 
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 text-justify">
-          {product_name}
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          {product_name?.slice(0, 25)}...
         </h3>
         <p className="text-sm text-gray-600 mb-4 text-justify leading-relaxed">
-          {product_description.slice(0, 80)}...
+          {product_description.length > 80 &&
+            `${product_description?.slice(0, 80)}...`}{" "}
+          {product_description.length < 80 && product_description}
         </p>
 
         <div className="flex justify-between mb-4 items-center">
@@ -95,13 +66,13 @@ const ProductCard = ({ product }) => {
         </div>
 
         <div className="flex flex-col space-y-2">
-          <div className="flex justify-between items-center gap-1">
+          <div className="flex justify-between items-center gap-1 overflow-scroll no-scrollbar">
             <button
-              onClick={onAddToCart}
+              onClick={() => handleAdd(product)}
               disabled={productQuantity ? true : false}
               className={`${
                 productQuantity ? "w-2/3" : "w-full"
-              } bg-primary cursor-pointer flex items-center justify-center gap-2 text-white font-medium text-sm py-3 px-4 rounded-full transition-colors`}
+              } bg-primary cursor-pointer flex items-center justify-center gap-2 text-white font-medium text-sm py-3 px-4 rounded-full transition-colors whitespace-nowrap`}
             >
               <ShoppingCart size={15} />
               Add to cart
@@ -110,14 +81,14 @@ const ProductCard = ({ product }) => {
             {productQuantity ? (
               <div className="flex items-center gap-3">
                 <button
-                  onClick={onRemoveFromCart}
+                  onClick={() => handleDecrement(product)}
                   className="border border-gray-400 py-1 px-4 rounded-2xl cursor-pointer text-2xl"
                 >
                   -
                 </button>
                 <span>{productQuantity}</span>
                 <button
-                  onClick={onAddToCart}
+                  onClick={() => handleAdd(product)}
                   className="border border-gray-400 py-1 px-4 rounded-2xl cursor-pointer text-2xl"
                 >
                   +
@@ -139,8 +110,8 @@ const ProductCard = ({ product }) => {
         <ProductModal
           product={product}
           closeAction={() => setIsModalOpen(false)}
-          onAddToCart={onAddToCart}
-          onRemoveFromCart={onRemoveFromCart}
+          onAddToCart={() => handleAdd(product)}
+          onRemoveFromCart={handleRemove}
           productQuantity={productQuantity}
         />
       )}

@@ -9,7 +9,7 @@ import { useUser } from "../../context/UserContext";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Overview = () => {
-  const { user,refreshUser } = useUser();
+  const { user, refreshUser } = useUser();
   const firstName = user.first_name || "User";
 
   const topWallets = [
@@ -23,8 +23,8 @@ const Overview = () => {
     },
     {
       type: "wallet",
-      walletType: "Incentive Wallet",
-      walletBalance: parseFloat(user.incentive_wallet || 0),
+      walletType: "Earning Wallet",
+      walletBalance: parseFloat(user.earning_wallet || 0),
       path: "/user/transactions",
       pathName: "History",
       color: "gold",
@@ -47,18 +47,19 @@ const Overview = () => {
       path: "/user/transactions",
       pathName: "History",
     },
+
     {
       type: "wallet",
-      walletType: "Earning Wallet",
-      walletBalance: parseFloat(user.earning_wallet || 0),
-      path: "/user/transfer",
-      pathName: "Transfer",
+      walletType: "Incentive Wallet",
+      walletBalance: parseFloat(user.incentive_wallet || 0),
+      path: "/user/transactions",
+      pathName: "History",
     },
     {
       type: "wallet",
       walletType: "Total Debit",
       walletBalance: parseFloat(user.total_debit || 0),
-      path: "/user/transfer",
+      path: "/user/transactions",
       pathName: "History",
     },
     {
@@ -71,9 +72,8 @@ const Overview = () => {
   ];
 
   useEffect(() => {
-    refreshUser()
-  }, [])
-  
+    refreshUser();
+  }, []);
 
   return (
     <div className="flex flex-col gap-[2rem]">
@@ -81,9 +81,6 @@ const Overview = () => {
         <div className="flex flex-col text-justify">
           <h3 className="text-xl font-semibold">Hello, {firstName}</h3>
           <p className="text-base">Here’s your dashboard overview</p>
-        </div>
-        <div className="lg:block hidden">
-          <SearchInput />
         </div>
       </div>
 
