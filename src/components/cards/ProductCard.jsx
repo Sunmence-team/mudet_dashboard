@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import ProductModal from "../modals/ProductModal";
 
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 const ProductCard = ({ product }) => {
   const {
     id,
@@ -72,7 +74,7 @@ const ProductCard = ({ product }) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
         <div className="flex justify-center mb-4">
           <img
-            src={product_image}
+            src={API_URL+"/"+product_image}
             alt={product_name}
             className="h-48 object-contain rounded-md bg-gray-100 w-full"
           />
