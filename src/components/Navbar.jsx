@@ -9,12 +9,14 @@ import { IoIosLogOut } from "react-icons/io";
 import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
+import { useCart } from "../context/CartProvider";
 
 const Navbar = () => {
   const { user } = useUser();
-  const cart = JSON.parse(localStorage.getItem("carts")) || [];
+  const { cart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
-  const [cartItem, setCartItem] = useState(0);
+  const cartItem = cart.length;
+
 
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -51,10 +53,6 @@ const Navbar = () => {
       window.removeEventListener("resize", checkScrollPosition);
     };
   }, []);
-
-  useEffect(() => {
-    setCartItem(cart.length);
-  }, [cart]);
 
   const navItems = [
     {
@@ -108,8 +106,13 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "Profile",
-      path: "/user/profile",
+      name: "Register",
+      path: "/user/register",
+      role: ["user"],
+    },
+    {
+      name: "Products",
+      path: "/user/products",
       role: ["user"],
     },
     {
@@ -123,28 +126,28 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "Transactions",
-      path: "/user/transactions",
-      role: ["user"],
-    },
-    {
-      name: "Register",
-      path: "/user/register",
-      role: ["user"],
-    },
-    {
-      name: "Products",
-      path: "/user/products",
-      role: ["user"],
-    },
-    {
       name: "E-Wallet Transfer",
       path: "/user/ewallet-transfer",
       role: ["user"],
     },
     {
+      name: "AllTransactions",
+      path: "/user/transactions",
+      role: ["user"],
+    },
+    {
       name: "Upgrade Package",
       path: "/user/upgrade-package",
+      role: ["user"],
+    },
+    {
+      name: "Stockist",
+      path: "/user/stockistuser",
+      role: ["user"],
+    },
+    {
+      name: "Profile",
+      path: "/user/profile",
       role: ["user"],
     },
     {
@@ -156,16 +159,6 @@ const Navbar = () => {
       name: "Product Upload",
       path: "/admin/product-upload",
       role: ["admin"],
-    },
-    // {
-    //   name: "AllTransactions",
-    //   path: "/admin/transactions",
-    //   role: ["user"],
-    // },
-    {
-      name: "Stockist",
-      path: "/user/stockistuser",
-      role: ["user"],
     },
     {
       name: "Package Upload",

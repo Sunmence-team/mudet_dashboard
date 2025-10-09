@@ -3,34 +3,25 @@ import ProductCard from "../../components/cards/ProductCard";
 import { toast } from "sonner";
 import api from "../../utilities/api";
 import LazyLoader from "../../components/LazyLoader";
+import { useUser } from "../../context/UserContext";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Products = () => {
+  const { token } = useUser();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  // optional logout handler (you can define what happens on logout)
-  const logout = () => {
-    localStorage.removeItem("token");
-    toast.error("Session expired. Please log in again.");
-    window.location.href = "/login";
-  };
-
-  useEffect(() => {
-    setupInterceptors(logout);
-    fetchProducts();
-  }, []);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      // since baseURL is already set in api.js, just call the endpoint directly
-      const response = await api.get("/api/allproducts");
+      const response = await api.get("/api/allproducts", {
+        headers : {
+          "Authorization": `Bearer ${token}`
+        }
+      });
 
-      console.log("API response:", response.data);
-
-      // handle different response shapes safely
+      console.log("Products reposne", response )
       const productsData = response.data?.data || response.data || [];
 
       if (Array.isArray(productsData) && productsData.length > 0) {
@@ -45,16 +36,7 @@ const Products = () => {
         error.response?.data?.message ||
         error.response?.data?.error ||
         "Error loading products";
-
-      // don’t auto logout unless token is invalid
-      if (
-        error.response?.status === 401 ||
-        message.toLowerCase().includes("unauthenticated")
-      ) {
-        logout();
-      } else {
-        toast.error(message);
-      }
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -69,7 +51,7 @@ const Products = () => {
     return (
       <div className="flex flex-col gap-1 p-6 justify-center items-center min-h-[400px]">
         <h3 className="text-2xl font-semibold">Loading Products</h3>
-        <LazyLoader width={"50px"} />
+        <LazyLoader color={"green"} width={"50px"} />
       </div>
     );
   }
