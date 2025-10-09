@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 
-const EHistory = () => {
+const Deposit = () => {
   const { user } = useUser();
-  const [historyData, setHistoryData] = useState({
+  const [depositsData, setDepositsData] = useState({
     data: [],
     current_page: 1,
     last_page: 1,
@@ -15,42 +15,72 @@ const EHistory = () => {
 
   const userId = user?.id;
 
-  const fetchHistory = async (page = 1) => {
+  const fetchDeposits = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await api.get(`/api/user/p2p/${userId}?page=${page}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            user?.token ||
-            JSON.parse(localStorage.getItem("user") || "{}").token
-          }`,
-        },
-      });
+      if (!userId) {
+        console.error("User ID is undefined. Please log in.");
+        setDepositsData({
+          data: [],
+          current_page: 1,
+          last_page: 1,
+          per_page: 15,
+          total: 0,
+        });
+        return;
+      }
+
+      const response = await api.get(
+        `/api/users/${userId}/fund-e-wallets?page=${page}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              user?.token ||
+              JSON.parse(localStorage.getItem("user") || "{}").token
+            }`,
+          },
+        }
+      );
 
       if (response.data.ok) {
-        setHistoryData({
-          data: response.data.transactions,
+        setDepositsData({
+          data: response.data.data.data || [],
           current_page: page,
-          last_page: Math.ceil(response.data.total / 15),
+          last_page: Math.ceil((response.data.data.total || 0) / 15),
           per_page: 15,
-          total: response.data.total,
+          total: response.data.data.total || 0,
+        });
+      } else {
+        setDepositsData({
+          data: [],
+          current_page: 1,
+          last_page: 1,
+          per_page: 15,
+          total: 0,
         });
       }
     } catch (err) {
-      console.error("Error fetching transaction history:", err);
+      console.error("Error fetching deposits:", err);
+      setDepositsData({
+        data: [],
+        current_page: 1,
+        last_page: 1,
+        per_page: 15,
+        total: 0,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchHistory();
+    fetchDeposits();
   }, []);
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= historyData.last_page) {
-      fetchHistory(page);
+    if (page >= 1 && page <= depositsData.last_page) {
+      fetchDeposits(page);
     }
   };
 
@@ -80,14 +110,14 @@ const EHistory = () => {
     }
   };
 
-  const { data: transactions, current_page, last_page } = historyData;
+  const { data: deposits, current_page, last_page } = depositsData;
 
   return (
     <div className="bg-[var(--color-tetiary)]">
-      {/* Table container with horizontal scroll on md & sm */}
+      {/* Table container */}
       <div className="overflow-x-auto">
         {/* Header */}
-        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] min-w-[800px] text-center uppercase text-[17px]">
+        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
           <span className="text-start ps-4 w-[15%]">SN</span>
           <span className="text-start w-[25%]">Type</span>
           <span className="w-[20%] text-center">Amount</span>
@@ -96,7 +126,7 @@ const EHistory = () => {
         </div>
 
         {/* Rows */}
-        <div className="space-y-3 min-w-[800px]">
+        <div className="space-y-3 w-full">
           {loading ? (
             <div className="text-center py-4">
               <svg
@@ -121,10 +151,10 @@ const EHistory = () => {
               </svg>
               <span className="text-black/60">Loading...</span>
             </div>
-          ) : transactions.length === 0 ? (
-            <div className="text-center py-4">No transactions found.</div>
+          ) : deposits.length === 0 ? (
+            <div className="text-center py-4">No deposits found.</div>
           ) : (
-            transactions.map((item, idx) => {
+            deposits.map((item, idx) => {
               const { date, time } = formatDateTime(item.created_at);
               return (
                 <div
@@ -146,10 +176,10 @@ const EHistory = () => {
                     ₦{parseFloat(item.amount).toLocaleString()}
                   </span>
 
-                  {/* Status with fixed width pill */}
+                  {/* Status */}
                   <span className="w-[20%] text-center">
                     <div
-                      className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border border-black/10 mx-auto ${getStatusColor(
+                      className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border-black/10 border mx-auto ${getStatusColor(
                         item.status
                       )}`}
                     >
@@ -159,7 +189,7 @@ const EHistory = () => {
                     </div>
                   </span>
 
-                  {/* Date + Time stacked */}
+                  {/* Date & Time */}
                   <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
                     <span>{date}</span>
                     <span className="text-[var(--color-primary)] font-bold pe-2">
@@ -173,46 +203,48 @@ const EHistory = () => {
         </div>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-4 gap-2">
-        <button
-          onClick={() => handlePageChange(current_page - 1)}
-          disabled={current_page === 1}
-          className={`px-3 py-1 rounded ${
-            current_page === 1
-              ? "bg-gray-200 opacity-50 cursor-not-allowed"
-              : "bg-gray-200"
-          }`}
-        >
-          ‹
-        </button>
-        {Array.from({ length: last_page }, (_, i) => i + 1).map((page) => (
+      {/* Pagination - only show if more than 1 page */}
+      {last_page > 1 && (
+        <div className="flex justify-center mt-4 gap-2">
           <button
-            key={page}
-            onClick={() => handlePageChange(page)}
+            onClick={() => handlePageChange(current_page - 1)}
+            disabled={current_page === 1}
             className={`px-3 py-1 rounded ${
-              page === current_page
-                ? "bg-[var(--color-primary)] text-white"
+              current_page === 1
+                ? "bg-gray-200 opacity-50 cursor-not-allowed"
                 : "bg-gray-200"
             }`}
           >
-            {page}
+            ‹
           </button>
-        ))}
-        <button
-          onClick={() => handlePageChange(current_page + 1)}
-          disabled={current_page === last_page}
-          className={`px-3 py-1 rounded ${
-            current_page === last_page
-              ? "bg-gray-200 opacity-50 cursor-not-allowed"
-              : "bg-gray-200"
-          }`}
-        >
-          ›
-        </button>
-      </div>
+          {Array.from({ length: last_page }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-3 py-1 rounded ${
+                page === current_page
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(current_page + 1)}
+            disabled={current_page === last_page}
+            className={`px-3 py-1 rounded ${
+              current_page === last_page
+                ? "bg-gray-200 opacity-50 cursor-not-allowed"
+                : "bg-gray-200"
+            }`}
+          >
+            ›
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
-export default EHistory;
+export default Deposit;
