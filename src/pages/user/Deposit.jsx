@@ -1,262 +1,201 @@
-import React, { useState } from "react";
-import { HiOutlineArrowUpRight } from "react-icons/hi2";
-import { toast, Toaster } from "sonner";
-import { BsFillWalletFill } from "react-icons/bs";
-import api from "../../utilities/api";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useUser } from "../../../context/UserContext";
+import api from "../../../utilities/api";
+import LazyLoader from "../../../components/LazyLoader";
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const Deposit = () => {
-  const [amount, setAmount] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { user } = useUser();
+  const [depositsData, setDepositsData] = useState({
+    data: [],
+    current_page: 1,
+    last_page: 1,
+    per_page: 15,
+    total: 0,
+  });
+  const [loading, setLoading] = useState(true);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const user_id = user?.id;
-  const email = user?.email;
-  const eWallet = user?.e_wallet || "0.00";
+  const userId = user?.id;
 
-  const handleConfirm = async () => {
-    if (!amount || parseFloat(amount) <= 0) {
-      toast.error("Please enter a valid amount.");
-      return;
-    }
-
+  const fetchDeposits = async (page = 1) => {
     setLoading(true);
-
     try {
-      const response = await api.post("/api/wallets/fund/initiate", {
-        user_id,
-        amount,
-        email,
-        payment_method: "paystack",
-      });
+      if (!userId) {
+        console.error("User ID is undefined. Please log in.");
+        setDepositsData({
+          data: [],
+          current_page: 1,
+          last_page: 1,
+          per_page: 15,
+          total: 0,
+        });
+        return;
+      }
+
+      const response = await api.get(
+        `/api/users/2/fund-e-wallets?page=${page}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              user?.token ||
+              JSON.parse(localStorage.getItem("user") || "{}").token
+            }`,
+          },
+        }
+      );
 
       if (response.data.ok) {
-        toast.success("Payment initialized.");
-        window.open(response.data.authorization_url, "_blank");
+        setDepositsData({
+          data: response.data.data.data || [],
+          current_page: page,
+          last_page: Math.ceil((response.data.data.total || 0) / 15),
+          per_page: 15,
+          total: response.data.data.total || 0,
+        });
       } else {
-        toast.error(response.data.message || "Something went wrong.");
+        setDepositsData({
+          data: [],
+          current_page: 1,
+          last_page: 1,
+          per_page: 15,
+          total: 0,
+        });
       }
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to initialize payment.");
+      console.error("Error fetching deposits:", err);
+      setDepositsData({
+        data: [],
+        current_page: 1,
+        last_page: 1,
+        per_page: 15,
+        total: 0,
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const formatBalance = (balance) => {
-    return parseFloat(balance).toLocaleString('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  useEffect(() => {
+    fetchDeposits();
+  }, []);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= depositsData.last_page) {
+      fetchDeposits(page);
+    }
   };
 
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return {
+      date: date.toLocaleDateString("en-CA"),
+      time: date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    };
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "success":
+        return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
+      case "failed":
+        return "bg-[#c51236]/20 text-red-600";
+      case "pending":
+      case "pending_manual":
+        return "bg-yellow-100 text-yellow-600";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
+
+  const { data: deposits, current_page, last_page } = depositsData;
+
   return (
-    <div className=" bg-[var(--color-tetiary)] px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-[70%_30%] lg:gap-6 gap-4">
-      {/* Wallet Card (Mobile) */}
-      <div className="block lg:hidden bg-[var(--color-primary)] text-white p-4 sm:p-6 rounded-2xl shadow flex flex-col space-y-4">
-        <div>
-          <p className="text-sm opacity-80">E-Wallet</p>
-          <p className="text-2xl font-bold mt-2">{formatBalance(eWallet)}</p>
-          <div className="border-t border-white/30 mt-4"></div>
-        </div>
-        <div className="flex items-center justify-end">
-          <Link
-            to="/user/transactions"
-            className="flex items-center gap-2 text-sm font-medium text-white hover:text-gray-200 transition"
-          >
-            <span>History</span>
-            <button className="bg-white text-[var(--color-primary)] rounded-full p-2 hover:bg-gray-100 transition">
-              <HiOutlineArrowUpRight className="w-5 h-5" />
-            </button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Main Form Section */}
-      <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-2xl shadow flex flex-col space-y-6 transition-all duration-300">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-black">Deposit Funds</h1>
-          <p className="text-black/50 text-sm sm:text-base mt-1">Select a deposit method and fill in the details</p>
+    <div className="bg-[var(--color-tetiary)]">
+      {/* Table container */}
+      <div className="overflow-x-auto">
+        {/* Header */}
+        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
+          <span className="text-start ps-4 w-[15%]">SN</span>
+          <span className="text-start w-[25%]">Type</span>
+          <span className="w-[20%] text-center">Amount</span>
+          <span className="w-[20%] text-center">Status</span>
+          <span className="text-end pe-8 w-[20%]">Date</span>
         </div>
 
-        {/* Step 1: Choose Payment Method */}
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg sm:text-xl text-black">1. Choose a Method to Pay</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between rounded-xl p-4 sm:p-6 bg-[var(--color-tetiary)] border border-[var(--color-primary)] shadow-md">
-              <div className="flex items-center gap-4">
-                <BsFillWalletFill size={34} className="text-[var(--color-primary)]" />
-                <div>
-                  <span className="block font-semibold text-[var(--color-primary)]">Paystack</span>
-                  <p className="text-sm text-gray-600">Pay securely with your card or bank details</p>
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                checked={true}
-                readOnly
-                className="accent-[var(--color-primary)] w-5 h-5"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Step 2: Fill Deposit Details */}
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg sm:text-xl text-black">2. Fill Deposit Details</h2>
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 mb-1">Amount</label>
-            <input
-              type="number"
-              placeholder="₦14,000"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 border border-black/40 focus:ring-1 focus:ring-[var(--color-primary)] outline-none"
-            />
-          </div>
-        </div>
-
-        <button
-          onClick={handleConfirm}
-          disabled={loading}
-          className="bg-[var(--color-primary)] text-white w-full py-3 rounded-xl hover:opacity-90 transition my-6 disabled:opacity-50"
-        >
-<<<<<<<<< Temporary merge branch 1
-          {(selectedMethod === "paystack" || selectedMethod === "manual") && (
-            <div className="mb-6">
-              <h2 className="font-semibold mb-2 text-black text-[20px]">
-                2. Fill Deposit Details
-              </h2>
-              <p className="text-black/50 mb-1">Amount</p>
-              <input
-                type="number"
-                placeholder="₦14,000"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full rounded-xl px-4 border-1 border-black/40 py-3 focus:ring-1 focus:ring-black/40 outline-0"
-              />
-=========
+        {/* Rows */}
+        <div className="space-y-3 w-full">
           {loading ? (
-            <div className="flex items-center justify-center">
-              <svg
-                className="animate-spin h-5 w-5 mr-2 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Processing...
->>>>>>>>> Temporary merge branch 2
+            <div className="text-center py-4">
+              <LazyLoader/>
+              <span className="text-black/60">Loading...</span>
             </div>
+          ) : deposits.length === 0 ? (
+            <div className="text-center py-4">No deposits found.</div>
           ) : (
-            "Confirm Deposit"
-          )}
-<<<<<<<<< Temporary merge branch 1
+            deposits.map((item, idx) => {
+              const { date, time } = formatDateTime(item.created_at);
+              return (
+                <div
+                  key={idx}
+                  className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
+                >
+                  {/* SN */}
+                  <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
+                    00{idx + 1}
+                  </span>
 
-          {selectedMethod === "manual" && (
-            <div>
-              <h2 className="font-semibold mb-2 text-black text-[20px]">
-                3. Upload Proof of Payment
-              </h2>
-              <p className="text-black/50 mb-1">Image</p>
-              <div className="border-2 border-dashed border-black/20 rounded-xl p-6 text-center flex flex-col items-center justify-center gap-4">
-                <div className="p-3 rounded-md bg-[var(--color-tetiary)]">
-                  <img
-                    src={assets.imageicon}
-                    alt="Upload Icon"
-                    className="h-8 w-8 object-contain"
-                  />
-                </div>
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="file"
-                    id="proof"
-                    className="hidden"
-                    onChange={(e) => setProofFile(e.target.files[0])}
-                  />
-                  <label
-                    htmlFor="proof"
-                    className="cursor-pointer px-4 py-2 border-black/20 border rounded-md text-gray-600 hover:text-[var(--color-secondary)] hover:border-[var(--color-secondary)] transition"
-                  >
-                    Choose File
-                  </label>
-                  <span className="text-sm text-gray-500">
-                    {proofFile ? proofFile.name : "No file chosen"}
+                  {/* Type */}
+                  <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
+                    {item.transaction_type.replace(/_/g, " ")}
+                  </span>
+
+                  {/* Amount */}
+                  <span className="font-medium text-sm w-[20%] text-center">
+                    ₦{parseFloat(item.amount).toLocaleString()}
+                  </span>
+
+                  {/* Status */}
+                  <span className="w-[20%] text-center">
+                    <div
+                      className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border-black/10 border mx-auto ${getStatusColor(
+                        item.status
+                      )}`}
+                    >
+                      {item.status
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (c) => c.toUpperCase())}
+                    </div>
+                  </span>
+
+                  {/* Date & Time */}
+                  <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
+                    <span>{date}</span>
+                    <span className="text-[var(--color-primary)] font-bold pe-2">
+                      {time}
+                    </span>
                   </span>
                 </div>
-              </div>
-            </div>
+              );
+            })
           )}
-        </div>
-
-        <button
-          onClick={handleConfirm}
-          disabled={loading}
-          className="bg-[var(--color-primary)] text-white w-full py-3 rounded-xl hover:opacity-90 transition my-6 disabled:opacity-50"
-        >
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <svg
-                className="animate-spin h-5 w-5 mr-2 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Processing...
-            </div>
-          ) : (
-            "Confirm Deposit"
-          )}
-        </button>
-      </div>
-
-      {/* Right Section (Desktop) */}
-      <div className="hidden lg:flex flex-col gap-6">
-        <div className="bg-[var(--color-primary)] text-white p-6 rounded-2xl shadow flex flex-col space-y-4">
-          <div>
-            <p className="text-sm opacity-80">E-Wallet</p>
-            <p className="text-2xl font-bold mt-2">{formatBalance(eWallet)}</p>
-            <div className="border-t border-white/50 mt-4"></div>
-          </div>
-          <div className="flex items-center justify-end">
-            <Link
-              to="/user/transactions"
-              className="flex items-center gap-2 text-sm font-normal text-white hover:text-gray-200 transition"
-            >
-              <span>History</span>
-              <button className="bg-white text-[var(--color-primary)] rounded-full p-2 hover:bg-gray-100 transition">
-                <HiOutlineArrowUpRight className="w-5 h-5" />
-              </button>
-            </Link>
-          </div>
         </div>
       </div>
 
-      <Toaster />
+      {/* Pagination - only show if more than 1 page */}
+      {last_page > 1 && (
+        <div className="mt-6 flex justify-center">
+          <PaginationControls
+            currentPage={current_page}
+            totalPages={last_page}
+            setCurrentPage={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };
