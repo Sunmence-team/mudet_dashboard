@@ -49,10 +49,6 @@ function App() {
           element={<MainLayout child={<Users />} />}
         />
         <Route
-          path={"/admin/contact"}
-          element={<MainLayout child={<Contact />} />}
-        />
-        <Route
           path={"/admin/announcements"}
           element={<MainLayout child={<Announcements />} />}
         />
@@ -60,7 +56,6 @@ function App() {
           path={"/admin/stockist"}
           element={<MainLayout child={<Stockist />} />}
         />
-        
         <Route
           path={"/admin/contact"}
           element={<MainLayout child={<Contact />} />}

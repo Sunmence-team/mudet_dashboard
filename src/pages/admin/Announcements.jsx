@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import api from "../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
+import AnnouncementCard from "../../components/cards/AnnouncementCard";
 
 const Announcements = () => {
     const { token } = useUser();
@@ -12,6 +13,7 @@ const Announcements = () => {
     const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
     const [loadingSubmit, setLoadingSubmit] = useState(false);
     const [loadingView, setLoadingView] = useState(null);
+    const [refresh, setRefresh] = useState(null);
     const [viewData, setViewData] = useState(null);
     const [editingId, setEditingId] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -21,44 +23,46 @@ const Announcements = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        fetchAnnouncements(currentPage);
-    }, [currentPage]);
+        // fetchAnnouncements(currentPage);
+    }, [
+        // currentPage, token
+    ]);
 
-    const fetchAnnouncements = async (page = 1) => {
-        try {
-            if (!token) {
-                toast.error("No authentication token found. Please log in.");
-                console.log("No token provided");
-                return;
-            }
-            console.log(`Fetching announcements from: /api/announcements?page=${page} with token: ${token}`);
-            const response = await api.get(`/api/announcements?page=${page}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log("Fetched announcements response:", JSON.stringify(response.data, null, 2));
-            const announcementsData = response.data.data.data || [];
-            console.log("Parsed announcements data:", JSON.stringify(announcementsData, null, 2));
-            setAnnouncements(announcementsData);
-            console.log("Set announcements state:", JSON.stringify(announcementsData, null, 2));
-            setCurrentPage(response.data.data.current_page || 1);
-            setLastPage(response.data.data.last_page || 1);
-            setPaginationLinks(response.data.data.links || []);
-            console.log("Pagination info:", {
-                current_page: response.data.data.current_page,
-                last_page: response.data.data.last_page,
-                links: response.data.data.links,
-            });
-        } catch (error) {
-            console.error("Error fetching announcements:", error);
-            console.log("Error details:", JSON.stringify(error.response?.data, null, 2));
-            toast.error(error.response?.data?.message || "Failed to fetch announcements.");
-        } finally {
-            setLoadingAnnouncements(false);
-        }
-    };
+    // const fetchAnnouncements = async (page = 1) => {
+    //     try {
+    //         if (!token) {
+    //             toast.error("No authentication token found. Please log in.");
+    //             console.log("No token provided");
+    //             return;
+    //         }
+    //         console.log(`Fetching announcements from: /api/announcements?page=${page} with token: ${token}`);
+    //         const response = await api.get(`/api/announcements?page=${page}`, {
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
+    //         console.log("Fetched announcements response:", JSON.stringify(response.data, null, 2));
+    //         const announcementsData = response.data.data.data || [];
+    //         console.log("Parsed announcements data:", JSON.stringify(announcementsData, null, 2));
+    //         setAnnouncements(announcementsData);
+    //         console.log("Set announcements state:", JSON.stringify(announcementsData, null, 2));
+    //         setCurrentPage(response.data.data.current_page || 1);
+    //         setLastPage(response.data.data.last_page || 1);
+    //         setPaginationLinks(response.data.data.links || []);
+    //         console.log("Pagination info:", {
+    //             current_page: response.data.data.current_page,
+    //             last_page: response.data.data.last_page,
+    //             links: response.data.data.links,
+    //         });
+    //     } catch (error) {
+    //         console.error("Error fetching announcements:", error);
+    //         console.log("Error details:", JSON.stringify(error.response?.data, null, 2));
+    //         toast.error(error.response?.data?.message || "Failed to fetch announcements.");
+    //     } finally {
+    //         setLoadingAnnouncements(false);
+    //     }
+    // };
 
     const validationSchema = Yup.object().shape({
         title: Yup.string().required("Title is required").min(2, "Title must be at least 2 characters"),
@@ -84,7 +88,7 @@ const Announcements = () => {
             image: null,
         },
         validationSchema,
-        onSubmit: async (values) => {
+        onSubmit: async (values, { resetForm }) => {
             setLoadingSubmit(true);
             try {
                 if (!token) {
@@ -100,13 +104,11 @@ const Announcements = () => {
                 payload.append("end_date", values.end_date);
                 payload.append("image", values.image);
 
-                console.log("Submitting announcement with payload:");
                 for (let [key, value] of payload.entries()) {
                     console.log(`${key}: ${value instanceof File ? value.name : value}`);
                 }
 
                 const url = isEditing ? `/api/announcements/${editingId}` : "/api/announcements/create";
-                console.log(`Submitting to: ${url}`);
                 const response = await api.post(url, payload, {
                     headers: {
                         "Content-Type": "multipart/form-data",
@@ -115,15 +117,16 @@ const Announcements = () => {
                 });
 
 
-                console.log("Announcement response:", JSON.stringify(response.data, null, 2));
+                console.log("Announcement post response:", response);
+
                 if (response.data.status === "success") {
                     toast.success(response.data.message || "Announcement created/updated successfully");
                     if (isEditing) {
                         setEditingId(null);
                         setIsEditing(false);
-                        formik.resetForm();
                     }
-                    fetchAnnouncements(currentPage);
+                    setRefresh(true);
+                    resetForm();
                 } else {
                     toast.error(response.data.message || "Failed to create/update announcement.");
                 }
@@ -139,6 +142,21 @@ const Announcements = () => {
             }
         },
     });
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            formik.setFieldValue("image", file); // Set the file object directly
+
+            // const reader = new FileReader();
+            // reader.onloadend = () => {
+            //     setImagePreview(reader.result);
+            // };
+            // reader.readAsDataURL(file);
+        } else {
+            formik.setFieldValue("image", null); // Clear the file object if no file selected
+        }
+    };
 
     const handleView = async (id) => {
         setLoadingView(id);
@@ -231,12 +249,12 @@ const Announcements = () => {
     };
 
     return (
-        <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
+        <div className="w-full h-full flex flex-col gap-8 items-center justify-center">
             <form onSubmit={formik.handleSubmit} className="w-full flex flex-col gap-4">
                 <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
                     <p className="text-xl md:text-2xl font-semibold">{isEditing ? "Update Announcement" : "Create Announcement"}</p>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex flex-col w-full sm:w-1/2">
+                    <div className="grid md:grid-col-2 grid-col-1 gap-4">
+                        <div className="md:col-span-2 col-span-1 flex flex-col w-full">
                             <label htmlFor="title" className="text-sm font-medium text-gray-700 mb-1">
                                 Title {formik.touched.title && formik.errors.title && <span className="text-red-500 text-xs"> - {formik.errors.title}</span>}
                             </label>
@@ -250,7 +268,7 @@ const Announcements = () => {
                                 className={`h-12 px-4 py-2 border w-full ${formik.touched.title && formik.errors.title ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
                             />
                         </div>
-                        <div className="flex flex-col w-full sm:w-1/2">
+                        <div className="md:col-span-1 col-span-1 flex flex-col w-full">
                             <label htmlFor="start_date" className="text-sm font-medium text-gray-700 mb-1">
                                 Start Date {formik.touched.start_date && formik.errors.start_date && <span className="text-red-500 text-xs"> - {formik.errors.start_date}</span>}
                             </label>
@@ -264,9 +282,7 @@ const Announcements = () => {
                                 className={`h-12 px-4 py-2 border w-full ${formik.touched.start_date && formik.errors.start_date ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
                             />
                         </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex flex-col w-full sm:w-1/2">
+                        <div className="md:col-span-1 col-span-1 flex flex-col w-full">
                             <label htmlFor="end_date" className="text-sm font-medium text-gray-700 mb-1">
                                 End Date {formik.touched.end_date && formik.errors.end_date && <span className="text-red-500 text-xs"> - {formik.errors.end_date}</span>}
                             </label>
@@ -280,7 +296,20 @@ const Announcements = () => {
                                 className={`h-12 px-4 py-2 border w-full ${formik.touched.end_date && formik.errors.end_date ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
                             />
                         </div>
-                        <div className="flex flex-col w-full sm:w-1/2">
+                        <div className="md:col-span-2 col-span-1 flex flex-col">
+                            <label htmlFor="message" className="text-sm font-medium text-gray-700 mb-1">
+                                Message {formik.touched.message && formik.errors.message && <span className="text-red-500 text-xs"> - {formik.errors.message}</span>}
+                            </label>
+                            <textarea
+                                id="message"
+                                name="message"
+                                value={formik.values.message}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                className={`h-32 styled-scrollbar resize-none px-4 py-2 border w-full ${formik.touched.message && formik.errors.message ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                            />
+                        </div>
+                        <div className="md:col-span-2 col-span-1 flex flex-col w-full">
                             <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
                                 Image {formik.touched.image && formik.errors.image && <span className="text-red-500 text-xs"> - {formik.errors.image}</span>}
                             </label>
@@ -292,11 +321,7 @@ const Announcements = () => {
                                     name="image"
                                     className="hidden"
                                     accept="image/jpeg,image/png,image/jpg"
-                                    onChange={(event) => {
-                                        const file = event.currentTarget.files[0];
-                                        formik.setFieldValue("image", file);
-                                        formik.setFieldTouched("image", true);
-                                    }}
+                                    onChange={handleImageChange}
                                 />
                                 <div className="flex items-center gap-3">
                                     <label
@@ -314,19 +339,6 @@ const Announcements = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="message" className="text-sm font-medium text-gray-700 mb-1">
-                            Message {formik.touched.message && formik.errors.message && <span className="text-red-500 text-xs"> - {formik.errors.message}</span>}
-                        </label>
-                        <textarea
-                            id="message"
-                            name="message"
-                            value={formik.values.message}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            className={`h-24 px-4 py-2 border w-full ${formik.touched.message && formik.errors.message ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
-                        />
-                    </div>
                     <button
                         type="submit"
                         disabled={loadingSubmit}
@@ -342,7 +354,12 @@ const Announcements = () => {
             </form>
 
             <div className="w-full">
-                <div className="bg-white border border-black/10 rounded-lg p-4 md:p-8">
+                <AnnouncementCard 
+                    style={"max-h-[400px]"}
+                    refresh={refresh}
+                    pagination={true}
+                />
+                {/* <div className="bg-white border border-black/10 rounded-lg p-4 md:p-8">
                     <h3 className="text-xl font-semibold mb-4">All Announcements</h3>
                     {loadingAnnouncements ? (
                         <div className="flex items-center justify-center py-8">
@@ -439,7 +456,7 @@ const Announcements = () => {
                     ) : (
                         <p className="text-center text-gray-500 py-8">No announcements available</p>
                     )}
-                </div>
+                </div> */}
             </div>
 
             {viewData && (

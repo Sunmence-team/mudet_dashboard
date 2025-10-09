@@ -5,8 +5,9 @@ import api from "../../utilities/api";
 import { toast } from "sonner";
 import axios from "axios";
 import { formatDateToStyle, formatterUtility } from "../../utilities/formatterutility";
+import PaginationControls from "../../utilities/PaginationControls";
 
-const UserTable = ({ users, reFetch }) => {
+const UserTable = ({ users, reFetch, currentPage, lastPage, setCurrentPage }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [disableModalOpen, setDisableModalOpen] = useState(false);
@@ -55,7 +56,7 @@ const UserTable = ({ users, reFetch }) => {
   };
 
   const confirmDelete = async () => {
-    setDisabling(true);
+    setDeleting(true);
     try {
       const res = await api.delete(`/api/admin/users/${currentUser.id}`);
       if (res.status === 200) {
@@ -94,16 +95,16 @@ const UserTable = ({ users, reFetch }) => {
       <table className="w-full text-sm text-left border-collapse">
         <thead className="text-gray-700 font-semibold text-xs">
           <tr>
-            <th className="py-3 px-4">S/N</th>
-            <th className="py-3 px-4">Name</th>
-            <th className="py-3 px-4">Earning</th>
-            <th className="py-3 px-4">Email</th>
-            <th className="py-3 px-4">Username</th>
-            <th className="py-3 px-4">Phone</th>
-            <th className="py-3 px-4">Stockist Enabled</th>
-            <th className="py-3 px-4">Account Status</th>
-            <th className="py-3 px-4">Date Joined</th>
-            <th className="py-3 px-4">Action</th>
+            <th className="py-3 px-4 text-start">S/N</th>
+            <th className="py-3 px-4 text-center">Name</th>
+            <th className="py-3 px-4 text-center">Earning</th>
+            <th className="py-3 px-4 text-center">Email</th>
+            <th className="py-3 px-4 text-center">Username</th>
+            <th className="py-3 px-4 text-center">Phone</th>
+            <th className="py-3 px-4 text-center whitespace-nowrap">Is Stockist?</th>
+            <th className="py-3 px-4 text-center">Account Status</th>
+            <th className="py-3 px-4 text-center">Date Joined</th>
+            <th className="py-3 px-4 text-end">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -144,21 +145,21 @@ const UserTable = ({ users, reFetch }) => {
                 <td className="border-y border-black/10 rounded-s-lg border-s-1 lg:py-5 py-3 px-4">
                   {(index + 1).toString().padStart(3, "0")}
                 </td>
-                <td className="border-y border-black/10 lg:py-5 py-3 px-4">
+                <td className="border-y border-black/10 lg:py-5 py-3 text-center px-4">
                   {first_name} {last_name}
                 </td>
-                <td className="border-y border-black/10 lg:py-5 py-3 px-4">
-                  ₦{formatterUtility(Number(earning_wallet))}
+                <td className="border-y border-black/10 lg:py-5 py-3 text-center px-4">
+                  {formatterUtility(Number(earning_wallet))}
                 </td>
-                <td className="border-y border-black/10 lg:py-5 py-3 px-4">{email}</td>
-                <td className="border-y border-black/10 lg:py-5 py-3 px-4">{username}</td>
-                <td className="border-y border-black/10 lg:py-5 py-3 px-4">{mobile}</td>
-                <td className="border-y border-black/10 lg:py-5 py-3 px-4">
+                <td className="border-y border-black/10 lg:py-5 py-3 text-center px-4">{email}</td>
+                <td className="border-y border-black/10 lg:py-5 py-3 text-center px-4">{username}</td>
+                <td className="border-y border-black/10 lg:py-5 py-3 text-center px-4">{mobile}</td>
+                <td className="border-y border-black/10 lg:py-5 py-3 text-center px-4">
                   <span className="text-black font-semibold text-center flex justify-center py-1 px-3 rounded-full text-xs">
-                    {stockist_enabled}
+                    {stockist_enabled === 0 ? "No" : "Yes"}
                   </span>
                 </td>
-                <td className="border-y border-black/10 py-2 px-4">
+                <td className="border-y border-black/10 py-2 text-center px-4">
                   <button
                     className={`${
                       enabled !== 0 ? "bg-primary/10" : "bg-red-700 text-white"
@@ -167,7 +168,7 @@ const UserTable = ({ users, reFetch }) => {
                     {enabled !== 0 ? "Active" : "Inactive"}
                   </button>
                 </td>
-                <td className="border-y border-black/10 py-2 px-4">{formatDateToStyle(created_at)}</td>
+                <td className="border-y border-black/10 py-2 text-center px-4">{formatDateToStyle(created_at)}</td>
                 <td className="border-y border-black/10 rounded-e-lg border-e-1 py-6 px-4">
                   <div className="flex gap-4">
                     <button
@@ -194,6 +195,17 @@ const UserTable = ({ users, reFetch }) => {
             )
           )}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={10}>
+              <PaginationControls 
+                currentPage={currentPage}
+                totalPages={lastPage}
+                setCurrentPage={setCurrentPage}
+              />
+            </td>
+          </tr>
+        </tfoot>
       </table>
       {deleteModalOpen && (
         <WarningModal
@@ -201,6 +213,7 @@ const UserTable = ({ users, reFetch }) => {
           message={"Confirming the button will delete this user permanently."}
           negativeAction={() => setDeleteModalOpen(false)}
           positiveAction={confirmDelete}
+          isPositive={deleting}
         />
       )}
       {disableModalOpen && (
