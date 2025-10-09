@@ -18,7 +18,6 @@ const Products = () => {
   };
 
   useEffect(() => {
-    setupInterceptors(logout);
     fetchProducts();
   }, []);
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Deposit from "./trans/Deposit";
-import Withdraw from "./trans/Withdraw";
-import EHistory from "./trans/EHistory";
+import Deposit from "../admin/trans/Deposit";
+import Withdraw from "../admin/trans/Withdraw";
+import EHistory from "../admin/trans/EHistory";
 
 const Transactions = () => {
   const [activeTab, setActiveTab] = useState("deposit");

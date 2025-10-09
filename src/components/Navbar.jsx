@@ -159,7 +159,7 @@ const Navbar = () => {
     },
     {
       name: "AllTransactions",
-      path: "/admin/transactions",
+      path: "/user/transactions",
       role: ["user"],
     },
     {
