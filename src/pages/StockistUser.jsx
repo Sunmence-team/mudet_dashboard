@@ -11,6 +11,7 @@ import UpgradeHistory from "./user/stockisttabs/UpgradeHistory";
 import TransactionHistory from "./user/stockisttabs/TransactionHistory";
 import RegistrationHistory from "./user/stockisttabs/RegistrationHistory";
 import { BiSolidMessageEdit } from "react-icons/bi";
+import { BsInfoCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
 const StockistUser = () => {
@@ -26,7 +27,10 @@ const StockistUser = () => {
     "Transaction History",
   ];
   const backUpuser = JSON.parse(localStorage.getItem("user"));
-  const { user, refreshUser } = useUser();
+  const backUpMiscellaneousDetails = JSON.parse(
+    localStorage.getItem("miscellaneousDetails")
+  );
+  const { user, refreshUser, miscellaneousDetails } = useUser();
   const stockistWallet = {
     type: "wallet",
     walletType: "Stockist Balance",
@@ -99,8 +103,43 @@ const StockistUser = () => {
 
   return (
     <div className="w-full flex flex-col gap-4 items-cente justify-center">
-      {activeUser.stockist_enabled === 0 &&
-      activeUser.stockist_active === null ? (
+      {miscellaneousDetails?.planDetails?.name !== "legend" ||
+      backUpMiscellaneousDetails?.planDetails?.name !== "legend" ? (
+        <>
+          <div className="flex flex-col translate-y-[4rem] justify-center gap-8 items-center bg-white rounded-lg lg:w-1/2 py-8 mx-auto">
+            <div className="rounded-full p-6 bg-primary/10 text-primary text-4xl lg:text-5xl">
+              <BsInfoCircleFill />
+            </div>
+            <div className="flex flex-col gap-6 items-center text-center">
+              <h2 className="text-xl lg:text-2xl font-semibold">
+                Upgrade Package
+              </h2>
+              <p className="text-sm lg:text-base font-medium text-gray-400 lg:w-2/3 md:w-1/3 w-full px-4">
+                You must be on the{" "}
+                <span className="text-primary font-semibold">
+                  Legend package
+                </span>{" "}
+                before you can become a stockist.
+                <br />
+                <span className="block mt-3 text-gray-500 text-sm">
+                  As a stockist, you gain exclusive access to discounted
+                  products, higher commission rates, and priority support from
+                  the company. You’ll also be able to manage your own
+                  sub-network of distributors and earn extra bonuses from their
+                  performance.
+                </span>
+              </p>
+              <Link
+                to={"/user/upgrade-package"}
+                className="py-3 px-9 border-0 bg-[#1B6020] text-sm lg:text-base rounded-3xl text-white cursor-pointer font-medium hover:bg-[#155018] transition-all"
+              >
+                Upgrade
+              </Link>
+            </div>
+          </div>
+        </>
+      ) : activeUser.stockist_enabled === 0 &&
+        activeUser.stockist_active === null ? (
         stockistChoice === "" ? (
           <>
             <p className="text-lg font-semibold">Stockist</p>
