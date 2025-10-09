@@ -78,11 +78,6 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
-      name: "Announcements",
-      path: "/admin/announcements",
-      role: ["admin"],
-    },
-    {
       name: "Stockist",
       path: "/admin/stockist",
       role: ["admin"],
@@ -95,11 +90,6 @@ const Navbar = () => {
     {
       name: "Announcements",
       path: "/admin/announcements",
-      role: ["admin"],
-    },
-    {
-      name: "Stockist",
-      path: "/admin/stockist",
       role: ["admin"],
     },
     {
@@ -133,7 +123,7 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "AllTransactions",
+      name: "Transactions",
       path: "/user/transactions",
       role: ["user"],
     },
