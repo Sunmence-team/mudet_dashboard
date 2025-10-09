@@ -8,7 +8,10 @@ import { IoCloseOutline } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
 import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
-import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
+import {
+  MdKeyboardDoubleArrowLeft,
+  MdKeyboardDoubleArrowRight,
+} from "react-icons/md";
 import { useCart } from "../context/CartProvider";
 
 const Navbar = () => {
@@ -16,7 +19,6 @@ const Navbar = () => {
   const { cart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const cartItem = cart.length;
-
 
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -167,7 +169,10 @@ const Navbar = () => {
     },
   ];
 
-  const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
+  const filteredLinks = navItems.filter(
+    (navItem) =>
+      Array.isArray(navItem.role) && navItem.role.includes(user?.role)
+  );
   const userName = `${user?.first_name} ${user?.last_name}`;
 
   return (
@@ -191,21 +196,21 @@ const Navbar = () => {
           {/* Scrollable links section */}
           <div className="relative flex items-center overflow-hidden w-3/4">
             {/* Left scroll */}
-            {
-              canScrollLeft && (
-                <button
-                  onClick={scrollLeft}
-                  className="absolute left-0 z-10 bg-tetiary text-primary w-8 h-8 flex items-center justify-center rounded-full shadow-md hover:scale-105 transition"
-                >
-                  <MdKeyboardDoubleArrowLeft />
-                </button>
-              )
-            }
+            {canScrollLeft && (
+              <button
+                onClick={scrollLeft}
+                className="absolute left-0 z-10 bg-tetiary text-primary w-8 h-8 flex items-center justify-center rounded-full shadow-md hover:scale-105 transition"
+              >
+                <MdKeyboardDoubleArrowLeft />
+              </button>
+            )}
 
             {/* Links */}
             <ul
               ref={scrollRef}
-              className={`md:flex hidden flex-nowrap items-center gap-4 overflow-x-scroll no-scrollbar scroll-smooth flex-1 ${canScrollLeft ? "ps-10" : ""} pe-10`}
+              className={`md:flex hidden flex-nowrap items-center gap-4 overflow-x-scroll no-scrollbar scroll-smooth flex-1 ${
+                canScrollLeft ? "ps-10" : ""
+              } pe-10`}
             >
               {filteredLinks.map(({ name, path }, index) => (
                 <NavLink
@@ -213,7 +218,9 @@ const Navbar = () => {
                   key={index}
                   className={({ isActive }) =>
                     `nav-links relative whitespace-nowrap text-black cursor-pointer py-1 ${
-                      isActive ? "active text-primary !font-extrabold text-base" : "font-medium text-sm"
+                      isActive
+                        ? "active text-primary !font-extrabold text-base"
+                        : "font-medium text-sm"
                     }`
                   }
                   onClick={() => setIsOpen(false)}
@@ -224,16 +231,14 @@ const Navbar = () => {
             </ul>
 
             {/* Right scroll */}
-            {
-              canScrollRight && (
-                <button
-                  onClick={scrollRight}
-                  className="absolute right-0 z-10 bg-tetiary text-primary w-8 h-8 flex items-center justify-center rounded-full shadow-md hover:scale-105 transition"
-                >
-                  <MdKeyboardDoubleArrowRight />
-                </button>
-              )
-            }
+            {canScrollRight && (
+              <button
+                onClick={scrollRight}
+                className="absolute right-0 z-10 bg-tetiary text-primary w-8 h-8 flex items-center justify-center rounded-full shadow-md hover:scale-105 transition"
+              >
+                <MdKeyboardDoubleArrowRight />
+              </button>
+            )}
           </div>
         </div>
 
@@ -245,9 +250,11 @@ const Navbar = () => {
             to={"/user/cart"}
             className="relative w-10 h-10 flex justify-center items-center rounded-full font-bold text-xl bg-tetiary text-primary"
           >
-            <p className="absolute bottom-[1.4rem] left-[2rem] text-base">
-              {cartItem !== 0 ? cartItem : " "}
-            </p>
+            {cartItem !== 0 && (
+              <p className="absolute bottom-[1.4rem] left-[1.4rem] text-sm bg-primary text-[#EFF7F0] px-[7px] py-[1px] rounded-full">
+                {cartItem !== 0 ? cartItem : " "}
+              </p>
+            )}
             <IoMdCart />
           </Link>
           <Link
@@ -267,8 +274,9 @@ const Navbar = () => {
       </nav>
 
       <nav
-        className={`fixed top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${isOpen ? "slide-in" : "slide-out"
-          }`}
+        className={`fixed top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${
+          isOpen ? "slide-in" : "slide-out"
+        }`}
       >
         <div className="flex flex-col h-[calc(100%-40px-24px)] w-full md:gap-6 gap-3">
           <div className="flex flex-row-reverse items-center justify-between ">
@@ -294,10 +302,11 @@ const Navbar = () => {
                   key={index}
                   className={({ isActive }) => `
                                         nav-links relative font-medium whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${isActive
-                      ? "active text-primary !font-extrabold"
-                      : ""
-                    }
+                                        ${
+                                          isActive
+                                            ? "active text-primary !font-extrabold"
+                                            : ""
+                                        }
                                     `}
                   onClick={() => setIsOpen(false)}
                 >
