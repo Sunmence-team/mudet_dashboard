@@ -8,6 +8,8 @@ import axios from "axios";
 import PackageModal from "../../components/modals/PackageModal";
 import Spinner from "../../components/Spinner";
 import WarningModal from "../../components/modals/WarningModal";
+import LazyLoader from "../../components/LazyLoader";
+import CartCard from "../../components/cards/CartCard";
 
 const PackageUpload = ({
   prevStep,
@@ -20,15 +22,18 @@ const PackageUpload = ({
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [activePackage, setActivePackage] = useState({});
   const [packages, setPackages] = useState([]);
+  const [products, setProducts] = useState([]);
   const [updatingPackage, setUpdatingPackage] = useState(false);
   const [deletingPackage, setDeletingPackage] = useState(false);
   const [fetchingPackage, setFetchingPackage] = useState(false);
+  const [fetchingProducts, setFetchingProducts] = useState(false);
+  // const [selectedProducts, setSelectedProducts] = useState([]);
   const fetchPackages = async () => {
     setFetchingPackage(true);
     try {
       const response = await api.get("/api/plans/all");
-      console.log(response.data.data.data);
-      setPackages(response.data.data.data);
+      console.log(response.data?.data?.data);
+      setPackages(response.data?.data?.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -36,8 +41,22 @@ const PackageUpload = ({
     }
   };
 
+  const fetchProducts = async () => {
+    setFetchingProducts(true);
+    try {
+      const response = await api.get("/api/allproducts");
+      console.log(response?.data);
+      setProducts(response?.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setFetchingProducts(false);
+    }
+  };
+
   useEffect(() => {
     fetchPackages();
+    fetchProducts();
   }, []);
 
   useEffect(() => {
@@ -46,22 +65,46 @@ const PackageUpload = ({
   const [submitting, setSubmitting] = useState(false);
 
   const validationSchema = Yup.object().shape({
-    packageName: Yup.string()
-      .required("Product Name is required")
+    name: Yup.string()
+      .required("Package Name is required")
       .min(2, "Package Name must be at least 2 characters"),
-    amount: Yup.number()
-      .required("Amount is required")
+    price: Yup.number()
+      .required("Price is required")
       .min(0, "Price must be at least 0"),
-    pointValue: Yup.number()
+    point_value: Yup.number()
       .required("Point Value is required")
       .min(0, "Point Value must be at least 0"),
+    products: Yup.array()
+      .of(
+        Yup.object({
+          name: Yup.string().required(),
+          price: Yup.number().required(),
+          quantity: Yup.number().required(),
+        })
+      )
+      .min(1, "Please select at least one product")
+      .required("Please select at least one product")
+      .test(
+        "total-price-check",
+        "The total cost of products cannot exceed the package price",
+        function (products) {
+          const { price } = this.parent;
+          if (!price || !Array.isArray(products)) return true;
+          const total = products.reduce(
+            (sum, p) => sum + p.price * p.quantity,
+            0
+          );
+          return total <= price;
+        }
+      ),
   });
 
   const formik = useFormik({
     initialValues: {
-      packageName: formData.productName || "",
-      amount: formData.amount || "",
-      pointValue: formData.pointValue || "",
+      name: formData.name || "",
+      price: formData.price || "",
+      point_value: formData.point_value || "",
+      products: [],
     },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
@@ -69,11 +112,13 @@ const PackageUpload = ({
       try {
         const response = await api.post("/api/plans", {
           ...values,
-          name: values.packageName,
-          price: values.amount,
-          point_value: values.pointValue,
+          products: values.products.map(({ name, quantity }) => ({
+            name,
+            quantity,
+          })),
         });
-        if (response.status === 200) {
+        console.log(response);
+        if (response.status === 201) {
           toast.success(response.data.message);
         } else {
           toast.error(response.data.message);
@@ -173,12 +218,34 @@ const PackageUpload = ({
     }
   };
 
+  const increaseQuantity = (productName) => {
+    const updated = formik.values.products.map((p) =>
+      p.name === productName ? { ...p, quantity: p.quantity + 1 } : p
+    );
+    formik.setFieldValue("products", updated);
+  };
+
+  const decreaseQuantity = (productName) => {
+    const updated = formik.values.products.map((p) =>
+      p.name === productName && p.quantity > 1
+        ? { ...p, quantity: p.quantity - 1 }
+        : p
+    );
+    formik.setFieldValue("products", updated);
+  };
+
+  const removeProduct = (productName) => {
+    const updated = formik.values.products.filter(
+      (p) => p.name !== productName
+    );
+    formik.setFieldValue("products", updated);
+  };
+
   useEffect(() => {
     if (setFormValidity) {
       setFormValidity(formik.isValid && formik.dirty);
     }
   }, [formik.isValid, formik.dirty, setFormValidity]);
-
 
   return (
     <>
@@ -191,27 +258,27 @@ const PackageUpload = ({
             <p className="text-xl md:text-2xl font-semibold">Create Package</p>
             <div className="flex flex-col w-full">
               <label
-                htmlFor="packageName"
+                htmlFor="name"
                 className="text-sm font-medium text-gray-700 mb-1"
               >
-                Product Name{" "}
-                {formik.touched.packageName && formik.errors.packageName && (
+                Package Name{" "}
+                {formik.touched.name && formik.errors.name && (
                   <span className="text-red-500 text-xs">
                     {" "}
-                    - {formik.errors.packageName}
+                    - {formik.errors.name}
                   </span>
                 )}
               </label>
               <input
                 type="text"
-                id="productName"
-                name="packageName"
+                id="name"
+                name="name"
                 placeholder="Enter Package name"
-                value={formik.values.packageName}
+                value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`h-12 px-4 py-2 border w-full ${
-                  formik.touched.packageName && formik.errors.packageName
+                  formik.touched.name && formik.errors.name
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-lg focus:ring-pryClr focus:border-pryClr`}
@@ -220,27 +287,27 @@ const PackageUpload = ({
 
             <div className="flex flex-col w-full">
               <label
-                htmlFor="pointValue"
+                htmlFor="point_value"
                 className="text-sm font-medium text-gray-700 mb-1"
               >
                 Point Value{" "}
-                {formik.touched.pointValue && formik.errors.pointValue && (
+                {formik.touched.point_value && formik.errors.point_value && (
                   <span className="text-red-500 text-xs">
                     {" "}
-                    - {formik.errors.pointValue}
+                    - {formik.errors.point_value}
                   </span>
                 )}
               </label>
               <input
                 type="number"
-                id="pointValue"
-                name="pointValue"
+                id="point_value"
+                name="point_value"
                 placeholder="Enter Package Point Value"
-                value={formik.values.pointValue}
+                value={formik.values.point_value}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`h-12 px-4 py-2 border w-full ${
-                  formik.touched.pointValue && formik.errors.pointValue
+                  formik.touched.point_value && formik.errors.point_value
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-lg focus:ring-pryClr focus:border-pryClr`}
@@ -248,32 +315,131 @@ const PackageUpload = ({
             </div>
             <div className="flex flex-col w-full">
               <label
-                htmlFor="amount"
+                htmlFor="price"
                 className="text-sm font-medium text-gray-700 mb-1"
               >
-                Amount{" "}
-                {formik.touched.amount && formik.errors.amount && (
+                Price{" "}
+                {formik.touched.price && formik.errors.price && (
                   <span className="text-red-500 text-xs">
                     {" "}
-                    - {formik.errors.amount}
+                    - {formik.errors.price}
                   </span>
                 )}
               </label>
               <input
                 type="number"
-                id="amount"
-                name="amount"
-                placeholder="Enter Package Amount"
-                value={formik.values.amount}
+                id="price"
+                name="price"
+                placeholder="Enter Package price"
+                value={formik.values.price}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className={`h-12 px-4 py-2 border w-full ${
-                  formik.touched.amount && formik.errors.amount
+                  formik.touched.price && formik.errors.price
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
             </div>
+            <div className="flex flex-col w-full">
+              <label
+                htmlFor="products"
+                className="text-sm font-medium text-gray-700 mb-1"
+              >
+                Products{" "}
+                {formik.touched.products && formik.errors.products && (
+                  <span className="text-red-500 text-xs">
+                    {" "}
+                    - {formik.errors.products}
+                  </span>
+                )}
+              </label>
+              <select
+                id="products"
+                name="products"
+                onChange={(e) => {
+                  const selectedProduct = JSON.parse(e.target.value);
+                  const existingProducts = formik.values.products;
+
+                  const alreadySelected = existingProducts.some(
+                    (p) => p.name === selectedProduct.name
+                  );
+
+                  const updatedProducts = alreadySelected
+                    ? existingProducts.filter(
+                        (p) => p.name !== selectedProduct.name
+                      )
+                    : [...existingProducts, selectedProduct];
+
+                  formik.setFieldValue("products", updatedProducts);
+                }}
+                onBlur={formik.handleBlur}
+                value=""
+                className={`h-12 px-4 py-2 border w-full ${
+                  formik.touched.products && formik.errors.products
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              >
+                <option value="" disabled>
+                  {fetchingProducts
+                    ? "Fetching Products..."
+                    : "Select product(s)"}
+                </option>
+                {products.map((prd, index) => (
+                  <option
+                    key={index}
+                    value={JSON.stringify({
+                      name: prd.product_name,
+                      quantity: 1,
+                      price: prd.price,
+                    })}
+                  >
+                    {prd.product_name} (₦{prd.price})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="grid lg:grid-cols-2 gap-3">
+              {formik.values.products.length > 0 &&
+                formik.values.products.map((el, index) => {
+                  const displayedProduct = products.find((product) => {
+                    return product.product_name === el.name;
+                  });
+                  return (
+                    <CartCard
+                      product={{ ...displayedProduct, quantity: el.quantity }}
+                      key={index}
+                      onAddToCart={() =>
+                        increaseQuantity(displayedProduct.product_name)
+                      }
+                      onRemoveFromCart={() =>
+                        decreaseQuantity(displayedProduct.product_name)
+                      }
+                      onDelete={() =>
+                        removeProduct(displayedProduct.product_name)
+                      }
+                    />
+                  );
+                })}
+            </div>
+            {formik.values.products.length > 0 && (
+              <p
+                className={`text-sm ${
+                  formik.values.products.reduce(
+                    (sum, p) => sum + p.price * p.quantity,
+                    0
+                  ) > formik.values.price
+                    ? "text-red-600"
+                    : "text-gray-600"
+                }`}
+              >
+                Total Products Value: ₦
+                {formik.values.products
+                  .reduce((sum, p) => sum + p.price * p.quantity, 0)
+                  .toLocaleString()}
+              </p>
+            )}
             <button
               type="submit"
               className="bg-primary text-white px-6 py-2 rounded-full w-full sm:w-auto"
@@ -286,7 +452,7 @@ const PackageUpload = ({
           <p className="text-xl md:text-2xl font-semibold">Packages</p>
           <div className="w-full">
             {fetchingPackage ? (
-              <Spinner />
+              <LazyLoader />
             ) : packages.length === 0 ? (
               <div className="w-full flex items-center justify-center py-12">
                 <div className="text-gray-500 text-lg font-medium">
@@ -294,22 +460,21 @@ const PackageUpload = ({
                 </div>
               </div>
             ) : (
-              <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-9">
+              <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-3">
                 {packages.map((pkg, index) => (
                   <div
                     key={index}
-                    className="relative group w-[270px] md:w-[300px] border border-black/10 flex flex-col rounded-2xl overflow-hidden lg:mx-0 mx-auto"
+                    className="relative group w-[270px] md:w-[280px] border border-black/10 flex flex-col rounded-2xl overflow-hidden lg:mx-0 mx-auto"
                     onMouseOver={() => setActivePackage(pkg)}
                   >
                     <div
                       className={`h-18 ${
-                        pkg.name.includes("Package")
-                          ? "bg-primary"
-                          : "bg-secondary"
-                      } rounded-t-2xl flex items-center justify-center text-white text-center`}
+                        index % 2 === 0 ? "bg-primary" : "bg-secondary"
+                      } rounded-t-2xl flex items-center justify-center text-white text-center capitalize`}
                     >
                       <p className="text-xl md:text-2xl font-bold">
-                        {pkg.name}
+                        {pkg.name}{" "}
+                        {pkg.name.includes("package") ? "" : "package"}
                       </p>
                     </div>
 

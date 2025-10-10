@@ -9,47 +9,49 @@ const AnnouncementModal = ({ announcement, onClose }) => {
   return (
     <div className="fixed inset-0 backdrop-blur-xs bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white w-[90%] max-w-md rounded-2xl shadow-lg p-6 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-black"
-        >
-          <X size={20} />
-        </button>
+        <div className="max-h-100 overflow-auto styled-scrollbar">
+          <button
+            onClick={onClose}
+            className="absolute top-1 right-2 text-gray-500 hover:text-black"
+          >
+            <X size={20} />
+          </button>
 
-        <div
-          className="w-10 h-1 rounded-full mb-4"
-          style={{ backgroundColor: announcement.color }}
-        ></div>
+          <div
+            className="w-10 h-1 rounded-full mb-4"
+            style={{ backgroundColor: announcement.color }}
+          ></div>
 
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          {announcement.title}
-        </h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            {announcement.title}
+          </h2>
 
-        {isattachement ? (
-          <>
-            <img
-              src={`${imageBaseUrl}/${announcement.image}`}
-              alt={announcement.title}
-              className="border border-gray-300 rounded-lg"
-            />
-          </>
-        ) : (
-          <>
-            <p className="text-xs text-gray-500 mb-4">{announcement.date}</p>
+          {isattachement ? (
+            <>
+              <img
+                src={`${imageBaseUrl}/${announcement.image}`}
+                alt={announcement.title}
+                className="border border-gray-300 rounded-lg"
+              />
+            </>
+          ) : (
+            <>
+              <p className="text-xs text-gray-500 mb-4">{announcement.date}</p>
 
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {announcement.description}
-            </p>
-            {announcement.image && announcement.action && (
-              <button
-                className="mt-6 w-full bg-primary cursor-pointer text-white py-2 px-4 rounded-lg "
-                onClick={() => setIsAttachement(!isattachement)}
-              >
-                {announcement.action}
-              </button>
-            )}
-          </>
-        )}
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {announcement.description}
+              </p>
+              {announcement.image && announcement.action && (
+                <button
+                  className="mt-6 w-full bg-primary cursor-pointer text-white py-2 px-4 rounded-lg "
+                  onClick={() => setIsAttachement(!isattachement)}
+                >
+                  {announcement.action}
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
