@@ -45,9 +45,9 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
     const transactionPin = localStorage.getItem("currentAuth");
     if (transactionPin) {
       localStorage.removeItem("currentAuth");
-      setPinModal(false);
+      setShowPinModal(false);
     } else {
-      setPinModal(false);
+      setShowPinModal(false);
     }
   };
 
@@ -85,11 +85,12 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data.message || "Order placed successfully!");
         localStorage.removeItem("currentAuth");
-
+        setShowPinModal(false); // Close PinModal after successful purchase
         // Optional: clear cart or redirect
       } else {
         toast.error(response.data.message || "Failed to place order.");
         localStorage.removeItem("currentAuth");
+        setShowPinModal(false); // Close PinModal on failure
       }
     } catch (error) {
       console.error("Error purchasing:", error);
@@ -108,6 +109,7 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
       } else {
         toast.error(message);
       }
+      setShowPinModal(false); // Close PinModal on error
     } finally {
       setLoading(false);
       localStorage.removeItem("currentAuth");
@@ -140,7 +142,6 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
 
         <button
           onClick={handleConfirmModal}
-          disabled={loading}
           className={`${
             loading
               ? "bg-gray-400 cursor-not-allowed"
