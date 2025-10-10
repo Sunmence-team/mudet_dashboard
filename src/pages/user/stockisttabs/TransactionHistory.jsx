@@ -6,14 +6,16 @@ import PaginationControls from "../../../utilities/PaginationControls";
 import LazyLoader from "../../../components/loaders/LazyLoader";
 
 const TransactionHistory = () => {
-  const { token } = useUser();
+  const { user, token } = useUser();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Format amount as currency (e.g., ₦5,000)
+  const userId = user?.id;
+
+  // Format amount as currency (e.g., ₦4,200)
   const formatAmount = (amount) => {
     if (!amount) return "₦0";
     return `₦${parseFloat(amount).toLocaleString("en-NG", {
@@ -22,7 +24,7 @@ const TransactionHistory = () => {
     })}`;
   };
 
-  // Format date and time (e.g., { date: "2025-10-10", time: "12:56 AM" })
+  // Format date and time (e.g., { date: "2025-10-06", time: "4:01 PM" })
   const formatDateTime = (dateString) => {
     if (!dateString) return { date: "N/A", time: "N/A" };
     const date = new Date(dateString);
@@ -56,30 +58,29 @@ const TransactionHistory = () => {
     setLoading(true);
     setError(null);
     try {
+      if (!userId) {
+        throw new Error("User ID not found. Please log in.");
+      }
       if (!token) {
         throw new Error("No authentication token found. Please log in.");
       }
 
-      const response = await api.post(
-        "/api/stockists/3/user",
-        { transactions_page: page },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get(`/api/stockists/bonus/${userId}?page=${page}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       console.log(
         "Transaction history response:",
         JSON.stringify(response.data, null, 2)
       );
 
-      if (response.data.ok && response.data.transactions) {
-        setTransactions(response.data.transactions.data || []);
-        setCurrentPage(response.data.transactions.current_page || 1);
-        setTotalPages(response.data.transactions.last_page || 1);
+      if (response.data.ok && response.data.data) {
+        setTransactions(response.data.data.data || []);
+        setCurrentPage(response.data.data.current_page || 1);
+        setTotalPages(response.data.data.last_page || 1);
       } else {
         throw new Error(
           response.data.message || "Failed to fetch transactions"
@@ -101,14 +102,14 @@ const TransactionHistory = () => {
 
   useEffect(() => {
     fetchTransactions(currentPage);
-  }, [currentPage, token]);
+  }, [currentPage, userId, token]);
 
   return (
     <div className="bg-[var(--color-tetiary)] w-full flex items-center justify-center py-12">
       {/* Table container */}
       <div className="overflow-x-auto w-[95%]">
         {/* Header */}
-        <div className="flex justify-between py- font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
+        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
           <span className="text-start ps-4 w-[15%]">SN</span>
           <span className="text-start w-[25%]">Type</span>
           <span className="w-[20%] text-center">Amount</span>
@@ -130,25 +131,25 @@ const TransactionHistory = () => {
               No transactions found.
             </div>
           ) : (
-            transactions.map((transaction, idx) => {
+            transactions.map((transaction) => {
               const { date, time } = formatDateTime(transaction.created_at);
               return (
                 <div
                   key={transaction.id}
-                  className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
+                  className="flex justify-between items-center py-6 bg-white rounded-md shadow-sm text-black/80  font-medium hover:bg-gray-50 transition"
                 >
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
                     {transaction.id}
                   </span>
-                  <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
+                  <span className="capitalize px-2 break-words text-base text-start w-[25%]">
                     {transaction.transaction_type.replace(/_/g, " ")}
                   </span>
-                  <span className="font-medium text-sm w-[20%] text-center">
+                  <span className="font-medium text-base w-[20%] text-center">
                     {formatAmount(transaction.amount)}
                   </span>
                   <span className="w-[20%] text-center">
                     <div
-                      className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border border-black/10 mx-auto ${getStatusColor(
+                      className={`px-3 py-2 w-[100px] rounded-[10px] text-sm font-medium border border-black/10 mx-auto ${getStatusColor(
                         transaction.status
                       )}`}
                     >
@@ -157,11 +158,8 @@ const TransactionHistory = () => {
                         .replace(/\b\w/g, (c) => c.toUpperCase())}
                     </div>
                   </span>
-                  <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
+                  <span className="text-[var(--color-primary)] font-bold flex flex-col text-base text-end pe-5 ps-2 w-[20%]">
                     <span>{date}</span>
-                    <span className="text-[var(--color-primary)] font-bold pe-2">
-                      {time}
-                    </span>
                   </span>
                 </div>
               );
