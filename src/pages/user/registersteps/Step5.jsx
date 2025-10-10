@@ -14,6 +14,7 @@ const Step5 = forwardRef(({ nextStep, formData = {}, updateFormData, setSubmitti
   const [reference, setReference] = useState(null);
   const [lastSessionId, setLastSessionId] = useState(null);
   const [pinModal, setPinModal] = useState(false);
+  const [countdown, setCountdown] = useState(5); // Countdown state starting at 5
 
   // Memoized completeRegistration function
   const completeRegistration = useCallback(
@@ -114,14 +115,21 @@ const Step5 = forwardRef(({ nextStep, formData = {}, updateFormData, setSubmitti
     setPinModal(false);
   }, []);
 
-  // Redirect to dashboard after 5 seconds on successful completion
+  // Countdown and redirect
   useEffect(() => {
     if (completed) {
-      const timer = setTimeout(() => {
-        console.log("Redirecting to /user/overview");
-        navigate("/user/overview");
-      }, 5000);
-      return () => clearTimeout(timer);
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            console.log("Redirecting to /user/overview");
+            navigate("/user/overview");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
     }
   }, [completed, navigate]);
 
@@ -155,7 +163,9 @@ const Step5 = forwardRef(({ nextStep, formData = {}, updateFormData, setSubmitti
         <div className="bg-white border border-black/10 rounded-lg p-8 md:p-16 w-full max-w-xl text-center">
           <h2 className="text-3xl md:text-4xl font-semibold text-green-600 mb-4">Registration Successful</h2>
           <p className="text-lg md:text-xl text-gray-600">Your account has been created and enabled successfully.</p>
-          <p className="text-sm md:text-base text-gray-500 mt-2">Redirecting to dashboard in 5 seconds...</p>
+          <p className="text-sm md:text-base text-gray-500 mt-2">
+            Redirecting in {countdown} {countdown === 1 ? "sec" : "secs"}
+          </p>
           {reference && (
             <p className="text-sm md:text-base text-gray-500 mt-2">Reference: {reference}</p>
           )}
