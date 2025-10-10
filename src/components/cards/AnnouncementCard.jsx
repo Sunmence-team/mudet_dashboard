@@ -74,7 +74,7 @@ const AnnouncementCard = () => {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow p-5 mx-auto border-gray-300 border">
+      <div className="bg-white rounded-2xl shadow p-5 mx-auto border-gray-300 border h-89">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
           Announcement Board
         </h2>
@@ -101,7 +101,7 @@ const AnnouncementCard = () => {
                       {item.title}
                     </h3>
                     <p className="text-xs text-gray-600 leading-relaxed">
-                      {item.description}
+                      {item.description?.slice(0, 300)}...
                     </p>
                   </div>
                   <div className="flex-shrink-0 ml-4 font-semibold">

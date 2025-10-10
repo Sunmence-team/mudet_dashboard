@@ -22,12 +22,6 @@ const PinModal = ({ onClose, onConfirm, user }) => {
   const handleConfirm = async () => {
     try {
       const pinValue = pin.join("");
-      if (+pinValue !== +user.pin) {
-        toast.error("Incorrect Pin");
-        setPin(["", "", "", ""]);
-        setIncorrectPin(true);
-        return;
-      }
       if (pinValue.length === 4) {
         localStorage.setItem("currentAuth", pinValue);
         if (pinValue) {
