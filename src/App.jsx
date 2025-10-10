@@ -24,6 +24,7 @@ import Stockist from "./pages/admin/Stockist";
 import StockistUser from "./pages/StockistUser";
 import Upgrade from "./pages/user/Upgrade";
 import Announcements from "./pages/admin/Announcements";
+import ManageWithdrawals from "./pages/admin/transactions/ManageWithdrawals";
 
 function App() {
   return (
@@ -113,6 +114,10 @@ function App() {
         <Route
           path={"/user/transactions"}
           element={<MainLayout child={<Transactions />} />}
+        />
+        <Route
+          path={"/admin/transactions"}
+          element={<MainLayout child={<ManageWithdrawals />} />}
         />
         <Route
           path={"/admin/product-upload"}

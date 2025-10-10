@@ -108,9 +108,14 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "AllTransactions",
+      name: "Transactions",
       path: "/user/transactions",
       role: ["user"],
+    },
+    {
+      name: "Manage Transactions",
+      path: "/admin/transactions",
+      role: ["admin"],
     },
     {
       name: "Stockist",
@@ -178,7 +183,6 @@ const Navbar = () => {
             className="object-cover md:block hidden"
           />
 
-          {/* Scrollable links section */}
           <div className="relative flex items-center overflow-hidden w-3/4">
             {/* Left scroll */}
             {canScrollLeft && (
@@ -244,7 +248,7 @@ const Navbar = () => {
           </Link>
           <Link
             to={"/user/profile"}
-            className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-xl bg-tetiary text-primary"
+            className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-lg bg-tetiary text-primary"
           >
             <h3>
               {" "}

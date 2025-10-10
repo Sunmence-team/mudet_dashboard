@@ -14,16 +14,13 @@ import {
 import { HiUserGroup } from "react-icons/hi";
 import { useUser } from "../../context/UserContext";
 import { Link } from "react-router-dom";
+import { formatterUtility } from "../../utilities/formatterutility";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("password");
-  const backupUser = JSON.parse(localStorage.getItem("user"));
   const [activeUser, setActiveuser] = useState({});
-  const { user } = useUser();
-  const backUpUser = JSON.parse(localStorage.getItem("user"));
-  const name = `${user?.first_name || backUpUser?.first_name} ${
-    user?.last_name || backUpUser?.last_name
-  }`;
+  const { user, miscellaneousDetails } = useUser();
+  const name = `${user?.first_name} ${user?.last_name}`;
 
   const tabs = [
     { key: "password", label: "Password Reset" },
@@ -34,7 +31,7 @@ const Profile = () => {
   ];
 
   useEffect(() => {
-    setActiveuser(user || backupUser);
+    setActiveuser(user);
   }, []);
 
   return (
@@ -108,7 +105,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold "> Personal PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser?.personal_pv).toLocaleString()}
+                {formatterUtility(Number(activeUser?.personal_pv), true)}
               </span>
             </div>
 
@@ -118,7 +115,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Total PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser?.total_pv).toLocaleString()}
+                {formatterUtility((Number(miscellaneousDetails?.totalPVLeft) + Number(miscellaneousDetails?.totalPVRight)), true)}
               </span>
             </div>
 
@@ -128,7 +125,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Right PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser?.right_pv_checkpoint).toLocaleString()}
+                {formatterUtility(Number(miscellaneousDetails?.totalPVLeft), true)}
               </span>{" "}
             </div>
 
@@ -138,7 +135,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Left PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser?.left_pv_checkpoint).toLocaleString()}
+                {formatterUtility(Number(miscellaneousDetails?.totalPVRight), true)}
               </span>{" "}
             </div>
           </div>
