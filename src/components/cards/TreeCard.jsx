@@ -1,7 +1,6 @@
 import React from 'react';
 import { Popover } from "@headlessui/react";
 import { useFloating, flip, shift, autoUpdate } from "@floating-ui/react";
-import { BsChevronDown, BsChevronRight } from 'react-icons/bs';
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
 
 const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
@@ -11,45 +10,45 @@ const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
     });
 
     return (
-        <Popover as="div" className="relative -z-1 inline-block text-left w-full">
+        <Popover as="div" className="relative z-1 inline-block text-left w-full">
             <Popover.Button
                 as="div"
                 title={`View ${user.username} info`}
                 ref={refs.setReference}
-                className="group bg-primary text-tetiary thiscard cursor-pointer rounded-lg transition-all duration-300 w-[200px] min-h-[90px] relative text-sm p-2 pt-6"
+                className="group bg-primary text-tetiary thiscard cursor-pointer rounded-lg transition-all duration-300 w-[180px] min-h-[90px] relative text-sm p-2 pt-6"
             >
-                    <div className="absolute -top-1/2 left-1/2 -translate-x-1/2 md:w-18 w-18 md:h-18 h-18 rounded-full border-2 border-primary bg-tetiary overflow-hidden flex items-center justify-center">
-                        <h3 className='text-primary text-2xl uppercase font-extrabold'>{`${user?.fullname?.split(" ")[0].charAt(0)}${user?.fullname?.split(" ")[1]?.charAt(0) || ''}`}</h3>
-                    </div>
-                    <div className="relative">
-                        <h3 className="font-medium text-center mt-1 capitalize">{user.fullname}</h3>
-                        <small className="flex items-center justify-center gap-2 font-medium text-pryClr">
-                            <span>Left: {user.left_count}</span>
-                            <hr className='h-3 border-0 border-r-2' />
-                            <span>Right: {user.right_count}</span>
-                        </small>
-                        {hasChildren && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onToggle(user.id)
-                                }}
-                                className={`w-12 h-4 mx-auto flex translate-y-2.5 items-center justify-center rounded-t bg-secondary cursor-pointer text-white hover:shadow-md transition-all duration-200`}
-                            >
-                                {isExpanded ? <FaCaretDown size={16} /> : <FaCaretUp size={16} />}
-                            </button>
-                        )}
-                    </div>
+                <div className="absolute -top-1/2 left-1/2 -translate-x-1/2 md:w-18 w-18 md:h-18 h-18 rounded-full border-2 border-primary bg-tetiary overflow-hidden flex items-center justify-center">
+                    <h3 className='text-primary text-2xl uppercase font-extrabold'>{`${user?.fullname?.split(" ")[0].charAt(0)}${user?.fullname?.split(" ")[1]?.charAt(0) || ''}`}</h3>
+                </div>
+                <div className="">
+                    <h3 className="font-medium text-center mt-1 capitalize line-clamp-1">{user.fullname}</h3>
+                    <small className="flex items-center justify-center gap-2 font-medium text-pryClr">
+                        <span>Left: {user.left_count}</span>
+                        <hr className='h-3 border-0 border-r-2' />
+                        <span>Right: {user.right_count}</span>
+                    </small>
+                    {hasChildren && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onToggle(user.id)
+                            }}
+                            title='Expand Tree'
+                            className={`w-12 h-4 mx-auto flex translate-y-2.5 items-center justify-center rounded-t bg-secondary cursor-pointer text-white hover:shadow-md transition-all duration-200`}
+                        >
+                            {isExpanded ? <FaCaretDown size={16} /> : <FaCaretUp size={16} />}
+                        </button>
+                    )}
+                </div>
             </Popover.Button>
-            {isExpanded && user.left && <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 h-8 w-[1px] bg-black/50 -z-1"></div>}
+            {isExpanded && user.left && <div className="absolute -Z-[1] left-1/2 -translate-x-1/2 -bottom-8 h-8 w-[1px] bg-black"></div>}
             <Popover.Panel
                 ref={refs.setFloating}
                 style={floatingStyles}
-                className="absolute z-2 w-[250px] mt-3 px-4 py-2 bg-tetiary border border-gray-200 rounded-md shadow-lg"
+                className="absolute z-100 w-[250px] mt-3 px-4 py-2 bg-tetiary border border-gray-200 rounded-md shadow-lg"
             >
-                {/* Popover content */}
                 <div className="font-semibold text-sm mb-2">User Details</div>
-                <div className="space-y-1 text-xs text-gray-700">
+                <div className="space-y-1 text-xs text-gray-800">
                     <p><strong>Username:</strong> {user.username}</p>
                     <p><strong>Name:</strong> {user.fullname}</p>
                     <p><strong>Email:</strong> {user.email}</p>

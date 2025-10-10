@@ -5,6 +5,7 @@ import TreeNode from './TreeNode';
 import { useUser } from '../../../../context/UserContext';
 import api from '../../../../utilities/api';
 import { toast } from 'sonner';
+import LazyLoader from '../../../../components/LazyLoader';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -16,220 +17,220 @@ const GenealogyTree = () => {
   const [startY, setStartY] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
-  // const [referralData, setReferralData] = useState(null);
+  const [referralData, setReferralData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { token } = useUser()
 
-  const referralData ={
-    address: {
-      address1: null, 
-      address2: null, 
-      city: 'Kuje', 
-      state: 'Federal Capital Territory', 
-      country: 'Nigeria'
-    },
-    created_at:"2025-08-25T18:18:05.000000Z",
-    email:"developerone@gmail.com",
-    fullname:"developer one",
-    left_count: 10,
-    right_count: 10,
-    username: "Mayorkun27",
-    id:459,
-    left: {
-        address: {
-            address1: null, 
-            address2: null, 
-            city: 'Kuje', 
-            state: 'Federal Capital Territory', 
-            country: 'Nigeria'
-        },
-        created_at:"2025-08-25T18:18:05.000000Z",
-        email:"developerone@gmail.com",
-        fullname:"developer one",
-        left_count: 10,
-        right_count: 10,
-        username: "Mayorkun27",
-        id:459,
-        left: {
-        address: {
-            address1: null, 
-            address2: null, 
-            city: 'Kuje', 
-            state: 'Federal Capital Territory', 
-            country: 'Nigeria'
-        },
-        created_at:"2025-08-25T18:18:05.000000Z",
-        email:"developerone@gmail.com",
-        fullname:"developer one",
-        left_count: 10,
-        right_count: 10,
-        username: "Mayorkun27",
-        id:459,
-    },
-    right: {
-      address: {
-        address1: null, 
-        address2: null, 
-        city: 'Kuje', 
-        state: 'Federal Capital Territory', 
-        country: 'Nigeria'
-      },
-      created_at:"2025-08-25T18:18:05.000000Z",
-      email:"developerone@gmail.com",
-      fullname:"developer one",
-      left_count: 10,
-      right_count: 10,
-      username: "Mayorkun27",
-      id:459,
-      left: {
-          address: {
-              address1: null, 
-              address2: null, 
-              city: 'Kuje', 
-              state: 'Federal Capital Territory', 
-              country: 'Nigeria'
-          },
-          created_at:"2025-08-25T18:18:05.000000Z",
-          email:"developerone@gmail.com",
-          fullname:"developer one",
-          left_count: 10,
-          right_count: 10,
-          username: "Mayorkun27",
-          id:459,
-      },
-      right: {
-        address: {
-          address1: null, 
-          address2: null, 
-          city: 'Kuje', 
-          state: 'Federal Capital Territory', 
-          country: 'Nigeria'
-        },
-        created_at:"2025-08-25T18:18:05.000000Z",
-        email:"developerone@gmail.com",
-        fullname:"developer one",
-        left_count: 10,
-        right_count: 10,
-        username: "Mayorkun27",
-        id:459,
-        left: {
-        address: {
-          address1: null, 
-          address2: null, 
-          city: 'Kuje', 
-          state: 'Federal Capital Territory', 
-          country: 'Nigeria'
-        },
-        created_at:"2025-08-25T18:18:05.000000Z",
-        email:"developerone@gmail.com",
-        fullname:"developer one",
-        left_count: 10,
-        right_count: 10,
-        username: "Mayorkun27",
-        id:459,
-      }
-      }
-    }
-    },
-    right: {
-      address: {
-        address1: null, 
-        address2: null, 
-        city: 'Kuje', 
-        state: 'Federal Capital Territory', 
-        country: 'Nigeria'
-      },
-      created_at:"2025-08-25T18:18:05.000000Z",
-      email:"developerone@gmail.com",
-      fullname:"developer one",
-      left_count: 10,
-      right_count: 10,
-      username: "Mayorkun27",
-      id:459,
-      left: {
-          address: {
-              address1: null, 
-              address2: null, 
-              city: 'Kuje', 
-              state: 'Federal Capital Territory', 
-              country: 'Nigeria'
-          },
-          created_at:"2025-08-25T18:18:05.000000Z",
-          email:"developerone@gmail.com",
-          fullname:"developer one",
-          left_count: 10,
-          right_count: 10,
-          username: "Mayorkun27",
-          id:459,
-      },
-      right: {
-        address: {
-          address1: null, 
-          address2: null, 
-          city: 'Kuje', 
-          state: 'Federal Capital Territory', 
-          country: 'Nigeria'
-        },
-        created_at:"2025-08-25T18:18:05.000000Z",
-        email:"developerone@gmail.com",
-        fullname:"developer one",
-        left_count: 10,
-        right_count: 10,
-        username: "Mayorkun27",
-        id:459,
-        left: {
-        address: {
-          address1: null, 
-          address2: null, 
-          city: 'Kuje', 
-          state: 'Federal Capital Territory', 
-          country: 'Nigeria'
-        },
-        created_at:"2025-08-25T18:18:05.000000Z",
-        email:"developerone@gmail.com",
-        fullname:"developer one",
-        left_count: 10,
-        right_count: 10,
-        username: "Mayorkun27",
-        id:459,
-      }
-      }
-    }
-  }
-
-  // const fetchGenealogyTree = async () => {
-  //   setIsLoading(true)
-  //   try {
-  //     const response = await api.get(`/api/referrals/genealogy-tree`, {
-  //       headers: {
-  //         "Authorization": `Bearer ${token}`,
-  //       }
-  //     });
-
-  //     console.log("Genealogy response", response)
-
-  //     if (response.status === 200) {
-  //       setReferralData(response.data.data)
-  //       toast.success(response.data.message || "Genealogy data fetched successfully.");
-  //     } else {
-  //       throw new Error(response.data.message || "Genealogy data call failed.");
+  // const referralData ={
+  //   address: {
+  //     address1: null, 
+  //     address2: null, 
+  //     city: 'Kuje', 
+  //     state: 'Federal Capital Territory', 
+  //     country: 'Nigeria'
+  //   },
+  //   created_at:"2025-08-25T18:18:05.000000Z",
+  //   email:"developerone@gmail.com",
+  //   fullname:"developer one",
+  //   left_count: 10,
+  //   right_count: 10,
+  //   username: "Mayorkun27",
+  //   id:459,
+  //   left: {
+  //       address: {
+  //           address1: null, 
+  //           address2: null, 
+  //           city: 'Kuje', 
+  //           state: 'Federal Capital Territory', 
+  //           country: 'Nigeria'
+  //       },
+  //       created_at:"2025-08-25T18:18:05.000000Z",
+  //       email:"developerone@gmail.com",
+  //       fullname:"developer one",
+  //       left_count: 10,
+  //       right_count: 10,
+  //       username: "Mayorkun27",
+  //       id:459,
+  //       left: {
+  //       address: {
+  //           address1: null, 
+  //           address2: null, 
+  //           city: 'Kuje', 
+  //           state: 'Federal Capital Territory', 
+  //           country: 'Nigeria'
+  //       },
+  //       created_at:"2025-08-25T18:18:05.000000Z",
+  //       email:"developerone@gmail.com",
+  //       fullname:"developer one",
+  //       left_count: 10,
+  //       right_count: 10,
+  //       username: "Mayorkun27",
+  //       id:459,
+  //   },
+  //   right: {
+  //     address: {
+  //       address1: null, 
+  //       address2: null, 
+  //       city: 'Kuje', 
+  //       state: 'Federal Capital Territory', 
+  //       country: 'Nigeria'
+  //     },
+  //     created_at:"2025-08-25T18:18:05.000000Z",
+  //     email:"developerone@gmail.com",
+  //     fullname:"developer one",
+  //     left_count: 10,
+  //     right_count: 10,
+  //     username: "Mayorkun27",
+  //     id:459,
+  //     left: {
+  //         address: {
+  //             address1: null, 
+  //             address2: null, 
+  //             city: 'Kuje', 
+  //             state: 'Federal Capital Territory', 
+  //             country: 'Nigeria'
+  //         },
+  //         created_at:"2025-08-25T18:18:05.000000Z",
+  //         email:"developerone@gmail.com",
+  //         fullname:"developer one",
+  //         left_count: 10,
+  //         right_count: 10,
+  //         username: "Mayorkun27",
+  //         id:459,
+  //     },
+  //     right: {
+  //       address: {
+  //         address1: null, 
+  //         address2: null, 
+  //         city: 'Kuje', 
+  //         state: 'Federal Capital Territory', 
+  //         country: 'Nigeria'
+  //       },
+  //       created_at:"2025-08-25T18:18:05.000000Z",
+  //       email:"developerone@gmail.com",
+  //       fullname:"developer one",
+  //       left_count: 10,
+  //       right_count: 10,
+  //       username: "Mayorkun27",
+  //       id:459,
+  //       left: {
+  //       address: {
+  //         address1: null, 
+  //         address2: null, 
+  //         city: 'Kuje', 
+  //         state: 'Federal Capital Territory', 
+  //         country: 'Nigeria'
+  //       },
+  //       created_at:"2025-08-25T18:18:05.000000Z",
+  //       email:"developerone@gmail.com",
+  //       fullname:"developer one",
+  //       left_count: 10,
+  //       right_count: 10,
+  //       username: "Mayorkun27",
+  //       id:459,
   //     }
-  //   } catch (error) {
-  //     if (error.response?.data?.message?.includes("unauthenticated")) {
-  //       logout();
   //     }
-  //     console.error("An error occured fetching genealogy data:", error);
-  //     toast.error(error.response?.data?.message || "An error occurred fetching genealogy data.");
-  //   } finally {
-  //     setTimeout(() => {
-  //       setIsLoading(false)
-  //     }, 2000);
+  //   }
+  //   },
+  //   right: {
+  //     address: {
+  //       address1: null, 
+  //       address2: null, 
+  //       city: 'Kuje', 
+  //       state: 'Federal Capital Territory', 
+  //       country: 'Nigeria'
+  //     },
+  //     created_at:"2025-08-25T18:18:05.000000Z",
+  //     email:"developerone@gmail.com",
+  //     fullname:"developer one",
+  //     left_count: 10,
+  //     right_count: 10,
+  //     username: "Mayorkun27",
+  //     id:459,
+  //     left: {
+  //         address: {
+  //             address1: null, 
+  //             address2: null, 
+  //             city: 'Kuje', 
+  //             state: 'Federal Capital Territory', 
+  //             country: 'Nigeria'
+  //         },
+  //         created_at:"2025-08-25T18:18:05.000000Z",
+  //         email:"developerone@gmail.com",
+  //         fullname:"developer one",
+  //         left_count: 10,
+  //         right_count: 10,
+  //         username: "Mayorkun27",
+  //         id:459,
+  //     },
+  //     right: {
+  //       address: {
+  //         address1: null, 
+  //         address2: null, 
+  //         city: 'Kuje', 
+  //         state: 'Federal Capital Territory', 
+  //         country: 'Nigeria'
+  //       },
+  //       created_at:"2025-08-25T18:18:05.000000Z",
+  //       email:"developerone@gmail.com",
+  //       fullname:"developer one",
+  //       left_count: 10,
+  //       right_count: 10,
+  //       username: "Mayorkun27",
+  //       id:459,
+  //       left: {
+  //       address: {
+  //         address1: null, 
+  //         address2: null, 
+  //         city: 'Kuje', 
+  //         state: 'Federal Capital Territory', 
+  //         country: 'Nigeria'
+  //       },
+  //       created_at:"2025-08-25T18:18:05.000000Z",
+  //       email:"developerone@gmail.com",
+  //       fullname:"developer one",
+  //       left_count: 10,
+  //       right_count: 10,
+  //       username: "Mayorkun27",
+  //       id:459,
+  //     }
+  //     }
   //   }
   // }
 
-  // useEffect(() => {
-  //   fetchGenealogyTree()
-  // }, [token])
+  const fetchGenealogyTree = async () => {
+    setIsLoading(true)
+    try {
+      const response = await api.get(`/api/referrals/genealogy-tree`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        }
+      });
+
+      // console.log("Genealogy response", response)
+
+      if (response.status === 200) {
+        setReferralData(response.data.data)
+        toast.success(response.data.message || "Genealogy data fetched successfully.");
+      } else {
+        throw new Error(response.data.message || "Genealogy data call failed.");
+      }
+    } catch (error) {
+      if (error.response?.data?.message?.includes("unauthenticated")) {
+        logout();
+      }
+      console.error("An error occured fetching genealogy data:", error);
+      toast.error(error.response?.data?.message || "An error occurred fetching genealogy data.");
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 2000);
+    }
+  }
+
+  useEffect(() => {
+    fetchGenealogyTree()
+  }, [token])
 
   const canvaRef = useRef(null);
 
@@ -314,10 +315,15 @@ const GenealogyTree = () => {
       onTouchEnd={handleTouchEnd}
     >
       <div className="w-max mx-auto" style={{ transform: `scale(${canvaScale / 100})`, transformOrigin: 'top center' }}>
-        {referralData && <TreeNode node={referralData} />}
+        {isLoading ? (
+          <LazyLoader 
+            color={"green"}
+            width={40}
+          />
+        ) : referralData && <TreeNode node={referralData} />}
       </div>
 
-      <div className="absolute bottom-0 right-0 w-max right-8 md:bottom-8 bottom-4 flex bg-gray-100 border border-black/20 rounded-md overflow-hidden">
+      <div className="absolute w-max right-8 md:bottom-8 bottom-4 flex bg-gray-100 border border-black/20 rounded-md overflow-hidden">
         <button
           type='button'
           className='w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer'

@@ -85,7 +85,7 @@ const AnnouncementCard = ({ style, refresh, pagination=false }) => {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow p-5 mx-auto border-gray-300 border">
+      <div className="bg-white rounded-2xl shadow p-5 mx-auto border-gray-300 border h-89">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
           Announcement Board
         </h2>
@@ -101,7 +101,7 @@ const AnnouncementCard = ({ style, refresh, pagination=false }) => {
                 onClick={() => setIsModalOpen(true)}
               >
                 <div
-                  className="absolute left-0 top-0 bottom-0 w-3 rounded-t-full rounded-b-full"
+                  className="absolute left-0 top-0 bottom-0 w-2 rounded-t-full rounded-b-full"
                   style={{
                     backgroundColor: index % 2 === 0 ? "#2B7830" : "#A9890B",
                   }}
