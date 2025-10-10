@@ -14,16 +14,13 @@ import {
 import { HiUserGroup } from "react-icons/hi";
 import { useUser } from "../../context/UserContext";
 import { Link } from "react-router-dom";
+import { formatterUtility } from "../../utilities/formatterutility";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("password");
-  const backupUser = JSON.parse(localStorage.getItem("user"));
   const [activeUser, setActiveuser] = useState({});
-  const { user } = useUser();
-  const backUpUser = JSON.parse(localStorage.getItem("user"));
-  const name = `${user?.first_name || backUpUser?.first_name} ${
-    user?.last_name || backUpUser?.last_name
-  }`;
+  const { user, miscellaneousDetails } = useUser();
+  const name = `${user?.first_name} ${user?.last_name}`;
 
   const tabs = [
     { key: "password", label: "Password Reset" },
@@ -34,7 +31,7 @@ const Profile = () => {
   ];
 
   useEffect(() => {
-    setActiveuser(user || backupUser);
+    setActiveuser(user);
   }, []);
 
   return (
@@ -57,7 +54,7 @@ const Profile = () => {
           <p className="text-gray-500 text-sm">@{activeUser?.username}</p>
 
           <div className="mt-4 space-y-2 w-full">
-            <div className="border-y p-3 border-black/30">
+            <div className="border-y-1 p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   EMAIL:
@@ -65,7 +62,7 @@ const Profile = () => {
                 {activeUser?.email}
               </p>
             </div>
-            <div className="border-b p-3 border-black/30">
+            <div className="border-b-1 p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   USERNAME:
@@ -73,15 +70,15 @@ const Profile = () => {
                 {activeUser?.username}
               </p>
             </div>
-            <div className="border-b p-3 border-black/30">
-              <p className="text-sm flex justify-between capitalize">
+            <div className="border-b-1 p-3 border-black/30">
+              <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   PACKAGE:
                 </span>{" "}
                 {miscellaneousDetails?.planDetails?.name ? miscellaneousDetails?.planDetails?.name : "None"}
               </p>
             </div>
-            <div className="border-b p-3 border-black/30">
+            <div className="border-b-1 p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   CURRENT RANK:
@@ -108,7 +105,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold "> Personal PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser?.personal_pv).toLocaleString()}
+                {formatterUtility(Number(activeUser?.personal_pv), true)}
               </span>
             </div>
 
@@ -118,7 +115,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Total PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser?.total_pv).toLocaleString()}
+                {formatterUtility((Number(miscellaneousDetails?.totalPVLeft) + Number(miscellaneousDetails?.totalPVRight)), true)}
               </span>
             </div>
 
@@ -128,7 +125,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Right PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser?.right_pv_checkpoint).toLocaleString()}
+                {formatterUtility(Number(miscellaneousDetails?.totalPVLeft), true)}
               </span>{" "}
             </div>
 
@@ -138,7 +135,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Left PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser?.left_pv_checkpoint).toLocaleString()}
+                {formatterUtility(Number(miscellaneousDetails?.totalPVRight), true)}
               </span>{" "}
             </div>
           </div>

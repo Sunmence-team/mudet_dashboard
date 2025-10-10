@@ -1,40 +1,93 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
+import api from "../../../utilities/api";
+import LazyLoader from "../../../components/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 
 const EarningWallet = () => {
   const { user } = useUser();
   const [earningData, setEarningData] = useState({
-    data: [
-      {
-        id: 1,
-        transaction_type: "referral_bonus",
-        amount: "5000",
-        status: "successful",
-        created_at: "2025-10-07T14:20:00Z",
-      },
-      {
-        id: 2,
-        transaction_type: "team_bonus",
-        amount: "2500",
-        status: "pending",
-        created_at: "2025-10-06T10:45:00Z",
-      },
-      {
-        id: 3,
-        transaction_type: "milestone_bonus",
-        amount: "8000",
-        status: "successful",
-        created_at: "2025-10-05T09:30:00Z",
-      },
-    ],
+    data: [],
     current_page: 1,
     last_page: 1,
     per_page: 10,
-    total: 3,
+    total: 0,
   });
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] = useState(false);
+  const userId = user?.id;
+
+  const fetchEarnings = async (page = 1) => {
+    setLoading(true);
+    try {
+      if (!userId) {
+        console.error("User ID is undefined. Please log in.");
+        setEarningData({
+          data: [],
+          current_page: 1,
+          last_page: 1,
+          per_page: 10,
+          total: 0,
+        });
+        return;
+      }
+
+      // Note: Endpoint uses hardcoded user ID '2'. Consider using `userId` for dynamic user data: `/api/users_repurchase/${userId}`
+      const response = await api.get(
+        `/api/users_repurchase/2?page=${page}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              user?.token ||
+              JSON.parse(localStorage.getItem("user") || "{}").token
+            }`,
+          },
+        }
+      );
+
+      console.log("response", response)
+
+      if (response.status === 200) {
+        setEarningData({
+          data: response.data.data || [],
+          current_page: page,
+          last_page: Math.ceil((response.data.data.total || 0) / 10),
+          per_page: 10,
+          total: response.data.data.total || 0,
+        });
+      } else {
+        setEarningData({
+          data: [],
+          current_page: 1,
+          last_page: 1,
+          per_page: 10,
+          total: 0,
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching earnings:", err);
+      setEarningData({
+        data: [],
+        current_page: 1,
+        last_page: 1,
+        per_page: 10,
+        total: 0,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEarnings();
+  }, []);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= earningData.last_page) {
+      fetchEarnings(page);
+    }
+  };
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -51,6 +104,7 @@ const EarningWallet = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "success":
+      case "successful":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
       case "failed":
         return "bg-[#c51236]/20 text-red-600";
@@ -64,16 +118,6 @@ const EarningWallet = () => {
 
   const { data: earnings, current_page, last_page } = earningData;
 
-  // 👇 Handler for page change
-  const handlePageChange = (page) => {
-    // Here you would fetch real data from your API for the selected page
-    // For now, we just update the state to demonstrate pagination
-    setEarningData((prev) => ({
-      ...prev,
-      current_page: page,
-    }));
-  };
-
   return (
     <div className="bg-[var(--color-tetiary)]">
       {/* Table container */}
@@ -81,7 +125,7 @@ const EarningWallet = () => {
         {/* Header */}
         <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
           <span className="text-start ps-4 w-[15%]">SN</span>
-          <span className="text-start w-[25%]">Bonus Type</span>
+          <span className="text-start w-[25%]">Type</span>
           <span className="w-[20%] text-center">Amount</span>
           <span className="w-[20%] text-center">Status</span>
           <span className="text-end pe-8 w-[20%]">Date</span>
@@ -90,7 +134,10 @@ const EarningWallet = () => {
         {/* Rows */}
         <div className="space-y-3 w-full">
           {loading ? (
-            <div className="text-center py-4">Loading...</div>
+            <div className="text-center py-4">
+              <LazyLoader />
+              <span className="text-black/60">Loading...</span>
+            </div>
           ) : earnings.length === 0 ? (
             <div className="text-center py-4">No earning records found.</div>
           ) : (
@@ -134,7 +181,7 @@ const EarningWallet = () => {
         </div>
       </div>
 
-      {/* ✅ Pagination */}
+      {/* Pagination */}
       {last_page > 1 && (
         <div className="mt-4">
           <PaginationControls

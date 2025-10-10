@@ -10,7 +10,7 @@ const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
     });
 
     return (
-        <Popover as="div" className="relative -z-10 inline-block text-left w-full">
+        <Popover as="div" className="relative z-1 inline-block text-left w-full">
             <Popover.Button
                 as="div"
                 title={`View ${user.username} info`}
@@ -33,6 +33,7 @@ const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
                                 e.stopPropagation();
                                 onToggle(user.id)
                             }}
+                            title='Expand Tree'
                             className={`w-12 h-4 mx-auto flex translate-y-2.5 items-center justify-center rounded-t bg-secondary cursor-pointer text-white hover:shadow-md transition-all duration-200`}
                         >
                             {isExpanded ? <FaCaretDown size={16} /> : <FaCaretUp size={16} />}

@@ -39,7 +39,7 @@ const TreeNode = ({ isLoading, node, level = 0 }) => {
 
     return (
         <div className="relative flex flex-col items-center">
-            <div className={`relative z-10 flex flex-col items-center`}>
+            <div className={`relative z-1 flex flex-col items-center`}>
                 <TreeCard
                     user={node}
                     isExpanded={isExpanded}
@@ -50,12 +50,12 @@ const TreeNode = ({ isLoading, node, level = 0 }) => {
             {isExpanded && hasChildren && (
                 <div className={`${node.left && node.right ? "mt-28" : "mt-18"} flex gap-14 items-start justify-center relative`}>
                     {node.left && (
-                        <div className={`relative z-20 flex flex-col items-center children-card ${node.right ? "left-card" : ""}`}>
+                        <div className={`relative z-1 flex flex-col items-center children-card ${node.right ? "left-card" : ""}`}>
                             <TreeNode node={node.left} level={level + 1} />
                         </div>
                     )}
                     {node.right && (
-                        <div className={`relative z-20 flex flex-col items-center children-card ${node.left ? "right-card" : ""}`}>
+                        <div className={`relative z-1 flex flex-col items-center children-card ${node.left ? "right-card" : ""}`}>
                             <TreeNode node={node.right} level={level + 1} />
                         </div>
                     )}

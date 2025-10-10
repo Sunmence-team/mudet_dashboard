@@ -571,12 +571,12 @@ const StockistUser = () => {
         <>
           <div className="w-full flex flex-col gap-4 justify-center">
             <p className="text-lg font-semibold">Stockist Balance</p>
-            <div className="flex flex-col gap-9 justify-center">
+            <div className="flex flex-col gap-12 justify-center">
               <div className="w-full lg:w-1/2">
                 <OverviewCard details={stockistWallet} />
               </div>
 
-              <div className="bg-white rounded-lg shadow border border-gray-200 flex flex-col gap-3">
+              <div className="rounded-lg shadow border border-gray-200 flex flex-col ">
                 <div className="flex border-b rounded-b-lg shadow border-gray-200 no-scrollbar overflow-x-auto bg-gray-50 justify-between">
                   {tabs.map((tab) => (
                     <button

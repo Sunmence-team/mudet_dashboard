@@ -15,85 +15,85 @@ const DirectRefsTable = () => {
     const [lastPage, setLastPage] = useState(1);
     const [perPage, setPerPage] = useState(5);
 
-    // const fetchirectlySponsoredlist = async () => {
-    //     setIsLoading(true);
-    //     try {
-    //         const response = await api.get(`/api/referrals/sponsoredDownlines`, {
-    //             headers: {
-    //                 "Authorization": `Bearer ${token}`,
-    //             },
-    //             params: {
-    //                 page: currentPage,
-    //                 perPage: perPage
-    //             }
-    //         });
+    const fetchirectlySponsoredlist = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get(`/api/referrals/sponsoredDownlines`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+                params: {
+                    page: currentPage,
+                    perPage: perPage
+                }
+            });
 
-    //         // console.log("user directly sponsored list:", response);
+            // console.log("user directly sponsored list:", response);
 
-    //         if (response.status === 200 && response.data.success) {
-    //             const { downlines, current_page, last_page, per_page } = response.data.data;
-    //             setDirectlySponsored(downlines);
-    //             setCurrentPage(current_page);
-    //             setLastPage(last_page);
-    //             setPerPage(per_page);
-    //         } else {
-    //             throw new Error(response.data.message || "Failed to fetch user directly sponsored list.");
-    //         }
-    //     } catch (error) {
-    //         if (error.response?.data?.message?.includes("unauthenticated")) {
-    //             logout();
-    //         }
-    //         console.error("API submission error:", error);
-    //         toast.error(error.response?.data?.message || "An error occurred fetching user directly sponsored list!.");
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
+            if (response.status === 200 && response.data.success) {
+                const { downlines, current_page, last_page, per_page } = response.data.data;
+                setDirectlySponsored(downlines);
+                setCurrentPage(current_page);
+                setLastPage(last_page);
+                setPerPage(per_page);
+            } else {
+                throw new Error(response.data.message || "Failed to fetch user directly sponsored list.");
+            }
+        } catch (error) {
+            if (error.response?.data?.message?.includes("unauthenticated")) {
+                logout();
+            }
+            console.error("API submission error:", error);
+            toast.error(error.response?.data?.message || "An error occurred fetching user directly sponsored list!.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-    // useEffect(() => {
-    //     fetchirectlySponsoredlist();
-    // }, [user?.id, token, currentPage]);
+    useEffect(() => {
+        fetchirectlySponsoredlist();
+    }, [user?.id, token, currentPage]);
 
-    // const filteredData = directlySponsored.filter(direct => direct.relationship_type === "sponsored")
+    const filteredData = directlySponsored.filter(direct => direct.relationship_type === "sponsored")
 
-    const filteredData = [
-        {
-            user: {
-                fullname: "Ade Favour",
-                username: "Ade Favour",
-                rank: "",
-            },
-            plan: {
-                name: "Lunch",
-                username: "Ade Favour",
-            },
-            created_at: "2024-10-08T13:45:78"
-        },
-        {
-            user: {
-                fullname: "Ade Favour",
-                username: "Ade Favour",
-                rank: "",
-            },
-            plan: {
-                name: "Lunch",
-                username: "Ade Favour",
-            },
-            created_at: "2024-10-08T13:45:78"
-        },
-    ]
+    // const filteredData = [
+    //     {
+    //         user: {
+    //             fullname: "Ade Favour",
+    //             username: "Ade Favour",
+    //             rank: "",
+    //         },
+    //         plan: {
+    //             name: "Lunch",
+    //             username: "Ade Favour",
+    //         },
+    //         created_at: "2024-10-08T13:45:78"
+    //     },
+    //     {
+    //         user: {
+    //             fullname: "Ade Favour",
+    //             username: "Ade Favour",
+    //             rank: "",
+    //         },
+    //         plan: {
+    //             name: "Lunch",
+    //             username: "Ade Favour",
+    //         },
+    //         created_at: "2024-10-08T13:45:78"
+    //     },
+    // ]
 
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full">
                 <thead>
                     <tr className="text-black/70 text-[12px] uppercase">
-                        <th className="ps-0 p-5 text-start">S/N</th>
+                        <th className="ps-2 p-5 text-start">S/N</th>
                         <th className="p-5 text-center">Full name</th>
                         <th className="p-5 text-center">username</th>
                         <th className="p-5 text-center">package</th>
                         <th className="p-5 text-center">rank</th>
-                        <th className="pe-0 p-5 text-end">Date</th>
+                        <th className="pe-2 p-5 text-end">Date</th>
                     </tr>
                 </thead>
                 <tbody className="space-y-4">

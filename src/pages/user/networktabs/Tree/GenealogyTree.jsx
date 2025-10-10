@@ -207,7 +207,7 @@ const GenealogyTree = () => {
         }
       });
 
-      console.log("Genealogy response", response)
+      // console.log("Genealogy response", response)
 
       if (response.status === 200) {
         setReferralData(response.data.data)

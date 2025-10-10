@@ -108,18 +108,18 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "AllTransactions",
+      name: "Transactions",
       path: "/user/transactions",
       role: ["user"],
     },
     {
-      name: "Stockist",
-      path: "/admin/stockist",
+      name: "Manage Transactions",
+      path: "/admin/transactions",
       role: ["admin"],
     },
     {
-      name: "Contact",
-      path: "/admin/contact",
+      name: "Stockist",
+      path: "/admin/stockist",
       role: ["admin"],
     },
     {
@@ -138,16 +138,29 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "Testimonials",
-      path: "/admin/testimonials",
-      role: ["admin"],
-    },
-    {
       name: "Package Upload",
       path: "/admin/package-upload",
       role: ["admin"],
     },
     {
+      name: "Contact",
+      path: "/admin/contact",
+      role: ["admin"],
+    },
+    {
+      name: "Testimonials",
+      path: "/admin/testimonials",
+      role: ["admin"],
+    },
+    {
+<<<<<<< HEAD
+      name: "Package Upload",
+      path: "/admin/package-upload",
+      role: ["admin"],
+    },
+    {
+=======
+>>>>>>> 653b8e1903f6a7fd03a15c52dce9797620180186
       name: "Newsletter",
       path: "/admin/newsletter",
       role: ["admin"],
@@ -178,7 +191,6 @@ const Navbar = () => {
             className="object-cover md:block hidden"
           />
 
-          {/* Scrollable links section */}
           <div className="relative flex items-center overflow-hidden w-3/4">
             {/* Left scroll */}
             {canScrollLeft && (
@@ -244,7 +256,7 @@ const Navbar = () => {
           </Link>
           <Link
             to={"/user/profile"}
-            className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-xl bg-tetiary text-primary"
+            className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-lg bg-tetiary text-primary"
           >
             <h3>
               {" "}
