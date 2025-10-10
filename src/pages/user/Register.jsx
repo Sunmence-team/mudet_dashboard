@@ -23,6 +23,10 @@ const Register = () => {
   const stepRef = useRef(null);
 
   const nextStep = () => {
+    // console.log("nextStep called, moving to step:", currentStep + 1, "with formData:", JSON.stringify(formData, null, 2));
+    console.log("nextStep called from parent");
+    console.log("currentStep", currentStep);
+    console.log("currentStep + 1", currentStep + 1);
     if (currentStep < steps.length) {
       setCurrentStep((prev) => prev + 1);
       setSubmitting(false);
@@ -30,6 +34,7 @@ const Register = () => {
   };
 
   const prevStep = () => {
+    console.log("prevStep called, moving to step:", currentStep - 1);
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
       setSubmitting(false);
@@ -37,39 +42,49 @@ const Register = () => {
   };
 
   const handleNext = async () => {
+    console.log("handle next called from parent button")
+    console.log("handleNext called, currentStep:", currentStep, "isFormValid:", isFormValid, "submitting:", submitting);
     if (submitting || !isFormValid) {
-      setSubmitting(false); // Reset loader if form is invalid
+      console.warn("handleNext blocked: submitting or invalid form");
+      setSubmitting(false);
       return;
     }
 
     setSubmitting(true);
-
     try {
       if (stepRef.current && typeof stepRef.current.submit === "function") {
         const result = stepRef.current.submit();
         const success = result instanceof Promise ? await result : result;
         if (success === true) {
-          nextStep(); // Only proceed if submission explicitly succeeds
+          console.log("Step submission successful, proceeding to next step");
+          nextStep();
         } else {
-          setSubmitting(false); // Reset loader if submission fails
+          console.error("Step submission returned false");
+          setSubmitting(false);
         }
+      } else {
+        console.error("stepRef.current.submit is not a function");
+        setSubmitting(false);
       }
     } catch (error) {
       console.error("Step submission failed:", error);
-      setSubmitting(false); // Reset loader immediately on error
+      setSubmitting(false);
     }
   };
 
   const updateFormData = (values) => {
+    console.log("updateFormData called with values:", JSON.stringify(values, null, 2));
     setFormData((prev) => ({ ...prev, ...values }));
   };
 
   const setFormValidity = (valid) => {
+    console.log("setFormValidity called with valid:", valid);
     setIsFormValid(valid);
-    if (!valid) setSubmitting(false); // Reset loader if form becomes invalid
+    if (!valid) setSubmitting(false);
   };
 
   const renderStep = () => {
+    console.log("Rendering step:", currentStep, "with formData:", JSON.stringify(formData, null, 2));
     switch (currentStep) {
       case 1:
         return (
@@ -166,25 +181,20 @@ const Register = () => {
                 key={index}
                 ref={(el) => (stepRefs.current[index] = el)}
                 className={`flex items-center flex-1 relative px-4 py-2 min-w-[180px]
-                  ${isCompleted || isActive
-                    ? "bg-primary text-white"
-                    : "bg-primary/10 text-gray-500"}
+                  ${isCompleted || isActive ? "bg-primary text-white" : "bg-primary/10 text-gray-500"}
                   ${index === 0 ? "rounded-l-full" : ""}
                   ${index === steps.length - 1 ? "rounded-r-full" : ""}
                 `}
               >
                 <div
                   className={`flex items-center justify-center w-12 h-12 rounded-full border-2 absolute top-1/2 -translate-y-1/2
-                    ${isCompleted || isActive
-                      ? "border-primary text-primary bg-white"
-                      : "border-primary/40 text-gray-500 bg-white"}
+                    ${isCompleted || isActive ? "border-primary text-primary bg-white" : "border-primary/40 text-gray-500 bg-white"}
                     ${index === 0 ? "left-0" : "-ml-6"}
                   `}
                 >
                   <span className="text-base font-bold">{stepNumber}</span>
                 </div>
                 <span className="ml-18 text-xs md:text-sm font-medium whitespace-nowrap">{step}</span>
-
               </div>
             );
           })}
@@ -209,20 +219,8 @@ const Register = () => {
           >
             {submitting ? (
               <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
-                />
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
               </svg>
             ) : (
               "Next"
