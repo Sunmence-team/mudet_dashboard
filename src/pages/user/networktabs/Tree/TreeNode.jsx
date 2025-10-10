@@ -48,7 +48,7 @@ const TreeNode = ({ isLoading, node, level = 0 }) => {
                 />
             </div>
             {isExpanded && hasChildren && (
-                <div className={`${node.left && node.right ? "mt-28" : "mt-16"} flex gap-8 items-start justify-center relative`}>
+                <div className={`${node.left && node.right ? "mt-28" : "mt-18"} flex gap-14 items-start justify-center relative`}>
                     {node.left && (
                         <div className={`relative z-20 flex flex-col items-center children-card ${node.right ? "left-card" : ""}`}>
                             <TreeNode node={node.left} level={level + 1} />
