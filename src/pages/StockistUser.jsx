@@ -13,6 +13,7 @@ import RegistrationHistory from "./user/stockisttabs/RegistrationHistory";
 import { BiSolidMessageEdit } from "react-icons/bi";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { ArrowUpCircle } from "lucide-react";
 
 const StockistUser = () => {
   const [stockistChoice, setStockistChoice] = useState("");
@@ -102,38 +103,44 @@ const StockistUser = () => {
   }, []);
 
   return (
-    <div className="w-full flex flex-col gap-4 items-cente justify-center">
+    <div className="w-full flex flex-col gap-4 items-center justify-center">
       {miscellaneousDetails?.planDetails?.name !== "legend" ||
       backUpMiscellaneousDetails?.planDetails?.name !== "legend" ? (
         <>
-          <div className="flex flex-col translate-y-[4rem] justify-center gap-8 items-center bg-white rounded-lg lg:w-1/2 py-8 mx-auto">
-            <div className="rounded-full p-6 bg-primary/10 text-primary text-4xl lg:text-5xl">
-              <BsInfoCircleFill />
+          <div className="flex flex-col justify-center gap-8 items-center bg-white rounded-xl shadow-2xl ring-1 ring-gray-100 w-1/2 m-auto py-12 px-6 sm:px-10">
+            <div className="rounded-full p-6 bg-primary/10 text-primary text-5xl lg:text-6xl">
+              <ArrowUpCircle className="w-10 h-10 sm:w-12 sm:h-12" />
             </div>
-            <div className="flex flex-col gap-6 items-center text-center">
-              <h2 className="text-xl lg:text-2xl font-semibold">
-                Upgrade Package
+
+            <div className="flex flex-col gap-6 items-center text-center w-full">
+              <h2 className="text-2xl lg:text-3xl font-bold text-gray-800">
+                Unlock Stockist Status
               </h2>
-              <p className="text-sm lg:text-base font-medium text-gray-400 lg:w-2/3 md:w-1/3 w-full px-4">
-                You must be on the{" "}
-                <span className="text-primary font-semibold">
-                  Legend package
-                </span>{" "}
-                before you can become a stockist.
-                <br />
-                <span className="block mt-3 text-gray-500 text-sm">
-                  As a stockist, you gain exclusive access to discounted
-                  products, higher commission rates, and priority support from
-                  the company. You’ll also be able to manage your own
-                  sub-network of distributors and earn extra bonuses from their
-                  performance.
+
+              <p className="text-base text-gray-600 max-w-md">
+                To qualify as a stockist, you must first be on the{" "}
+                <strong className="text-primary">Legend Package</strong>.
+                <span className="block mt-4 text-sm text-gray-500 bg-primary/10 p-4 rounded-lg border border-gray-100">
+                  <strong className="text-gray-700">Stockist Benefits:</strong>{" "}
+                  You gain exclusive access to discounted products, higher
+                  commission rates, and priority support. You’ll also be able to
+                  manage your own sub-network of distributors and earn extra
+                  bonuses from their performance.
                 </span>
               </p>
+
               <Link
                 to={"/user/upgrade-package"}
-                className="py-3 px-9 border-0 bg-[#1B6020] text-sm lg:text-base rounded-3xl text-white cursor-pointer font-medium hover:bg-[#155018] transition-all"
+                className="mt-4 py-3 px-10 border-0 bg-primary hover:bg-primary transition duration-150 text-sm sm:text-base rounded-full text-white cursor-pointer font-semibold shadow-lg transform hover:scale-[1.02]"
               >
-                Upgrade
+                Upgrade to Legend Package
+              </Link>
+
+              <Link
+                to={"/user/overview"}
+                className="text-xs text-gray-400 hover:text-gray-600 mt-2 transition duration-150"
+              >
+                No thanks, maybe later
               </Link>
             </div>
           </div>

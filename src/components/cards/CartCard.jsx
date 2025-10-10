@@ -26,6 +26,7 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
             onClick={() => onRemoveFromCart(id)}
             className="border border-gray-400 py-1 px-4 rounded-2xl cursor-pointer text-2xl"
             disabled={quantity === 1}
+            type="button"
           >
             -
           </button>
@@ -33,6 +34,7 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
           <button
             onClick={() => onAddToCart(product)}
             className="border border-gray-400 py-1 px-4 rounded-2xl cursor-pointer text-2xl"
+            type="button"
           >
             +
           </button>
@@ -78,6 +80,7 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
                 onClick={() => onRemoveFromCart(id)}
                 className="border border-gray-400 py-1 px-3 rounded-lg text-lg hover:bg-gray-100 disabled:opacity-50"
                 disabled={quantity === 1}
+                type="button"
               >
                 -
               </button>
@@ -85,6 +88,7 @@ const CartCard = ({ product, onAddToCart, onRemoveFromCart, onDelete }) => {
               <button
                 onClick={() => onAddToCart(product)}
                 className="border border-gray-400 py-1 px-3 rounded-lg text-lg hover:bg-gray-100"
+                type="button"
               >
                 +
               </button>
