@@ -33,7 +33,7 @@ const Deposit = () => {
       }
 
       const response = await api.get(
-        `/api/users/${userId}/fund-e-wallets?page=${page}`,
+        `/api/users/2/fund-e-wallets?page=${page}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -188,14 +188,14 @@ const Deposit = () => {
 
       {/* Pagination - only show if more than 1 page */}
       {last_page > 1 && (
-  <div className="mt-6 flex justify-center">
-    <PaginationControls
-      currentPage={current_page}
-      totalPages={last_page}
-      setCurrentPage={handlePageChange}
-    />
-  </div>
-)}
+        <div className="mt-6 flex justify-center">
+          <PaginationControls
+            currentPage={current_page}
+            totalPages={last_page}
+            setCurrentPage={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "../../components/cards/ProductCard";
 import { toast } from "sonner";
-import api, { setupInterceptors } from "../../utilities/api";
+import api from "../../utilities/api";
 import LazyLoader from "../../components/LazyLoader";
 import { useUser } from "../../context/UserContext";
 
