@@ -101,7 +101,7 @@ const AnnouncementCard = ({ style, refresh, pagination=false }) => {
                 onClick={() => setIsModalOpen(true)}
               >
                 <div
-                  className="absolute left-0 top-0 bottom-0 w-3 rounded-t-full rounded-b-full"
+                  className="absolute left-0 top-0 bottom-0 w-2 rounded-t-full rounded-b-full"
                   style={{
                     backgroundColor: index % 2 === 0 ? "#2B7830" : "#A9890B",
                   }}
@@ -111,8 +111,8 @@ const AnnouncementCard = ({ style, refresh, pagination=false }) => {
                     <h3 className="font-semibold text-gray-900 mb-1 truncate">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      {item.description?.slice(0, 300)}...
+                    <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
+                      {item.description}
                     </p>
                   </div>
                   <div className="flex-shrink-0 ml-4 font-semibold">
