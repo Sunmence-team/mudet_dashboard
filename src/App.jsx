@@ -25,10 +25,7 @@ import StockistUser from "./pages/StockistUser";
 import Upgrade from "./pages/user/Upgrade";
 import Announcements from "./pages/admin/Announcements";
 import Newsletters from "./pages/admin/Newsletters";
-<<<<<<< HEAD
-=======
 import ManageWithdrawals from "./pages/admin/transactions/ManageWithdrawals";
->>>>>>> 653b8e1903f6a7fd03a15c52dce9797620180186
 
 function App() {
   return (
