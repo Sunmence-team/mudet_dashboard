@@ -148,13 +148,13 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
-      name: "Product Upload",
-      path: "/admin/product-upload",
+      name: "Package Upload",
+      path: "/admin/package-upload",
       role: ["admin"],
     },
     {
-      name: "Package Upload",
-      path: "/admin/package-upload",
+      name: "Newsletter",
+      path: "/admin/newsletter",
       role: ["admin"],
     },
   ];
