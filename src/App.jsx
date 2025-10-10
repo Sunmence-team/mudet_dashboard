@@ -126,7 +126,7 @@ function App() {
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
         <Route
           path={"/admin/users"}
-          element={<MainLayout child={<AllUsers />} />}
+          element={<MainLayout child={<Users />} />}
         />
         <Route
           path={"/admin/newsletter"}
