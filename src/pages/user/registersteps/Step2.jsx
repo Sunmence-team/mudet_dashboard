@@ -115,7 +115,6 @@ const Step2 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
             ...response.data.data,
             session_id: formData.session_id,
           });
-          // nextStep();
         } else {
           toast.error(response.data.message || "Step 2 submission failed");
           setSubmitting(false);
