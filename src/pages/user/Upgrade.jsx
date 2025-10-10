@@ -287,7 +287,7 @@ const Upgrade = () => {
                 {stockists.map((stk) => {
                   return (
                     <option key={stk.id} value={stk.id}>
-                      {stk.first_name}
+                      {stk.first_name}({stk.location})
                     </option>
                   );
                 })}
