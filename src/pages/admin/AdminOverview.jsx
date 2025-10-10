@@ -39,12 +39,12 @@ const AdminOverview = () => {
   return (
     <>
       <div className="flex flex-col gap-5">
-        <div className="grid lg:grid-cols-2 lg:grid-rows-2 grid-cols-1 gap-2">
+        <div className="grid lg:grid-cols-2 lg:grid-rows-2 grid-cols-1 gap-4">
           {topWallets.map((wallet, index) => (
             <OverviewCard details={wallet} key={index} />
           ))}
         </div>
-        <div className="w-full">
+        <div className="w-full mt-4">
           <div className="w-full lg:mx-0 mx-auto">
             <AnnouncementCard />
           </div>

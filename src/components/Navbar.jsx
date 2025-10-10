@@ -73,33 +73,8 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
-      name: "Contact",
-      path: "/admin/contact",
-      role: ["admin"],
-    },
-    {
       name: "Announcements",
       path: "/admin/announcements",
-      role: ["admin"],
-    },
-    {
-      name: "Stockist",
-      path: "/admin/stockist",
-      role: ["admin"],
-    },
-    {
-      name: "Contact",
-      path: "/admin/contact",
-      role: ["admin"],
-    },
-    {
-      name: "Announcements",
-      path: "/admin/announcements",
-      role: ["admin"],
-    },
-    {
-      name: "Stockist",
-      path: "/admin/stockist",
       role: ["admin"],
     },
     {
@@ -138,6 +113,16 @@ const Navbar = () => {
       role: ["user"],
     },
     {
+      name: "Stockist",
+      path: "/admin/stockist",
+      role: ["admin"],
+    },
+    {
+      name: "Contact",
+      path: "/admin/contact",
+      role: ["admin"],
+    },
+    {
       name: "Upgrade Package",
       path: "/user/upgrade-package",
       role: ["user"],
@@ -163,8 +148,8 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
-      name: "Package Upload",
-      path: "/admin/package-upload",
+      name: "Newsletter",
+      path: "/admin/newsletter",
       role: ["admin"],
     },
   ];

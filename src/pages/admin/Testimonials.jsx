@@ -6,15 +6,16 @@ import api from "../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
 
-const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, setFormValidity }, ref) => {
+const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, setFormValidity, setSubmitting }, ref) => {
   const { token } = useUser();
+  const imageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL;
   const [testimonials, setTestimonials] = useState([]);
   const [loadingTestimonials, setLoadingTestimonials] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const [loadingView, setLoadingView] = useState(null); // Track loading for each View button
+  const [loadingView, setLoadingView] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [viewData, setViewData] = useState(null); // Store testimonial data for popup
+  const [viewData, setViewData] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -25,6 +26,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
     try {
       if (!token) {
         toast.error("No authentication token found. Please log in.");
+        setSubmitting(false);
         return;
       }
       const response = await api.get("/api/testimonial/all", {
@@ -33,11 +35,11 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log("Fetched testimonials:", JSON.stringify(response.data, null, 2));
       setTestimonials(response.data.data?.data || []);
     } catch (error) {
       console.error("Error fetching testimonials:", error);
       toast.error(error.response?.data?.message || "Failed to fetch testimonials.");
+      setSubmitting(false);
     } finally {
       setLoadingTestimonials(false);
     }
@@ -47,6 +49,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
     name: Yup.string().required("Name is required").min(2, "Name must be at least 2 characters"),
     rating: Yup.number().required("Rating is required").min(1, "Rating must be at least 1").max(5, "Rating must not exceed 5"),
     comment: Yup.string().required("Comment is required"),
+    position: Yup.string().required("Position is required"),
     image: Yup.mixed()
       .required("Image is required")
       .test("fileType", "Image must be a JPEG, PNG, or JPG file", (value) => {
@@ -60,21 +63,25 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
       name: formData.name || "",
       rating: formData.rating || "",
       comment: formData.comment || "",
+      position: formData.position || "",
       image: formData.image || null,
     },
     validationSchema,
     onSubmit: async (values) => {
       setLoadingSubmit(true);
+      setSubmitting(true);
       try {
         if (!token) {
           toast.error("No authentication token found. Please log in.");
-          return;
+          setSubmitting(false);
+          return false;
         }
 
         const payload = new FormData();
         payload.append("full_name", values.name.trim());
         payload.append("rating", values.rating);
         payload.append("comment", values.comment);
+        payload.append("position", values.position.trim());
         payload.append("image", values.image);
 
         const url = isEditing
@@ -93,8 +100,19 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           fetchTestimonials();
           formik.resetForm();
           setIsEditing(false);
+          setEditingId(null);
+          updateFormData({
+            name: values.name,
+            rating: values.rating,
+            comment: values.comment,
+            position: values.position,
+            image: values.image,
+          });
+          return true;
         } else {
           toast.error(response.data.message || "Failed to create testimonial.");
+          setSubmitting(false);
+          return false;
         }
       } catch (error) {
         console.error("Error submitting testimonial:", error);
@@ -103,15 +121,23 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           error.response?.data?.errors?.image?.join(", ") ||
           "Failed to create testimonial.";
         toast.error(msg);
+        setSubmitting(false);
+        return false;
       } finally {
         setLoadingSubmit(false);
       }
     },
-
   });
 
   useImperativeHandle(ref, () => ({
-    submit: formik.submitForm,
+    submit: async () => {
+      const errors = await formik.validateForm();
+      if (Object.keys(errors).length > 0) {
+        setSubmitting(false);
+        return false;
+      }
+      return formik.submitForm();
+    },
   }));
 
   const handleView = async (id) => {
@@ -123,8 +149,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("View testimonial response:", JSON.stringify(response.data, null, 2));
-      setViewData(response.data.data); // Open popup with data
+      setViewData(response.data.data);
     } catch (error) {
       console.error("Error viewing testimonial:", error);
       toast.error(error.response?.data?.message || "Failed to view testimonial.");
@@ -141,12 +166,12 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Edit testimonial response:", JSON.stringify(response.data, null, 2));
       const testimonial = response.data.data;
       formik.setValues({
         name: testimonial.full_name,
         rating: testimonial.rating,
         comment: testimonial.comment,
+        position: testimonial.position,
         image: null,
       });
       setEditingId(id);
@@ -166,7 +191,6 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Delete testimonial response:", JSON.stringify(response.data, null, 2));
       if (response.data.status === "success") {
         toast.success(response.data.message || "Testimonial deleted successfully.");
         fetchTestimonials();
@@ -190,19 +214,33 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
       <form onSubmit={formik.handleSubmit} className="w-full flex flex-col gap-4">
         <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
           <p className="text-xl md:text-2xl font-semibold">{isEditing ? "Update Testimonial" : "Create Testimonial"}</p>
+          <div className="flex flex-col w-full">
+            <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">
+              Name {formik.touched.name && formik.errors.name && <span className="text-red-500 text-xs"> - {formik.errors.name}</span>}
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-12 px-4 py-2 border w-full ${formik.touched.name && formik.errors.name ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+            />
+          </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex flex-col w-full sm:w-1/2">
-              <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">
-                Name {formik.touched.name && formik.errors.name && <span className="text-red-500 text-xs"> - {formik.errors.name}</span>}
+              <label htmlFor="position" className="text-sm font-medium text-gray-700 mb-1">
+                Position {formik.touched.position && formik.errors.position && <span className="text-red-500 text-xs"> - {formik.errors.position}</span>}
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formik.values.name}
+                id="position"
+                name="position"
+                value={formik.values.position}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border w-full ${formik.touched.name && formik.errors.name ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border w-full ${formik.touched.position && formik.errors.position ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
             </div>
             <div className="flex flex-col w-full sm:w-1/2">
@@ -222,52 +260,58 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
               />
             </div>
           </div>
-          <div className="flex flex-col">
-            <label htmlFor="comment" className="text-sm font-medium text-gray-700 mb-1">
-              Comment {formik.touched.comment && formik.errors.comment && <span className="text-red-500 text-xs"> - {formik.errors.comment}</span>}
-            </label>
-            <textarea
-              id="comment"
-              name="comment"
-              value={formik.values.comment}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`h-24 px-4 py-2 border w-full ${formik.touched.comment && formik.errors.comment ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-pryClr focus:border-pryClr`}
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
-              Image {formik.touched.image && formik.errors.image && <span className="text-red-500 text-xs"> - {formik.errors.image}</span>}
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500">
-              <FaImage size={40} className="mb-4" />
-              <input
-                type="file"
-                id="image"
-                name="image"
-                className="hidden"
-                accept="image/jpeg,image/png,image/jpg"
-                onChange={(event) => {
-                  const file = event.currentTarget.files[0];
-                  formik.setFieldValue("image", file);
-                  formik.setFieldTouched("image", true);
-                }}
-              />
-              <div className="flex items-center gap-3">
-                <label
-                  htmlFor="image"
-                  className="px-6 text-xs py-2 bg-pryClr text-black border border-black/50 rounded-lg cursor-pointer hover:bg-pryClr/90"
-                >
-                  Choose File
-                </label>
-                {formik.values.image ? (
-                  <span className="text-sm text-gray-700">{formik.values.image.name}</span>
-                ) : (
-                  <span className="text-sm text-gray-500">No file chosen</span>
-                )}
-              </div>
-            </div>
-          </div>
+       <div className="flex flex-col sm:flex-row gap-4">
+  <div className="flex flex-col w-full sm:w-1/2">
+    <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
+      Image {formik.touched.image && formik.errors.image && <span className="text-red-500 text-xs"> - {formik.errors.image}</span>}
+    </label>
+    <div className="h-full min-h-[160px] border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-gray-500">
+      <FaImage size={32} className="mb-2" />
+      <input
+        type="file"
+        id="image"
+        name="image"
+        className="hidden"
+        accept="image/jpeg,image/png,image/jpg"
+        onChange={(event) => {
+          const file = event.currentTarget.files[0];
+          formik.setFieldValue("image", file);
+          formik.setFieldTouched("image", true);
+        }}
+      />
+      <div className="flex items-center gap-3">
+        <label
+          htmlFor="image"
+          className="px-6 text-xs py-2 bg-pryClr text-black border border-black/50 rounded-lg cursor-pointer hover:bg-pryClr/90"
+        >
+          Choose File
+        </label>
+        {formik.values.image ? (
+          <span className="text-sm text-gray-700">{formik.values.image.name}</span>
+        ) : (
+          <span className="text-sm text-gray-500">No file chosen</span>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <div className="flex flex-col w-full sm:w-1/2">
+    <label htmlFor="comment" className="text-sm font-medium text-gray-700 mb-1">
+      Comment {formik.touched.comment && formik.errors.comment && <span className="text-red-500 text-xs"> - {formik.errors.comment}</span>}
+    </label>
+    <textarea
+      id="comment"
+      name="comment"
+      value={formik.values.comment}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      className={`h-full min-h-[160px] px-4 py-2 border w-full ${
+        formik.touched.comment && formik.errors.comment ? "border-red-500" : "border-gray-300"
+      } rounded-lg focus:ring-pryClr focus:border-pryClr resize-none`}
+    />
+  </div>
+</div>
+
           <button
             type="submit"
             disabled={loadingSubmit}
@@ -296,6 +340,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
                     <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                     <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comment</th>
                     <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
@@ -309,6 +354,9 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
                         {testimonial.full_name || "N/A"}
                       </td>
                       <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">
+                        {testimonial.position || "N/A"}
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">
                         {testimonial.rating || "N/A"}
                       </td>
                       <td className="px-6 py-6 text-sm text-gray-900 max-w-xs truncate">
@@ -316,7 +364,11 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
                       </td>
                       <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">
                         {testimonial.image ? (
-                          <img src={testimonial.image} alt="Testimonial" className="h-10 w-10 rounded object-cover" />
+                          <img
+                            src={`${imageBaseUrl}/${testimonial.image}`}
+                            alt="Testimonial"
+                            className="border border-gray-300 rounded-lg h-10 w-10 object-cover"
+                          />
                         ) : (
                           "No Image"
                         )}
@@ -370,12 +422,17 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
             <div className="flex flex-col gap-4">
               <p><strong>ID:</strong> {viewData.id || "N/A"}</p>
               <p><strong>Name:</strong> {viewData.full_name || "N/A"}</p>
+              <p><strong>Position:</strong> {viewData.position || "N/A"}</p>
               <p><strong>Rating:</strong> {viewData.rating || "N/A"}</p>
               <p><strong>Comment:</strong> {viewData.comment || "N/A"}</p>
               <div>
                 <strong>Image:</strong>
                 {viewData.image ? (
-                  <img src={viewData.image} alt="Testimonial" className="h-20 w-20 rounded object-cover mt-2" />
+                  <img
+                    src={`${imageBaseUrl}/${viewData.image}`}
+                    alt="Testimonial"
+                    className="border border-gray-300 rounded-lg h-20 w-20 object-cover mt-2"
+                  />
                 ) : (
                   <span className="ml-2">No Image</span>
                 )}

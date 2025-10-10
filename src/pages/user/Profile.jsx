@@ -52,41 +52,41 @@ const Profile = () => {
           </div>
 
           <h2 className="mt-2 font-semibold text-lg text-gray-800 text-center">
-            {activeUser.first_name} {activeUser.last_name}
+            {activeUser?.first_name} {activeUser?.last_name}
           </h2>
-          <p className="text-gray-500 text-sm">@{activeUser.username}</p>
+          <p className="text-gray-500 text-sm">@{activeUser?.username}</p>
 
           <div className="mt-4 space-y-2 w-full">
-            <div className="border-y-2 p-3 border-black/30">
+            <div className="border-y p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   EMAIL:
                 </span>{" "}
-                {activeUser.email}
+                {activeUser?.email}
               </p>
             </div>
-            <div className="border-b-2 p-3 border-black/30">
+            <div className="border-b p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   USERNAME:
                 </span>{" "}
-                {activeUser.username}
+                {activeUser?.username}
               </p>
             </div>
-            <div className="border-b-2 p-3 border-black/30">
-              <p className="text-sm flex justify-between">
+            <div className="border-b p-3 border-black/30">
+              <p className="text-sm flex justify-between capitalize">
                 <span className="font-semibold text-black text-[16px]">
                   PACKAGE:
                 </span>{" "}
-                {activeUser.plan ? activeUser.stockist_plan : "None"}
+                {miscellaneousDetails?.planDetails?.name ? miscellaneousDetails?.planDetails?.name : "None"}
               </p>
             </div>
-            <div className="border-b-2 p-3 border-black/30">
+            <div className="border-b p-3 border-black/30">
               <p className="text-sm flex justify-between">
                 <span className="font-semibold text-black text-[16px]">
                   CURRENT RANK:
                 </span>{" "}
-                {activeUser.rank ? activeUser.rank : "No Rank"}
+                {activeUser?.rank ? activeUser?.rank : "No Rank"}
               </p>
             </div>
           </div>
@@ -108,7 +108,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold "> Personal PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser.personal_pv).toLocaleString()}
+                {Number(activeUser?.personal_pv).toLocaleString()}
               </span>
             </div>
 
@@ -118,7 +118,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Total PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser.total_pv).toLocaleString()}
+                {Number(activeUser?.total_pv).toLocaleString()}
               </span>
             </div>
 
@@ -128,7 +128,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Right PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser.right_pv_checkpoint).toLocaleString()}
+                {Number(activeUser?.right_pv_checkpoint).toLocaleString()}
               </span>{" "}
             </div>
 
@@ -138,7 +138,7 @@ const Profile = () => {
                 <span className="text-sm font-semibold ">Left PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
-                {Number(activeUser.left_pv_checkpoint).toLocaleString()}
+                {Number(activeUser?.left_pv_checkpoint).toLocaleString()}
               </span>{" "}
             </div>
           </div>

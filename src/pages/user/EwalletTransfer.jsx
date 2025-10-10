@@ -3,8 +3,8 @@ import OverviewCard from "../../components/cards/OverviewCard";
 import { useFormik } from "formik";
 import PinModal from "../../components/modals/PinModal";
 import { toast } from "sonner";
-import { useUser } from "../../context/UserContext";
 import api from "../../utilities/api";
+import { useUser } from "../../context/UserContext";
 
 const EwalletTransfer = () => {
   const { token, user, refreshUser } = useUser();
@@ -16,14 +16,13 @@ const EwalletTransfer = () => {
   const [receiverId, setReceiverId] = useState(null); // Store receiver_id from validate-username response
 
   useEffect(() => {
-    // Use user from context if available, else fall back to localStorage
     setActiveUser(user || JSON.parse(localStorage.getItem("user") || "{}"));
   }, [user]);
 
-  // Function to validate recipient's username using POST /api/validate-username
+  // Validate recipient's username
   const fetchRecipientName = async (recipientName) => {
     try {
-      setValidating(true); // Start validation loading
+      setValidating(true);
       if (!token) {
         toast.error("No authentication token found. Please log in.");
         setRecipientNameDisplay("Authentication required");
@@ -53,7 +52,7 @@ const EwalletTransfer = () => {
           `${response.data.data.first_name} ${response.data.data.last_name}`
         );
         setRecipientConfirmed(true);
-        setReceiverId(response.data.data.id); // Store receiver_id
+        setReceiverId(response.data.data.id);
         toast.success("Username validated successfully");
       } else {
         setRecipientNameDisplay("User not found");
@@ -72,7 +71,7 @@ const EwalletTransfer = () => {
           "Error validating username"
       );
     } finally {
-      setValidating(false); // Stop validation loading
+      setValidating(false);
     }
   };
 
@@ -98,18 +97,15 @@ const EwalletTransfer = () => {
     setPinModal(true);
     try {
       if (!token) {
-        toast.error("No authentication token found. Please log in.");
-        return;
+        throw new Error("No authentication token found. Please log in.");
       }
 
       if (!receiverId) {
-        toast.error("Recipient not validated. Please validate the username.");
-        return;
+        throw new Error("Recipient not validated. Please validate the username.");
       }
 
       if (!activeUser.id) {
-        toast.error("User ID not found. Please log in again.");
-        return;
+        throw new Error("User ID not found. Please log in again.");
       }
 
       console.log("Transfer payload:", {
@@ -141,8 +137,7 @@ const EwalletTransfer = () => {
 
       if (
         response.data.ok &&
-        response.data.message ===
-          "e_wallet_transfer transfer completed successfully."
+        response.data.message === "e_wallet_transfer transfer completed successfully."
       ) {
         toast.success("Transfer completed successfully");
         refreshUser();
@@ -153,6 +148,8 @@ const EwalletTransfer = () => {
         setRecipientNameDisplay("");
         setRecipientConfirmed(false);
         setReceiverId(null);
+        setPinModal(false);
+        localStorage.removeItem("currentAuth");
       } else {
         console.error("Transfer failed:", response.data.message);
         toast.error(response.data.message || "Transfer failed");
@@ -160,6 +157,7 @@ const EwalletTransfer = () => {
       }
     } catch (error) {
       console.error("Error during transfer:", error);
+      const errorMessage = error.response?.data?.message || error.message || "An error occurred during the transfer";
       if (error.response?.data?.errors) {
         const errorMessages = Object.values(error.response.data.errors)
           .flat()

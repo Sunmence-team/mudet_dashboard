@@ -15,7 +15,6 @@ import Testimonials from "./pages/admin/Testimonials";
 import ProductUpload from "./pages/admin/ProductUpload";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./utilities/ProtectRoute";
-import AllUsers from "./pages/admin/AllUsers";
 import Transactions from "./pages/user/Transactions";
 import PackageUpload from "./pages/admin/PackageUpload";
 import TransferFunds from "./pages/user/TransferFunds";
@@ -51,10 +50,6 @@ function App() {
           element={<MainLayout child={<Users />} />}
         />
         <Route
-          path={"/admin/contact"}
-          element={<MainLayout child={<Contact />} />}
-        />
-        <Route
           path={"/admin/announcements"}
           element={<MainLayout child={<Announcements />} />}
         />
@@ -62,7 +57,6 @@ function App() {
           path={"/admin/stockist"}
           element={<MainLayout child={<Stockist />} />}
         />
-        
         <Route
           path={"/admin/contact"}
           element={<MainLayout child={<Contact />} />}
@@ -118,7 +112,7 @@ function App() {
           element={<MainLayout child={<Testimonials />} />}
         />
         <Route
-          path={"/user/transaction"}
+          path={"/user/transactions"}
           element={<MainLayout child={<Transactions />} />}
         />
         <Route
