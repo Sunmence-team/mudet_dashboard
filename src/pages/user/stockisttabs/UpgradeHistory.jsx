@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
-import LazyLoader from "../../../components/LazyLoader";
+import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 import { FaCheck } from "react-icons/fa";
 
@@ -46,7 +46,8 @@ const UpgradeHistory = () => {
     setError(null);
     try {
       if (!userId) throw new Error("User ID not found. Please log in.");
-      if (!token) throw new Error("No authentication token found. Please log in.");
+      if (!token)
+        throw new Error("No authentication token found. Please log in.");
 
       const response = await api.post(
         `/api/stockists/${userId}/user`,
@@ -59,7 +60,10 @@ const UpgradeHistory = () => {
         }
       );
 
-      console.log("Upgrade history response:", JSON.stringify(response.data, null, 2));
+      console.log(
+        "Upgrade history response:",
+        JSON.stringify(response.data, null, 2)
+      );
 
       if (response.data.ok && response.data.transactions) {
         // Filter for upgrade_debit transactions only
@@ -70,9 +74,11 @@ const UpgradeHistory = () => {
         // ✅ Log transaction details for confirmation tracking
         filteredTransactions.forEach((t, i) => {
           console.log(
-            `#${i + 1}: ${t.orders?.products
-              ?.map((p) => p.product_name)
-              .join(", ") || "N/A"} | Order ID: ${t.orders?.id} | Status: ${t.orders?.status} | Delivery: ${t.orders?.delivery}`
+            `#${i + 1}: ${
+              t.orders?.products?.map((p) => p.product_name).join(", ") || "N/A"
+            } | Order ID: ${t.orders?.id} | Status: ${
+              t.orders?.status
+            } | Delivery: ${t.orders?.delivery}`
           );
         });
 
@@ -80,12 +86,16 @@ const UpgradeHistory = () => {
         setCurrentPage(response.data.transactions.current_page || 1);
         setTotalPages(response.data.transactions.last_page || 1);
       } else {
-        throw new Error(response.data.message || "Failed to fetch transactions");
+        throw new Error(
+          response.data.message || "Failed to fetch transactions"
+        );
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
       const errorMessage =
-        error.response?.data?.message || error.message || "Failed to fetch transactions";
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch transactions";
       setError(errorMessage);
       toast.error(errorMessage);
       setTransactions([]);
@@ -117,7 +127,9 @@ const UpgradeHistory = () => {
     } catch (error) {
       console.error("Error confirming order:", error);
       const errorMessage =
-        error.response?.data?.message || error.message || "Failed to confirm order";
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to confirm order";
       toast.error(errorMessage);
     }
   };
@@ -150,7 +162,9 @@ const UpgradeHistory = () => {
           ) : error ? (
             <div className="text-center py-4 text-red-500 text-lg">{error}</div>
           ) : transactions.length === 0 ? (
-            <div className="text-center py-4 text-black/60">No upgrade debit transactions found.</div>
+            <div className="text-center py-4 text-black/60">
+              No upgrade debit transactions found.
+            </div>
           ) : (
             transactions.map((transaction, index) => (
               <div
@@ -167,7 +181,9 @@ const UpgradeHistory = () => {
                   {transaction.orders?.products
                     ?.map(
                       (product) =>
-                        `${product.product_name.trim()} (Qty: ${product.product_quantity})`
+                        `${product.product_name.trim()} (Qty: ${
+                          product.product_quantity
+                        })`
                     )
                     .join(", ") || "N/A"}
                 </span>

@@ -64,7 +64,7 @@ const StockistUser = () => {
           const load = toast.loading("Proceeding to payment");
 
           setTimeout(() => {
-            window.open(res.data.authorization_url);
+            window.open(res.data.authorization_url, "_self");
             toast.dismiss(load);
           }, 2000);
           refreshUser();
