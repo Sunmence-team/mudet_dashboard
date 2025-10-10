@@ -25,6 +25,7 @@ import Stockist from "./pages/admin/Stockist";
 import StockistUser from "./pages/StockistUser";
 import Upgrade from "./pages/user/Upgrade";
 import Announcements from "./pages/admin/Announcements";
+import Newsletters from "./pages/admin/Newsletters";
 
 function App() {
   return (
@@ -132,6 +133,10 @@ function App() {
         <Route
           path={"/admin/users"}
           element={<MainLayout child={<AllUsers />} />}
+        />
+        <Route
+          path={"/admin/newsletter"}
+          element={<MainLayout child={<Newsletters />} />}
         />
         <Route
           path={"/user/transactions"}
