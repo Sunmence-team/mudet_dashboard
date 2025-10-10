@@ -260,57 +260,54 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
               />
             </div>
           </div>
-       <div className="flex flex-col sm:flex-row gap-4">
-  <div className="flex flex-col w-full sm:w-1/2">
-    <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
-      Image {formik.touched.image && formik.errors.image && <span className="text-red-500 text-xs"> - {formik.errors.image}</span>}
-    </label>
-    <div className="h-full min-h-[160px] border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-gray-500">
-      <FaImage size={32} className="mb-2" />
-      <input
-        type="file"
-        id="image"
-        name="image"
-        className="hidden"
-        accept="image/jpeg,image/png,image/jpg"
-        onChange={(event) => {
-          const file = event.currentTarget.files[0];
-          formik.setFieldValue("image", file);
-          formik.setFieldTouched("image", true);
-        }}
-      />
-      <div className="flex items-center gap-3">
-        <label
-          htmlFor="image"
-          className="px-6 text-xs py-2 bg-pryClr text-black border border-black/50 rounded-lg cursor-pointer hover:bg-pryClr/90"
-        >
-          Choose File
-        </label>
-        {formik.values.image ? (
-          <span className="text-sm text-gray-700">{formik.values.image.name}</span>
-        ) : (
-          <span className="text-sm text-gray-500">No file chosen</span>
-        )}
-      </div>
-    </div>
-  </div>
-
-  <div className="flex flex-col w-full sm:w-1/2">
-    <label htmlFor="comment" className="text-sm font-medium text-gray-700 mb-1">
-      Comment {formik.touched.comment && formik.errors.comment && <span className="text-red-500 text-xs"> - {formik.errors.comment}</span>}
-    </label>
-    <textarea
-      id="comment"
-      name="comment"
-      value={formik.values.comment}
-      onChange={formik.handleChange}
-      onBlur={formik.handleBlur}
-      className={`h-full min-h-[160px] px-4 py-2 border w-full ${
-        formik.touched.comment && formik.errors.comment ? "border-red-500" : "border-gray-300"
-      } rounded-lg focus:ring-pryClr focus:border-pryClr resize-none`}
-    />
-  </div>
-</div>
+          <div className="flex flex-col w-full">
+            <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
+              Image {formik.touched.image && formik.errors.image && <span className="text-red-500 text-xs"> - {formik.errors.image}</span>}
+            </label>
+            <div className="h-full min-h-[160px] border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-gray-500">
+              <FaImage size={32} className="mb-2" />
+              <input
+                type="file"
+                id="image"
+                name="image"
+                className="hidden"
+                accept="image/jpeg,image/png,image/jpg"
+                onChange={(event) => {
+                  const file = event.currentTarget.files[0];
+                  formik.setFieldValue("image", file);
+                  formik.setFieldTouched("image", true);
+                }}
+              />
+              <div className="flex items-center gap-3">
+                <label
+                  htmlFor="image"
+                  className="px-6 text-xs py-2 bg-pryClr text-black border border-black/50 rounded-lg cursor-pointer hover:bg-pryClr/90"
+                >
+                  Choose File
+                </label>
+                {formik.values.image ? (
+                  <span className="text-sm text-gray-700">{formik.values.image.name}</span>
+                ) : (
+                  <span className="text-sm text-gray-500">No file chosen</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col w-full">
+            <label htmlFor="comment" className="text-sm font-medium text-gray-700 mb-1">
+              Comment {formik.touched.comment && formik.errors.comment && <span className="text-red-500 text-xs"> - {formik.errors.comment}</span>}
+            </label>
+            <textarea
+              id="comment"
+              name="comment"
+              value={formik.values.comment}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-full min-h-[160px] px-4 py-2 border w-full ${
+                formik.touched.comment && formik.errors.comment ? "border-red-500" : "border-gray-300"
+              } rounded-lg focus:ring-pryClr focus:border-pryClr resize-none`}
+            />
+          </div>
 
           <button
             type="submit"
