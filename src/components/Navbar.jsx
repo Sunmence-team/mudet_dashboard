@@ -153,14 +153,11 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
-<<<<<<< HEAD
       name: "Package Upload",
       path: "/admin/package-upload",
       role: ["admin"],
     },
     {
-=======
->>>>>>> 653b8e1903f6a7fd03a15c52dce9797620180186
       name: "Newsletter",
       path: "/admin/newsletter",
       role: ["admin"],

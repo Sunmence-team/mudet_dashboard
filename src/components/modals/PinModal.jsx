@@ -42,10 +42,14 @@ const PinModal = ({ onClose, onConfirm, user }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white w-[90%] max-w-sm rounded-2xl shadow-xl p-6 relative animate-fadeIn">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 text-center">
-          Enter Your PIN
-        </h2>
-
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <h2 className="text-2xl font-semibold text-gray-900 text-center">
+            Enter Your PIN
+          </h2>
+          <p className="text-sm font-semibold text-gray-400 text-center">
+            Enter your 4 digit pin to authenticate your request
+          </p>
+        </div>
         <div className="flex justify-center gap-3 mb-6">
           {pin.map((digit, index) => (
             <input

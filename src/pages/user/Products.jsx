@@ -44,7 +44,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [token]);
 
   // loading state UI
   if (loading) {
