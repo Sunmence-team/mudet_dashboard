@@ -32,7 +32,8 @@ const Deposit = () => {
 
       if (response.data.ok) {
         toast.success("Payment initialized.");
-        window.open(response.data.authorization_url, "_blank");
+        window.open(response.data.authorization_url, "_self");
+
       } else {
         toast.error(response.data.message || "Something went wrong.");
       }
