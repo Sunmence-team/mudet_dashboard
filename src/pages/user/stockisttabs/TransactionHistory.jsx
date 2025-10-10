@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import PaginationControls from "../../../utilities/PaginationControls";
-import LazyLoader from "../../../components/LazyLoader";
+import LazyLoader from "../../../components/loaders/LazyLoader";
 
 const TransactionHistory = () => {
   const { token } = useUser();
@@ -71,18 +71,26 @@ const TransactionHistory = () => {
         }
       );
 
-      console.log("Transaction history response:", JSON.stringify(response.data, null, 2));
+      console.log(
+        "Transaction history response:",
+        JSON.stringify(response.data, null, 2)
+      );
 
       if (response.data.ok && response.data.transactions) {
         setTransactions(response.data.transactions.data || []);
         setCurrentPage(response.data.transactions.current_page || 1);
         setTotalPages(response.data.transactions.last_page || 1);
       } else {
-        throw new Error(response.data.message || "Failed to fetch transactions");
+        throw new Error(
+          response.data.message || "Failed to fetch transactions"
+        );
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Failed to fetch transactions";
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch transactions";
       setError(errorMessage);
       toast.error(errorMessage);
       setTransactions([]);
@@ -118,7 +126,9 @@ const TransactionHistory = () => {
           ) : error ? (
             <div className="text-center py-4 text-red-500 text-lg">{error}</div>
           ) : transactions.length === 0 ? (
-            <div className="text-center py-4 text-black/60">No transactions found.</div>
+            <div className="text-center py-4 text-black/60">
+              No transactions found.
+            </div>
           ) : (
             transactions.map((transaction, idx) => {
               const { date, time } = formatDateTime(transaction.created_at);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ProductCard from "../../components/cards/ProductCard";
 import { toast } from "sonner";
 import api from "../../utilities/api";
-import LazyLoader from "../../components/LazyLoader";
+import LazyLoader from "../../components/loaders/LazyLoader";
 import { useUser } from "../../context/UserContext";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -16,12 +16,12 @@ const Products = () => {
     setLoading(true);
     try {
       const response = await api.get("/api/allproducts", {
-        headers : {
-          "Authorization": `Bearer ${token}`
-        }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      console.log("Products reposne", response )
+      console.log("Products reposne", response);
       const productsData = response.data?.data || response.data || [];
 
       if (Array.isArray(productsData) && productsData.length > 0) {

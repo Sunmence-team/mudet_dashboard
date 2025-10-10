@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
-import LazyLoader from "../../../components/LazyLoader";
+import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 
 const EarningWallet = () => {
@@ -34,7 +34,7 @@ const EarningWallet = () => {
 
       // Note: Endpoint uses hardcoded user ID '2'. Consider using `userId` for dynamic user data: `/api/users_repurchase/${userId}`
       const response = await api.get(
-        `/api/users_repurchase/2?page=${page}`,
+        `/api/users_repurchase/${user?.id}?page=${page}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -46,15 +46,15 @@ const EarningWallet = () => {
         }
       );
 
-      console.log("response", response)
+      console.log("response", response);
 
       if (response.status === 200) {
         setEarningData({
-          data: response.data.data || [],
+          data: response?.data?.data?.data || [],
           current_page: page,
-          last_page: Math.ceil((response.data.data.total || 0) / 10),
+          last_page: Math.ceil((response?.data?.data?.total || 0) / 10),
           per_page: 10,
-          total: response.data.data.total || 0,
+          total: response?.data?.data?.total || 0,
         });
       } else {
         setEarningData({

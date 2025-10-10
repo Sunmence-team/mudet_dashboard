@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiEye } from "react-icons/fi";
 import { useUser } from "../../../context/UserContext"; // Adjust to "@context/UserContext" if using alias
 import api from "../../../utilities/api";
-import LazyLoader from "../../../components/LazyLoader";
+import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 
 const RepurchaseWallet = () => {
@@ -43,15 +43,18 @@ const RepurchaseWallet = () => {
       }
 
       // Note: Endpoint uses hardcoded user ID '2'. Consider using `userId` for dynamic user data: `/api/users/${userId}/repurchase`
-      const response = await api.get(`/api/users/2/fund-purchased-wallets?page=${page}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            user?.token || JSON.parse(localStorage.getItem("user") || "{}").token
-          }`,
-        },
-      });
-
+      const response = await api.get(
+        `/api/users/${user?.id}/fund-purchased-wallets?page=${page}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              user?.token ||
+              JSON.parse(localStorage.getItem("user") || "{}").token
+            }`,
+          },
+        }
+      );
 
       if (response.status === 200) {
         setRepurchaseData({
@@ -129,14 +132,17 @@ const RepurchaseWallet = () => {
   const { data: repurchases, current_page, per_page } = repurchaseData;
 
   // Filter repurchases based on activeTab
-  const filteredRepurchases = activeTab === "all"
-    ? repurchases
-    : repurchases.filter((row) => row.status?.toLowerCase() === activeTab.toLowerCase());
+  const filteredRepurchases =
+    activeTab === "all"
+      ? repurchases
+      : repurchases.filter(
+          (row) => row.status?.toLowerCase() === activeTab.toLowerCase()
+        );
 
   return (
     <div className="bg-[var(--color-tetiary)]">
       {/* Select Dropdown */}
-      <div className="mb-4 w-full max-w-xs">
+      <div hidden className="mb-4 w-full max-w-xs">
         <select
           value={activeTab}
           onChange={(e) => setActiveTab(e.target.value)}
@@ -187,21 +193,30 @@ const RepurchaseWallet = () => {
                     {row.ref_no || "N/A"}
                   </span>
                   <span className="font-medium text-sm w-[15%] text-center lg:ps-43 ps-22">
-                    ₦{row.amount ? parseFloat(row.amount).toLocaleString() : "N/A"}
+                    ₦
+                    {row.amount
+                      ? parseFloat(row.amount).toLocaleString()
+                      : "N/A"}
                   </span>
-                  <span   
+                  <span
                     className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border border-black/20 mx-auto text-center lg:me-30 me-13 ${getStatusColor(
                       row.status || "N/A"
                     )}`}
                   >
-                    {(row.status || "N/A").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                    {(row.status || "N/A")
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (c) => c.toUpperCase())}
                   </span>
                   <span className="w-[15%] text-center text-sm font-medium lg:ps-9 pe-9">
-                    {(row.transaction_type || "N/A").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                    {(row.transaction_type || "N/A")
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (c) => c.toUpperCase())}
                   </span>
                   <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-center w-[15%] ps-5">
                     <span>{date}</span>
-                    <span className="text-[var(--color-primary)] font-bold">{time}</span>
+                    <span className="text-[var(--color-primary)] font-bold">
+                      {time}
+                    </span>
                   </span>
                 </div>
               );
@@ -220,8 +235,6 @@ const RepurchaseWallet = () => {
           />
         </div>
       )}
-
-      
     </div>
   );
 };

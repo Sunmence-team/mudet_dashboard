@@ -4,10 +4,10 @@ import AnnouncementModal from "../modals/AnnouncementModal";
 import api from "../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
-import LazyLoader from "../LazyLoader";
+import LazyLoader from "../loaders/LazyLoader";
 import PaginationControls from "../../utilities/PaginationControls";
 
-const AnnouncementCard = ({ style, refresh, pagination=false }) => {
+const AnnouncementCard = ({ style, refresh, pagination = false }) => {
   const { token } = useUser();
   const [announcements, setAnnouncements] = useState([]);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState({});
@@ -17,7 +17,7 @@ const AnnouncementCard = ({ style, refresh, pagination=false }) => {
   const [lastPage, setLastPage] = useState(1);
 
   const fetchAnnouncements = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       if (!token) {
         toast.error("No authentication token found. Please log in.");
@@ -31,11 +31,11 @@ const AnnouncementCard = ({ style, refresh, pagination=false }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        params: {page: currentPage, }
+        params: { page: currentPage },
       });
       console.log("response:", response);
       if (response.status === 200) {
-        const { data, current_page, last_page } = response.data.data
+        const { data, current_page, last_page } = response.data.data;
         const announcementsData = data || [];
         const mappedAnnouncements = announcementsData.map((item) => {
           return {
@@ -81,15 +81,17 @@ const AnnouncementCard = ({ style, refresh, pagination=false }) => {
 
   useEffect(() => {
     fetchAnnouncements();
-  }, [refresh, token, currentPage]);
+  }, [token, refresh, currentPage]);
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow p-5 mx-auto border-gray-300 border h-89">
+      <div className="bg-white rounded-2xl shadow p-5 mx-auto border-gray-300 border">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">
           Announcement Board
         </h2>
-        <div className={`styled-scrollbar space-y-4 max-h-65 ${style} overflow-y-auto`}>
+        <div
+          className={`styled-scrollbar space-y-4 max-h-65 ${style} overflow-y-auto`}
+        >
           {loading ? (
             <LazyLoader />
           ) : announcements.length > 0 ? (
@@ -137,15 +139,13 @@ const AnnouncementCard = ({ style, refresh, pagination=false }) => {
           )}
         </div>
         <div className="mt-4">
-          {
-            pagination && (
-              <PaginationControls 
-                currentPage={currentPage}
-                totalPages={lastPage}
-                setCurrentPage={setCurrentPage}
-              />
-            )
-          }
+          {pagination && (
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={lastPage}
+              setCurrentPage={setCurrentPage}
+            />
+          )}
         </div>
       </div>
 
