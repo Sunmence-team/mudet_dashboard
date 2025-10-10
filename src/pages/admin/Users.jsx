@@ -83,8 +83,8 @@
 //         />
 //       </div>
 //       <div className="w-full overflow-x-auto styled-scrollbar">
-//         <UserTable 
-//           users={users} 
+//         <UserTable
+//           users={users}
 //           reFetch={fetchUsers}
 //           currentPage={currentPage}
 //           setCurrentPage={setCurrentPage}
@@ -97,13 +97,11 @@
 
 // export default Users;
 
-
-
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import SearchInput from "../../components/SearchInput";
 import UserTable from "../../components/tables/UserTable";
 import api from "../../utilities/api";
-import LazyLoader from "../../components/LazyLoader";
+import LazyLoader from "../../components/loaders/LazyLoader";
 import { useUser } from "../../context/UserContext";
 
 const Users = () => {

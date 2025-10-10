@@ -3,9 +3,10 @@ import React from "react";
 import { IoWallet } from "react-icons/io5";
 import { CgArrowRight } from "react-icons/cg";
 import { Link } from "react-router-dom";
+import { formatterUtility } from "../../utilities/formatterutility";
 
 const OverviewCard = ({ details }) => {
-  const { walletType, walletBalance, path, pathName, color, users, type } =
+  const { walletType, walletBalance, path, pathName, color, users, type, noSign } =
     details;
 
   const bgColor =
@@ -25,17 +26,10 @@ const OverviewCard = ({ details }) => {
       <div className="flex flex-col items-start text-sm lg:text-base font-light">
         <h3>{walletType}</h3>
         <div className="flex gap-2 items-center">
-          {type === "wallet" && <IoWallet size={25} />}
-          {type === "wallet" ? (
-            <h2 className="text-base lg:text-2xl font-semibold">
-              ₦{walletBalance.toLocaleString()}
-            </h2>
-          ) : (
-            <div className="flex items-center gap-3">
-              <p>{users}</p>
-              <Users />
-            </div>
-          )}
+          {type === "wallet" ? <IoWallet size={25} /> : type === "users" && <Users />}
+          <h2 className="text-base lg:text-2xl font-semibold">
+            {formatterUtility((type === "wallet" ? walletBalance : type === "users" ? users : 0), noSign)}
+          </h2>
         </div>
       </div>
       <div className="w-full text-gray-300 font-bold">

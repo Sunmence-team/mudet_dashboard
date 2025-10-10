@@ -268,8 +268,6 @@ const Upgrade = () => {
           <div className="bg-white rounded-lg w-[90%] max-w-md p-6 flex flex-col gap-4">
             <h2 className="text-xl font-semibold mb-2">Confirm Upgrade</h2>
             <div className="flex flex-col gap-3">
-    
-
               <label className="text-sm font-medium mt-2">
                 Select Stockist
               </label>
@@ -287,7 +285,7 @@ const Upgrade = () => {
                 {stockists.map((stk) => {
                   return (
                     <option key={stk.id} value={stk.id}>
-                      {stk.first_name}({stk.location})
+                      {stk.first_name} ({stk.stockist_location})
                     </option>
                   );
                 })}

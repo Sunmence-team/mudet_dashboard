@@ -73,11 +73,6 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
-      name: "Announcements",
-      path: "/admin/announcements",
-      role: ["admin"],
-    },
-    {
       name: "Network",
       path: "/user/network",
       role: ["user"],
@@ -145,6 +140,11 @@ const Navbar = () => {
     {
       name: "Contact",
       path: "/admin/contact",
+      role: ["admin"],
+    },
+    {
+      name: "Announcements",
+      path: "/admin/announcements",
       role: ["admin"],
     },
     {

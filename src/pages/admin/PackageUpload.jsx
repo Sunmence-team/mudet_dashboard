@@ -6,9 +6,9 @@ import api from "../../utilities/api";
 import { toast } from "sonner";
 import axios from "axios";
 import PackageModal from "../../components/modals/PackageModal";
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/loaders/Spinner";
 import WarningModal from "../../components/modals/WarningModal";
-import LazyLoader from "../../components/LazyLoader";
+import LazyLoader from "../../components/loaders/LazyLoader";
 import CartCard from "../../components/cards/CartCard";
 
 const PackageUpload = ({
@@ -460,17 +460,17 @@ const PackageUpload = ({
                 </div>
               </div>
             ) : (
-              <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-3">
+              <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
                 {packages.map((pkg, index) => (
                   <div
                     key={index}
-                    className="relative group w-[270px] md:w-[280px] border border-black/10 flex flex-col rounded-2xl overflow-hidden lg:mx-0 mx-auto"
+                    className="relative group border border-black/10 flex flex-col rounded-xl overflow-hidden lg:mx-0 mx-auto"
                     onMouseOver={() => setActivePackage(pkg)}
                   >
                     <div
                       className={`h-18 ${
                         index % 2 === 0 ? "bg-primary" : "bg-secondary"
-                      } rounded-t-2xl flex items-center justify-center text-white text-center capitalize`}
+                      } rounded-t-[inherit] flex items-center justify-center text-white text-center capitalize`}
                     >
                       <p className="text-xl md:text-2xl font-bold">
                         {pkg.name}{" "}

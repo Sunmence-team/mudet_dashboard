@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FaMinus, FaPlus } from 'react-icons/fa6';
+import React, { useState, useRef, useEffect } from "react";
+import { FaMinus, FaPlus } from "react-icons/fa6";
 import { CiMaximize1, CiMinimize1 } from "react-icons/ci";
-import TreeNode from './TreeNode';
-import { useUser } from '../../../../context/UserContext';
-import api from '../../../../utilities/api';
-import { toast } from 'sonner';
-import LazyLoader from '../../../../components/LazyLoader';
+import TreeNode from "./TreeNode";
+import { useUser } from "../../../../context/UserContext";
+import api from "../../../../utilities/api";
+import { toast } from "sonner";
+import LazyLoader from "../../../../components/loaders/LazyLoader";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -19,14 +19,14 @@ const GenealogyTree = () => {
   const [scrollTop, setScrollTop] = useState(0);
   const [referralData, setReferralData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { token } = useUser()
+  const { token } = useUser();
 
   // const referralData ={
   //   address: {
-  //     address1: null, 
-  //     address2: null, 
-  //     city: 'Kuje', 
-  //     state: 'Federal Capital Territory', 
+  //     address1: null,
+  //     address2: null,
+  //     city: 'Kuje',
+  //     state: 'Federal Capital Territory',
   //     country: 'Nigeria'
   //   },
   //   created_at:"2025-08-25T18:18:05.000000Z",
@@ -38,10 +38,10 @@ const GenealogyTree = () => {
   //   id:459,
   //   left: {
   //       address: {
-  //           address1: null, 
-  //           address2: null, 
-  //           city: 'Kuje', 
-  //           state: 'Federal Capital Territory', 
+  //           address1: null,
+  //           address2: null,
+  //           city: 'Kuje',
+  //           state: 'Federal Capital Territory',
   //           country: 'Nigeria'
   //       },
   //       created_at:"2025-08-25T18:18:05.000000Z",
@@ -53,10 +53,10 @@ const GenealogyTree = () => {
   //       id:459,
   //       left: {
   //       address: {
-  //           address1: null, 
-  //           address2: null, 
-  //           city: 'Kuje', 
-  //           state: 'Federal Capital Territory', 
+  //           address1: null,
+  //           address2: null,
+  //           city: 'Kuje',
+  //           state: 'Federal Capital Territory',
   //           country: 'Nigeria'
   //       },
   //       created_at:"2025-08-25T18:18:05.000000Z",
@@ -69,10 +69,10 @@ const GenealogyTree = () => {
   //   },
   //   right: {
   //     address: {
-  //       address1: null, 
-  //       address2: null, 
-  //       city: 'Kuje', 
-  //       state: 'Federal Capital Territory', 
+  //       address1: null,
+  //       address2: null,
+  //       city: 'Kuje',
+  //       state: 'Federal Capital Territory',
   //       country: 'Nigeria'
   //     },
   //     created_at:"2025-08-25T18:18:05.000000Z",
@@ -84,10 +84,10 @@ const GenealogyTree = () => {
   //     id:459,
   //     left: {
   //         address: {
-  //             address1: null, 
-  //             address2: null, 
-  //             city: 'Kuje', 
-  //             state: 'Federal Capital Territory', 
+  //             address1: null,
+  //             address2: null,
+  //             city: 'Kuje',
+  //             state: 'Federal Capital Territory',
   //             country: 'Nigeria'
   //         },
   //         created_at:"2025-08-25T18:18:05.000000Z",
@@ -100,10 +100,10 @@ const GenealogyTree = () => {
   //     },
   //     right: {
   //       address: {
-  //         address1: null, 
-  //         address2: null, 
-  //         city: 'Kuje', 
-  //         state: 'Federal Capital Territory', 
+  //         address1: null,
+  //         address2: null,
+  //         city: 'Kuje',
+  //         state: 'Federal Capital Territory',
   //         country: 'Nigeria'
   //       },
   //       created_at:"2025-08-25T18:18:05.000000Z",
@@ -115,10 +115,10 @@ const GenealogyTree = () => {
   //       id:459,
   //       left: {
   //       address: {
-  //         address1: null, 
-  //         address2: null, 
-  //         city: 'Kuje', 
-  //         state: 'Federal Capital Territory', 
+  //         address1: null,
+  //         address2: null,
+  //         city: 'Kuje',
+  //         state: 'Federal Capital Territory',
   //         country: 'Nigeria'
   //       },
   //       created_at:"2025-08-25T18:18:05.000000Z",
@@ -134,10 +134,10 @@ const GenealogyTree = () => {
   //   },
   //   right: {
   //     address: {
-  //       address1: null, 
-  //       address2: null, 
-  //       city: 'Kuje', 
-  //       state: 'Federal Capital Territory', 
+  //       address1: null,
+  //       address2: null,
+  //       city: 'Kuje',
+  //       state: 'Federal Capital Territory',
   //       country: 'Nigeria'
   //     },
   //     created_at:"2025-08-25T18:18:05.000000Z",
@@ -149,10 +149,10 @@ const GenealogyTree = () => {
   //     id:459,
   //     left: {
   //         address: {
-  //             address1: null, 
-  //             address2: null, 
-  //             city: 'Kuje', 
-  //             state: 'Federal Capital Territory', 
+  //             address1: null,
+  //             address2: null,
+  //             city: 'Kuje',
+  //             state: 'Federal Capital Territory',
   //             country: 'Nigeria'
   //         },
   //         created_at:"2025-08-25T18:18:05.000000Z",
@@ -165,10 +165,10 @@ const GenealogyTree = () => {
   //     },
   //     right: {
   //       address: {
-  //         address1: null, 
-  //         address2: null, 
-  //         city: 'Kuje', 
-  //         state: 'Federal Capital Territory', 
+  //         address1: null,
+  //         address2: null,
+  //         city: 'Kuje',
+  //         state: 'Federal Capital Territory',
   //         country: 'Nigeria'
   //       },
   //       created_at:"2025-08-25T18:18:05.000000Z",
@@ -180,10 +180,10 @@ const GenealogyTree = () => {
   //       id:459,
   //       left: {
   //       address: {
-  //         address1: null, 
-  //         address2: null, 
-  //         city: 'Kuje', 
-  //         state: 'Federal Capital Territory', 
+  //         address1: null,
+  //         address2: null,
+  //         city: 'Kuje',
+  //         state: 'Federal Capital Territory',
   //         country: 'Nigeria'
   //       },
   //       created_at:"2025-08-25T18:18:05.000000Z",
@@ -199,19 +199,21 @@ const GenealogyTree = () => {
   // }
 
   const fetchGenealogyTree = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const response = await api.get(`/api/referrals/genealogy-tree`, {
         headers: {
-          "Authorization": `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       // console.log("Genealogy response", response)
 
       if (response.status === 200) {
-        setReferralData(response.data.data)
-        toast.success(response.data.message || "Genealogy data fetched successfully.");
+        setReferralData(response.data.data);
+        toast.success(
+          response.data.message || "Genealogy data fetched successfully."
+        );
       } else {
         throw new Error(response.data.message || "Genealogy data call failed.");
       }
@@ -220,17 +222,20 @@ const GenealogyTree = () => {
         logout();
       }
       console.error("An error occured fetching genealogy data:", error);
-      toast.error(error.response?.data?.message || "An error occurred fetching genealogy data.");
+      toast.error(
+        error.response?.data?.message ||
+          "An error occurred fetching genealogy data."
+      );
     } finally {
       setTimeout(() => {
-        setIsLoading(false)
+        setIsLoading(false);
       }, 2000);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchGenealogyTree()
-  }, [token])
+    fetchGenealogyTree();
+  }, [token]);
 
   const canvaRef = useRef(null);
 
@@ -303,8 +308,8 @@ const GenealogyTree = () => {
   const handleTouchEnd = () => setIsDragging(false);
 
   return (
-    <div 
-      ref={canvaRef} 
+    <div
+      ref={canvaRef}
       className="canva-ref bg-white relative rounded-xl shadow-md p-20 pt-14 h-[calc(100dvh-(44px+16px+48px))] mb-2 overflow-auto no-scrollbar"
       onMouseDown={handleMouseDown}
       onMouseLeave={handleMouseLeave}
@@ -314,45 +319,50 @@ const GenealogyTree = () => {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="w-max mx-auto" style={{ transform: `scale(${canvaScale / 100})`, transformOrigin: 'top center' }}>
+      <div
+        className="w-max mx-auto"
+        style={{
+          transform: `scale(${canvaScale / 100})`,
+          transformOrigin: "top center",
+        }}
+      >
         {isLoading ? (
-          <LazyLoader 
-            color={"green"}
-            width={40}
-          />
-        ) : referralData && <TreeNode node={referralData} />}
+          <LazyLoader color={"green"} width={40} />
+        ) : (
+          referralData && <TreeNode node={referralData} />
+        )}
       </div>
 
       <div className="absolute w-max right-8 md:bottom-8 bottom-4 flex bg-gray-100 border border-black/20 rounded-md overflow-hidden">
         <button
-          type='button'
-          className='w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer'
-          title='Decrease canva size'
+          type="button"
+          className="w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+          title="Decrease canva size"
           disabled={canvaScale === 30}
           onClick={handleCanvaScaleReduction}
         >
           <FaMinus />
         </button>
         <button
-          type='button'
-          className='w-10 h-10 text-xs flex items-center justify-center border-x border-black/20 cursor-pointer'
-          title='Increase canva size'
+          type="button"
+          className="w-10 h-10 text-xs flex items-center justify-center border-x border-black/20 cursor-pointer"
+          title="Increase canva size"
           disabled
         >
           {canvaScale + "%"}
         </button>
         <button
-          type='button'
-          className='w-10 h-10 flex items-center justify-center border-x border-black/20 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer'
-          title='Increase canva size'
+          type="button"
+          className="w-10 h-10 flex items-center justify-center border-x border-black/20 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+          title="Increase canva size"
           disabled={canvaScale === 100}
           onClick={handleCanvaScaleIncrement}
         >
           <FaPlus />
         </button>
         <button
-          type='button'
-          className='w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer font-extrabold'
+          type="button"
+          className="w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer font-extrabold"
           title={`${isFullScreen ? "Minimize" : "Maximize"} canva`}
           onClick={handleMaximize}
         >
@@ -360,7 +370,7 @@ const GenealogyTree = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default GenealogyTree
+export default GenealogyTree;

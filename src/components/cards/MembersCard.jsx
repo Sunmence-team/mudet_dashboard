@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utilities/api";
-import LazyLoader from "../LazyLoader";
-import { formatDateToStyle, formatISODateToCustom, formatISODateToReadable } from "../../utilities/formatterutility";
+import LazyLoader from "../loaders/LazyLoader";
+import {
+  formatDateToStyle,
+  formatISODateToCustom,
+  formatISODateToReadable,
+} from "../../utilities/formatterutility";
 
 const MembersCard = () => {
   const [newMembers, setNewMembers] = useState([]);
@@ -11,7 +15,7 @@ const MembersCard = () => {
     setLoading(true);
     try {
       const res = await api.get("/api/referrals/latest");
-      console.log("res", res)
+      console.log("res", res);
       if (res.status === 200) {
         const resData = res?.data?.data;
         setNewMembers(resData);

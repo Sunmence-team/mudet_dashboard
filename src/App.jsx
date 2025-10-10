@@ -30,7 +30,10 @@ import ManageWithdrawals from "./pages/admin/transactions/ManageWithdrawals";
 function App() {
   return (
     <>
-      <Toaster richColors />
+      <Toaster 
+        richColors
+        closeButton
+      />
       <Routes>
         <Route path="/login" element={<Login />} />
 

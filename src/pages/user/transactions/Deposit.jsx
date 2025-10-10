@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
-import LazyLoader from "../../../components/LazyLoader";
+import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 
 const Deposit = () => {
@@ -33,7 +33,7 @@ const Deposit = () => {
       }
 
       const response = await api.get(
-        `/api/users/2/fund-e-wallets?page=${page}`,
+        `/api/users/${user?.id}/fund-e-wallets?page=${page}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -44,6 +44,8 @@ const Deposit = () => {
           },
         }
       );
+
+      console.log("response", response);
 
       if (response.data.ok) {
         setDepositsData({
@@ -131,7 +133,7 @@ const Deposit = () => {
         <div className="space-y-3 w-full">
           {loading ? (
             <div className="text-center py-4">
-              <LazyLoader/>
+              <LazyLoader />
               <span className="text-black/60">Loading...</span>
             </div>
           ) : deposits.length === 0 ? (

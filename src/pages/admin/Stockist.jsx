@@ -4,6 +4,7 @@ import api from "../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { formatTransactionType } from "../../utilities/formatterutility";
 
 const Stockist = () => {
     const { token } = useUser();
@@ -28,7 +29,7 @@ const Stockist = () => {
         if (activeTab === "requests") fetchRequests();
         else fetchStockists();
         fetchAllProducts();
-    }, [activeTab]);
+    }, [activeTab, token]);
 
     const fetchRequests = async (url = "/api/get_stockist-requests") => {
         try {
@@ -39,7 +40,7 @@ const Stockist = () => {
             const response = await api.get(url, {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             });
-            console.log("fetchRequests response:", JSON.stringify(response.data, null, 2));
+            console.log("fetchRequests response:", response);
             const allRequests = response.data.data?.data || [];
             setRequests(allRequests);
             if (response.data.data?.links) setPaginationLinks(response.data.data.links);
@@ -60,7 +61,7 @@ const Stockist = () => {
             const response = await api.get(url, {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             });
-            console.log("fetchStockists response:", JSON.stringify(response.data, null, 2));
+            console.log("fetchStockists response:", response);
             setStockists(response.data.data || []);
             if (response.data.links) setPaginationLinks(response.data.links);
         } catch (error) {
@@ -220,38 +221,33 @@ const Stockist = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case "success":
-                return "bg-primary text-white";
+                return "bg-tetiary text-primary border border-primary/50";
             case "failed":
                 return "bg-red-100 text-red-800";
             case "pending":
-                return "bg-yellow-100 text-yellow-800";
+                return "bg-yellow-100 text-yellow-800 border border-black/50";
             default:
                 return "bg-gray-100 text-gray-800";
         }
     };
 
-    const formatDateTime = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" });
-    };
-
     const renderTable = (data, title) => {
         const isRequests = title === "Stockist Requests";
         return (
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                                {isRequests && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>}
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <table className="min-w-full">
+                        <thead>
+                            <tr className="text-black/70 text-[12px] uppercase">
+                                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider">Username</th>
+                                <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Name</th>
+                                <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Location</th>
+                                {isRequests && <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Status</th>}
+                                <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Plan</th>
+                                <th className="px-6 py-3 text-right text-xs font-semibold tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody>
                             {loading ? (
                                 <tr>
                                     <td colSpan={isRequests ? 6 : 5} className="text-center py-6">
@@ -269,36 +265,36 @@ const Stockist = () => {
                                 data.map((item, idx) => {
                                     const user = isRequests ? item.user : item;
                                     return (
-                                        <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.username || "N/A"}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <tr key={idx} className="bg-white rounded-xl text-sm transition-colors">
+                                            <td className="px-6 py-4 border-y border-black/10 border-s-1 rounded-s-lg whitespace-nowrap text-sm text-gray-900">{user.username || "N/A"}</td>
+                                            <td className="px-6 py-4 capitalize text-center border-y border-black/10 whitespace-nowrap text-sm text-gray-900">
                                                 {`${user.first_name || ""} ${user.last_name || ""}`.trim() || "N/A"}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.stockist_location || "N/A"}</td>
+                                            <td className="px-6 py-4 text-center border-y border-black/10 whitespace-nowrap text-sm text-gray-900">{item.stockist_location || "N/A"}</td>
                                             {isRequests && (
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                <td className="px-6 py-4 border-y border-black/10 whitespace-nowrap text-sm text-center">
                                                     <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
                                                         {item.status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}
                                                     </span>
                                                 </td>
                                             )}
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.stockist_plan || "N/A"}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            <td className="px-6 py-4 capitalize text-center border-y border-black/10 whitespace-nowrap text-sm text-gray-900">{formatTransactionType(item.stockist_plan) || "N/A"}</td>
+                                            <td className="px-6 py-4 border-y border-black/10 border-e-1 rounded-e-lg whitespace-nowrap text-sm">
                                                 {isRequests ? (
                                                     <button
                                                         onClick={() => handleEnableStockist(item.user_id)}
                                                         disabled={item.status === "success" || loadingEnable[item.user_id]}
-                                                        className={`flex items-center space-x-2 px-3 py-1 rounded-md ${item.status === "success" || loadingEnable[item.user_id] ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary"}`}
+                                                        className={`flex ms-auto items-center space-x-2 px-4 py-2 rounded-full ${item.status === "success" || loadingEnable[item.user_id] ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary"}`}
                                                         title="Enable Stockist"
                                                     >
                                                         {loadingEnable[item.user_id] ? <FaSpinner className="animate-spin h-4 w-4" /> : <FaCheck className="h-4 w-4" />}
                                                         <span>Enable</span>
                                                     </button>
                                                 ) : (
-                                                    <div className="flex space-x-4">
+                                                    <div className="flex justify-end space-x-4">
                                                         <button
                                                             onClick={() => setUpgradeData({ id: item.id, location: item.stockist_location })}
-                                                            className="flex items-center space-x-2 px-3 py-1 rounded-md bg-primary text-white hover:bg-primary"
+                                                            className="flex items-center space-x-2 px-4 py-2 rounded-full bg-primary text-white hover:bg-primary"
                                                             title="Upgrade"
                                                         >
                                                             <FaEdit className="h-4 w-4" />
@@ -306,7 +302,7 @@ const Stockist = () => {
                                                         </button>
                                                         <button
                                                             onClick={() => handleViewProducts(item.id)}
-                                                            className="flex items-center space-x-2 px-3 py-1 rounded-md bg-purple-100 text-purple-800 hover:bg-purple-200"
+                                                            className="flex items-center space-x-2 px-4 py-2 rounded-full bg-purple-100 text-purple-800 hover:bg-purple-200"
                                                             title="View Products"
                                                         >
                                                             <span>View Products</span>
@@ -362,7 +358,7 @@ const Stockist = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="min-h-screen">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-center gap-6 mb-6">
                     <button

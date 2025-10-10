@@ -14,7 +14,7 @@ const PackageCard = () => {
   }`;
 
   return (
-    <div className="bg-[#FFFFFF] shadow-[2px_2px_3px] shadow-[#000000]/20 rounded-[10px] py-[2.9rem] flex flex-col gap-7 lg:mx-0 mx-auto">
+    <div className="bg-[#FFFFFF] shadow-[2px_2px_3px] shadow-[#000000]/20 capitalize rounded-[10px] py-[2.9rem] flex flex-col gap-7 lg:mx-0 mx-auto">
       <div className="flex flex-col gap-2 items-center justify-center px-2">
         <div className="w-17 h-17 flex justify-center items-center rounded-full font-bold text-2xl bg-[#2B7830]/30 text-primary">
           <h3>

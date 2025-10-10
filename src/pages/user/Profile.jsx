@@ -71,7 +71,7 @@ const Profile = () => {
               </p>
             </div>
             <div className="border-b-1 p-3 border-black/30">
-              <p className="text-sm flex justify-between">
+              <p className="text-sm flex justify-between capitalize">
                 <span className="font-semibold text-black text-[16px]">
                   PACKAGE:
                 </span>{" "}
@@ -140,7 +140,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="bg-white p- rounded-2xl shadow">
+          <div className="bg-white rounded-2xl shadow">
             <div className="flex flex-nowrap gap-6 items-center overflow-x-auto scrollbar-hide px-6 bg-white py-4 rounded shadow md:flex-wrap md:justify-between md:overflow-visible">
               {tabs.map((tab) => (
                 <button
