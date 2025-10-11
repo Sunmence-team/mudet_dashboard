@@ -15,11 +15,14 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { ArrowUpCircle } from "lucide-react";
 import { formatTransactionType } from "../utilities/formatterutility";
+import PinModal from "../components/modals/PinModal";
 
 const StockistUser = () => {
   const [stockistChoice, setStockistChoice] = useState("");
   const [requesting, setRequesting] = useState(false);
   const [activeTab, setActiveTab] = useState("Inventory");
+  const [withdrawModal, setWithdrawModal] = useState(false);
+  const [pinModal, setPinModal] = useState(false);
   const tabs = [
     "Inventory",
     "Repurchase Order",
@@ -33,10 +36,78 @@ const StockistUser = () => {
     type: "wallet",
     walletType: "Stockist Balance",
     walletBalance: +user?.stockist_balance,
-    path: "/user/transfer",
     pathName: "Withdraw",
     color: "deepGreen",
+    onClick: () => setWithdrawModal(true), // Trigger withdraw modal
   };
+
+  const withdrawFormik = useFormik({
+    initialValues: {
+      amount: "",
+    },
+    validate: (values) => {
+      const errors = {};
+      if (!values.amount) errors.amount = "Required";
+      if (values.amount <= 0) errors.amount = "Amount must be greater than 0";
+      if (values.amount > +user?.stockist_balance) errors.amount = "Insufficient balance";
+      return errors;
+    },
+    onSubmit: async () => {
+      setWithdrawModal(false); // Close withdraw modal
+      setPinModal(true); // Open PinModal
+    },
+  });
+
+  const handleWithdraw = async () => {
+    const transactionPin = localStorage.getItem("currentAuth");
+    if (!transactionPin) {
+      setPinModal(true);
+      return;
+    }
+    try {
+      const res = await api.post("/api/stockist/withdraw", {
+        user_id: user?.id,
+        amount: withdrawFormik.values.amount,
+        from: "stockist_balance",
+        to: "earning_wallet",
+        pin: transactionPin,
+      });
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        setPinModal(false);
+        withdrawFormik.resetForm();
+        localStorage.removeItem("currentAuth");
+        refreshUser();
+      } else {
+        toast.error(res.data.message);
+        localStorage.removeItem("currentAuth");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(
+          "An unexpected error occurred while transferring funds. " +
+            (error?.response?.data?.message || error?.message || "Please try again later.")
+        );
+        console.error("Error during transferring funds:", error);
+      }
+      localStorage.removeItem("currentAuth");
+    }
+  };
+
+  const onDecline = () => {
+    const transactionPin = localStorage.getItem("currentAuth");
+    if (transactionPin) {
+      localStorage.removeItem("currentAuth");
+      setPinModal(false);
+    } else {
+      setPinModal(false);
+    }
+    setWithdrawModal(false);
+    withdrawFormik.resetForm();
+  };
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -69,24 +140,14 @@ const StockistUser = () => {
           toast.error("Stockist request failed");
         }
       } catch (error) {
-        console.log(error);
-        if (
-          axios.isAxiosError(error) &&
-          error.response &&
-          error.response.status === 401
-        ) {
+        if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
           toast.error(error.response.data.message);
         } else {
           toast.error(
             "An unexpected error occurred while requesting stockist registration. " +
-              error?.response?.data?.message ||
-              error?.message ||
-              "Please try again later."
+              (error?.response?.data?.message || error?.message || "Please try again later.")
           );
-          console.error(
-            "Error during requesting stockist registration:",
-            error
-          );
+          console.error("Error during requesting stockist registration:", error);
         }
       } finally {
         resetForm();
@@ -167,7 +228,7 @@ const StockistUser = () => {
                     </div>
                     <div className="flex flex-col">
                       <p className="text-primary font-semibold">
-                        b.Branding & Exclusivity
+                        b. Branding & Exclusivity
                       </p>
                       <p>
                         Office must be fully branded in Mudet Real Solution
@@ -295,7 +356,7 @@ const StockistUser = () => {
                     </div>
                     <div className="flex flex-col">
                       <p className="text-primary font-semibold">
-                        b.Branding & Exclusivity
+                        b. Branding & Exclusivity
                       </p>
                       <p>
                         Office must be fully branded in Mudet Real Solution
@@ -306,7 +367,7 @@ const StockistUser = () => {
                     <div className="flex flex-col">
                       <p>
                         2. Office must be fully branded for MUDET REAL SOLUTION
-                        (by the MAX STORE)and must have EXCLUSIVELY MUDET REAL
+                        (by the MAX STORE) and must have EXCLUSIVELY MUDET REAL
                         SOLUTION products.
                       </p>
                     </div>
@@ -347,7 +408,7 @@ const StockistUser = () => {
                         </p>
                       </div>
                       <div className="flex flex-col">
-                        <p>D.Flyers, Brochures and branded Nylon bags.</p>
+                        <p>D. Flyers, Brochures and branded Nylon bags.</p>
                       </div>
                       <div className="flex flex-col">
                         <p>
@@ -458,12 +519,11 @@ const StockistUser = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     disabled
-                    className={`h-12 px-4 py-2 border w-full ${
-                      formik.touched.stockist_plan &&
-                      formik.errors.stockist_plan
+                    className={`h-12 px-4 py-2 border w-full ${formik.touched.stockist_plan &&
+                        formik.errors.stockist_plan
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr cursor-not-allowed opacity-[60%] focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr cursor-not-allowed opacity-[60%] focus:border-pryClr`}
                   />
                 </div>
 
@@ -488,12 +548,11 @@ const StockistUser = () => {
                     value={formik.values.stockist_location}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    className={`h-12 px-4 py-2 border w-full ${
-                      formik.touched.stockist_location &&
-                      formik.errors.stockist_location
+                    className={`h-12 px-4 py-2 border w-full ${formik.touched.stockist_location &&
+                        formik.errors.stockist_location
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                   />
                 </div>
 
@@ -505,12 +564,11 @@ const StockistUser = () => {
                     checked={formik.values.termsAndConditions}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    className={`${
-                      formik.touched.termsAndConditions &&
-                      formik.errors.termsAndConditions
+                    className={`${formik.touched.termsAndConditions &&
+                        formik.errors.termsAndConditions
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                   />
                   <label
                     htmlFor="termsAndConditions"
@@ -570,7 +628,9 @@ const StockistUser = () => {
             <p className="text-lg font-semibold">Stockist Balance</p>
             <div className="flex flex-col gap-12 justify-center">
               <div className="w-full lg:w-1/2">
-                <OverviewCard details={stockistWallet} />
+                <div onClick={() => setWithdrawModal(true)}>
+                  <OverviewCard details={stockistWallet} />
+                </div>
               </div>
 
               <div className="flex flex-col">
@@ -580,49 +640,88 @@ const StockistUser = () => {
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`nav-links relative py-4 cursor-pointer px-5 text-sm md:text-base font-medium transition-colors duration-200
-                    ${
-                      activeTab === tab
-                        ? "text-primary active bg-white"
-                        : "text-gray-600 hover:text-primary"
-                    }`}
+                    ${activeTab === tab
+                          ? "text-primary active bg-white"
+                          : "text-gray-600 hover:text-primary"
+                        }`}
                     >
                       {tab}
                     </button>
                   ))}
                 </div>
                 <div className="overflow-x-auto w-full">
-                  {
-                    user?.stockist_enabled === 1 &&
-                    user?.stockist_active === "active" && 
-                    (
-                      activeTab === "Inventory" 
-                        ? (
-                          <InventoryHistory />
-                        ) 
-                        : activeTab === "Repurchase Order" 
-                          ? (
-                            <RepurchaseHistory />
-                          ) 
-                          : activeTab === "Registration Order" 
-                            ? (
-                              <RegistrationHistory />
-                            ) 
-                            : activeTab === "Upgrade Order" 
-                              ? (
-                                <UpgradeHistory />
-                              ) 
-                              : activeTab === "Transaction History" 
-                                ? (
-                                  <TransactionHistory />
-                                ) 
-                                : null
-                    )
-                  }
+                  {user?.stockist_enabled === 1 &&
+                    user?.stockist_active === "active" && (
+                      activeTab === "Inventory" ? (
+                        <InventoryHistory />
+                      ) : activeTab === "Repurchase Order" ? (
+                        <RepurchaseHistory />
+                      ) : activeTab === "Registration Order" ? (
+                        <RegistrationHistory />
+                      ) : activeTab === "Upgrade Order" ? (
+                        <UpgradeHistory />
+                      ) : activeTab === "Transaction History" ? (
+                        <TransactionHistory />
+                      ) : null
+                    )}
                 </div>
               </div>
             </div>
           </div>
         </>
+      )}
+      {withdrawModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">Withdraw to Earning Wallet</h2>
+            <form onSubmit={withdrawFormik.handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col w-full">
+                <label htmlFor="amount" className="text-sm font-medium text-gray-700 mb-1">
+                  Withdrawal Amount
+                  {withdrawFormik.touched.amount && withdrawFormik.errors.amount && (
+                    <span className="text-red-500 text-xs"> - {withdrawFormik.errors.amount}</span>
+                  )}
+                </label>
+                <input
+                  type="number"
+                  id="amount"
+                  name="amount"
+                  placeholder="Enter Withdrawal Amount"
+                  value={withdrawFormik.values.amount}
+                  onChange={withdrawFormik.handleChange}
+                  onBlur={withdrawFormik.handleBlur}
+                  className={`h-12 px-4 py-2 border w-full ${withdrawFormik.touched.amount && withdrawFormik.errors.amount
+                      ? "border-red-500"
+                      : "border-gray-300"
+                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                />
+              </div>
+              <div className="flex justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={onDecline}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-full"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-primary text-white px-4 py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={withdrawFormik.isSubmitting}
+                >
+                  {withdrawFormik.isSubmitting ? "Processing..." : "Confirm"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {pinModal && (
+        <PinModal
+          onClose={onDecline}
+          onConfirm={handleWithdraw}
+          user={user}
+        />
       )}
     </div>
   );
