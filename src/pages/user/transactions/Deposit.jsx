@@ -4,83 +4,60 @@ import api from "../../../utilities/api";
 import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 import { formatISODateToCustom } from "../../../utilities/formatterutility";
+import { toast } from "sonner";
 
 const Deposit = () => {
   const { user, token } = useUser();
-  const [depositsData, setDepositsData] = useState({
-    data: [],
-    current_page: 1,
-    last_page: 1,
-    per_page: 15,
-    total: 0,
-  });
+  const [depositsData, setDepositsData] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
 
-  const userId = user?.id;
-
-  const fetchDeposits = async (page = 1) => {
+  const fetchDeposits = async () => {
     setLoading(true);
     try {
-      if (!userId || token) {
+      if (!user?.id || !token) {
         console.error("User ID or token is undefined. Please log in.");
-        setDepositsData({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          per_page: 15,
-          total: 0,
-        });
         return;
       }
 
       const response = await api.get(
-        `/api/users/${user?.id}/fund-e-wallets?page=${page}`,
+        `/api/users/${user?.id}/fund-e-wallets`,
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
+          params: {
+            page: currentPage,
+            perPage: perPage
+          }
         }
       );
 
-      console.log("response", response);
+      // console.log("response", response);
 
       if (response.data.ok) {
-        setDepositsData({
-          data: response.data.data.data || [],
-          current_page: page,
-          last_page: Math.ceil((response.data.data.total || 0) / 15),
-          per_page: 15,
-          total: response.data.data.total || 0,
-        });
+        const { data, current_page, last_page, per_page } = response.data.data;
+        setDepositsData(data);
+        setCurrentPage(current_page);
+        setLastPage(last_page);
+        setPerPage(per_page);
       } else {
-        setDepositsData({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          per_page: 15,
-          total: 0,
-        });
+        throw new Error(response.data.message || "Failed to fetch Deposit history.");
       }
     } catch (err) {
+      toast.error(err.response?.data?.message || "An error occurred fetching Deposit history!.");
       console.error("Error fetching deposits:", err);
-      setDepositsData({
-        data: [],
-        current_page: 1,
-        last_page: 1,
-        per_page: 15,
-        total: 0,
-      });
     } finally {
       setLoading(false);
     }
   };
 
-  const { data: deposits, current_page, last_page } = depositsData;
-
   useEffect(() => {
     fetchDeposits();
-  }, [userId, token, current_page]);
+  }, [user?.id, token, currentPage]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -116,10 +93,10 @@ const Deposit = () => {
               <LazyLoader />
               <span className="text-black/60">Loading...</span>
             </div>
-          ) : deposits.length === 0 ? (
+          ) : depositsData?.length === 0 ? (
             <div className="text-center py-4">No deposits found.</div>
           ) : (
-            deposits.map((item, idx) => {
+            depositsData?.map((item, idx) => {
               return (
                 <div
                   key={idx}
@@ -168,12 +145,12 @@ const Deposit = () => {
       </div>
 
       {/* Pagination - only show if more than 1 page */}
-      {last_page > 1 && (
+      {!loading && lastPage > 1 && (
         <div className="mt-6 flex justify-center">
           <PaginationControls
-            currentPage={current_page}
-            totalPages={last_page}
-            setCurrentPage={handlePageChange}
+            currentPage={currentPage}
+            totalPages={lastPage}
+            setCurrentPage={setCurrentPage}
           />
         </div>
       )}

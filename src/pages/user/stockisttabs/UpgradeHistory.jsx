@@ -211,11 +211,11 @@ const UpgradeHistory = () => {
                 <td className="p-3 text-start rounded-e-xl border-y border-e-1 border-black/10">
                   <div className="flex items-center justify-end">
                     <button
-                      onClick={() => confirmOrder(transaction?.orders?.transaction_id)}
+                      onClick={() => confirmOrder(transaction?.orders?.id)}
                       className="p-2 bg-[var(--color-primary)] text-white rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Confirm Order"
                       disabled={
-                        !transaction.id ||
+                        !transaction?.orders?.id ||
                         transaction.orders?.delivery === "picked"
                       }
                     >
