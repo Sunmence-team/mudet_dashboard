@@ -29,6 +29,7 @@ const UpgradeHistory = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "success":
+      case "picked":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
       case "failed":
         return "bg-[#c51236]/20 text-red-600";

@@ -204,8 +204,8 @@ const ProductsHis = () => {
                       {row.ref_no || "N/A"}
                     </td>
                     <td className="p-4 border-y border-black/10">
-                      {product.price
-                        ? formatterUtility(Number(product.price))
+                      {row.orders?.total_amount
+                        ? formatterUtility(Number(row.orders?.total_amount))
                         : "N/A"}
                     </td>
                     <td className={"p-4 border-y border-black/10"}>
@@ -276,10 +276,6 @@ const ProductsHis = () => {
               Product Details
             </h2>
             <div className="space-y-2 text-[15px]">
-              <p>
-                <span className="font-semibold">S/N:</span>{" "}
-                {selectedRow.serialNumber.toString().padStart(3, "0")}
-              </p>
               <p>
                 <span className="font-semibold">Product Name:</span>{" "}
                 {selectedRow.product_name || "N/A"}
