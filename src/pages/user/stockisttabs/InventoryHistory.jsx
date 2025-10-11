@@ -54,11 +54,11 @@ const InventoryHistory = () => {
     <div className="overflow-x-auto min-w-full">
       <table className="w-full">
         <thead>
-          <tr className="text-black/70 text-sm font-medium uppercase">
-            <td className="ps-2 p-5 text-start">SN</td>
-            <td className="p-5 text-center">Product Name</td>
-            <td className="p-5 text-center">Total In Stock</td>
-            <td className="ps-2 p-5 text-end">Total Sold</td>
+          <tr className="text-black/70 text-xs font-semibold uppercase">
+            <th className="ps-2 p-5 text-start">SN</th>
+            <th className="p-5 text-center">Product Name</th>
+            <th className="p-5 text-center">Total In Stock</th>
+            <th className="ps-2 p-5 text-end">Total Sold</th>
           </tr>
         </thead>
 

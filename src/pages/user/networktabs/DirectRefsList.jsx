@@ -121,7 +121,7 @@ const DirectRefsTable = () => {
               return (
                 <tr
                   key={item?.user?.id}
-                  className="bg-white rounded-xl text-sm text-center capitalize"
+                  className="bg-white text-sm text-center capitalize"
                 >
                   <td className="p-3 text-start rounded-s-lg border-y border-s-1 border-black/10">
                     {String(index + 1).padStart(3, "0")}
