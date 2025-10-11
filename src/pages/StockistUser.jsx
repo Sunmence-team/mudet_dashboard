@@ -30,7 +30,7 @@ const StockistUser = () => {
     "Upgrade Order",
     "Transaction History",
   ];
-  
+
   const { token, user, refreshUser, miscellaneousDetails } = useUser();
   const stockistWallet = {
     type: "wallet",
@@ -49,7 +49,8 @@ const StockistUser = () => {
       const errors = {};
       if (!values.amount) errors.amount = "Required";
       if (values.amount <= 0) errors.amount = "Amount must be greater than 0";
-      if (values.amount > +user?.stockist_balance) errors.amount = "Insufficient balance";
+      if (values.amount > +user?.stockist_balance)
+        errors.amount = "Insufficient balance";
       return errors;
     },
     onSubmit: async () => {
@@ -83,15 +84,23 @@ const StockistUser = () => {
         localStorage.removeItem("currentAuth");
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+      if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.status === 401
+      ) {
         toast.error(error.response.data.message);
       } else {
         toast.error(
           "An unexpected error occurred while transferring funds. " +
-            (error?.response?.data?.message || error?.message || "Please try again later.")
+            (error?.response?.data?.message ||
+              error?.message ||
+              "Please try again later.")
         );
         console.error("Error during transferring funds:", error);
       }
+      localStorage.removeItem("currentAuth");
+    } finally {
       localStorage.removeItem("currentAuth");
     }
   };
@@ -140,14 +149,23 @@ const StockistUser = () => {
           toast.error("Stockist request failed");
         }
       } catch (error) {
-        if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        if (
+          axios.isAxiosError(error) &&
+          error.response &&
+          error.response.status === 401
+        ) {
           toast.error(error.response.data.message);
         } else {
           toast.error(
             "An unexpected error occurred while requesting stockist registration. " +
-              (error?.response?.data?.message || error?.message || "Please try again later.")
+              (error?.response?.data?.message ||
+                error?.message ||
+                "Please try again later.")
           );
-          console.error("Error during requesting stockist registration:", error);
+          console.error(
+            "Error during requesting stockist registration:",
+            error
+          );
         }
       } finally {
         resetForm();
@@ -202,11 +220,12 @@ const StockistUser = () => {
             </div>
           </div>
         </>
-      ) : user?.stockist_enabled === 0 &&
-        user?.stockist_active === null ? (
+      ) : user?.stockist_enabled === 0 && user?.stockist_active === null ? (
         stockistChoice === "" ? (
           <>
-            <h3 className="text-start w-full text-xl font-semibold">Stockist</h3>
+            <h3 className="text-start w-full text-xl font-semibold">
+              Stockist
+            </h3>
             <div className="w-full flex flex-col gap-8">
               <div className="w-full rounded-lg border border-black/10 bg-white p-8 flex flex-col gap-4">
                 <p className="text-lg md:text-2xl font-semibold">
@@ -487,7 +506,9 @@ const StockistUser = () => {
           </>
         ) : (
           <>
-            <h3 className="text-start w-full text-xl font-semibold">Stockist Registration</h3>
+            <h3 className="text-start w-full text-xl font-semibold">
+              Stockist Registration
+            </h3>
             <form
               onSubmit={formik.handleSubmit}
               className="w-full flex flex-col gap-4"
@@ -519,11 +540,12 @@ const StockistUser = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     disabled
-                    className={`h-12 px-4 py-2 border w-full ${formik.touched.stockist_plan &&
-                        formik.errors.stockist_plan
+                    className={`h-12 px-4 py-2 border w-full ${
+                      formik.touched.stockist_plan &&
+                      formik.errors.stockist_plan
                         ? "border-red-500"
                         : "border-gray-300"
-                      } rounded-lg focus:ring-pryClr cursor-not-allowed opacity-[60%] focus:border-pryClr`}
+                    } rounded-lg focus:ring-pryClr cursor-not-allowed opacity-[60%] focus:border-pryClr`}
                   />
                 </div>
 
@@ -548,11 +570,12 @@ const StockistUser = () => {
                     value={formik.values.stockist_location}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    className={`h-12 px-4 py-2 border w-full ${formik.touched.stockist_location &&
-                        formik.errors.stockist_location
+                    className={`h-12 px-4 py-2 border w-full ${
+                      formik.touched.stockist_location &&
+                      formik.errors.stockist_location
                         ? "border-red-500"
                         : "border-gray-300"
-                      } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                   />
                 </div>
 
@@ -564,11 +587,12 @@ const StockistUser = () => {
                     checked={formik.values.termsAndConditions}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    className={`${formik.touched.termsAndConditions &&
-                        formik.errors.termsAndConditions
+                    className={`${
+                      formik.touched.termsAndConditions &&
+                      formik.errors.termsAndConditions
                         ? "border-red-500"
                         : "border-gray-300"
-                      } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                   />
                   <label
                     htmlFor="termsAndConditions"
@@ -640,10 +664,11 @@ const StockistUser = () => {
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`nav-links relative py-4 cursor-pointer px-5 text-sm md:text-base font-medium transition-colors duration-200
-                    ${activeTab === tab
-                          ? "text-primary active bg-white"
-                          : "text-gray-600 hover:text-primary"
-                        }`}
+                    ${
+                      activeTab === tab
+                        ? "text-primary active bg-white"
+                        : "text-gray-600 hover:text-primary"
+                    }`}
                     >
                       {tab}
                     </button>
@@ -651,19 +676,18 @@ const StockistUser = () => {
                 </div>
                 <div className="overflow-x-auto w-full">
                   {user?.stockist_enabled === 1 &&
-                    user?.stockist_active === "active" && (
-                      activeTab === "Inventory" ? (
-                        <InventoryHistory />
-                      ) : activeTab === "Repurchase Order" ? (
-                        <RepurchaseHistory />
-                      ) : activeTab === "Registration Order" ? (
-                        <RegistrationHistory />
-                      ) : activeTab === "Upgrade Order" ? (
-                        <UpgradeHistory />
-                      ) : activeTab === "Transaction History" ? (
-                        <TransactionHistory />
-                      ) : null
-                    )}
+                    user?.stockist_active === "active" &&
+                    (activeTab === "Inventory" ? (
+                      <InventoryHistory />
+                    ) : activeTab === "Repurchase Order" ? (
+                      <RepurchaseHistory />
+                    ) : activeTab === "Registration Order" ? (
+                      <RegistrationHistory />
+                    ) : activeTab === "Upgrade Order" ? (
+                      <UpgradeHistory />
+                    ) : activeTab === "Transaction History" ? (
+                      <TransactionHistory />
+                    ) : null)}
                 </div>
               </div>
             </div>
@@ -673,14 +697,26 @@ const StockistUser = () => {
       {withdrawModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Withdraw to Earning Wallet</h2>
-            <form onSubmit={withdrawFormik.handleSubmit} className="flex flex-col gap-4">
+            <h2 className="text-xl font-semibold mb-4">
+              Withdraw to Earning Wallet
+            </h2>
+            <form
+              onSubmit={withdrawFormik.handleSubmit}
+              className="flex flex-col gap-4"
+            >
               <div className="flex flex-col w-full">
-                <label htmlFor="amount" className="text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="amount"
+                  className="text-sm font-medium text-gray-700 mb-1"
+                >
                   Withdrawal Amount
-                  {withdrawFormik.touched.amount && withdrawFormik.errors.amount && (
-                    <span className="text-red-500 text-xs"> - {withdrawFormik.errors.amount}</span>
-                  )}
+                  {withdrawFormik.touched.amount &&
+                    withdrawFormik.errors.amount && (
+                      <span className="text-red-500 text-xs">
+                        {" "}
+                        - {withdrawFormik.errors.amount}
+                      </span>
+                    )}
                 </label>
                 <input
                   type="number"
@@ -690,10 +726,12 @@ const StockistUser = () => {
                   value={withdrawFormik.values.amount}
                   onChange={withdrawFormik.handleChange}
                   onBlur={withdrawFormik.handleBlur}
-                  className={`h-12 px-4 py-2 border w-full ${withdrawFormik.touched.amount && withdrawFormik.errors.amount
+                  className={`h-12 px-4 py-2 border w-full ${
+                    withdrawFormik.touched.amount &&
+                    withdrawFormik.errors.amount
                       ? "border-red-500"
                       : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                  } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                 />
               </div>
               <div className="flex justify-end gap-4">
@@ -717,11 +755,7 @@ const StockistUser = () => {
         </div>
       )}
       {pinModal && (
-        <PinModal
-          onClose={onDecline}
-          onConfirm={handleWithdraw}
-          user={user}
-        />
+        <PinModal onClose={onDecline} onConfirm={handleWithdraw} user={user} />
       )}
     </div>
   );
