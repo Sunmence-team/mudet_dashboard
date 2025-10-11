@@ -16,13 +16,6 @@ const ProductsHis = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [activeTab, setActiveTab] = useState("all");
-
-  const tabs = [
-    { value: "all", label: "All" },
-    { value: "pending", label: "Pending" },
-    { value: "delivered", label: "Delivered" },
-  ];
 
   const userId = user?.id;
 
@@ -41,19 +34,15 @@ const ProductsHis = () => {
         return;
       }
 
-      // Note: Endpoint uses hardcoded user ID '2'. Consider using `userId` for dynamic user data: `/api/users/${userId}/manual-purchases`
-      const response = await api.get(
-        `/api/users/2/manual-purchases?page=${page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              user?.token ||
-              JSON.parse(localStorage.getItem("user") || "{}").token
-            }`,
-          },
-        }
-      );
+      // Use dynamic userId instead of hardcoded '2'
+      const response = await api.get(`/api/users/${userId}/manual-purchases?page=${page}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${
+            user?.token || JSON.parse(localStorage.getItem("user") || "{}").token
+          }`,
+        },
+      });
 
       if (response.status === 200) {
         setProductsData({
@@ -110,7 +99,7 @@ const ProductsHis = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "delivered":
       case "success":
       case "successful":
@@ -131,29 +120,8 @@ const ProductsHis = () => {
 
   const { data: products, current_page, per_page } = productsData;
 
-  // Filter products based on activeTab
-  const filteredProducts = activeTab === "all"
-    ? products
-    : products.filter((row) => row.orders?.delivery?.toLowerCase() === activeTab.toLowerCase());
-
   return (
     <div className="bg-[var(--color-tetiary)]">
-      {/* Select Dropdown */}
-      <div className="mb-4 w-full max-w-xs">
-        <select
-          value={activeTab}
-          onChange={(e) => setActiveTab(e.target.value)}
-          className="appearance-none w-full bg-white border border-black/20 text-[var(--color-primary)] font-medium px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-black/20 focus:border-black/20 outline-0 transition duration-200 cursor-pointer"
-          aria-label="Select delivery status"
-        >
-          {tabs.map((tab) => (
-            <option key={tab.value} value={tab.value}>
-              {tab.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className="overflow-x-auto">
         {/* Header */}
         <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] min-w-[900px] text-center uppercase text-[17px]">
@@ -174,10 +142,10 @@ const ProductsHis = () => {
               <LazyLoader />
               <span className="text-black/60">Loading...</span>
             </div>
-          ) : filteredProducts.length === 0 ? (
+          ) : products.length === 0 ? (
             <div className="text-center py-4">No purchase records found.</div>
           ) : (
-            filteredProducts.map((row, idx) => {
+            products.map((row, idx) => {
               const { date, time } = formatDateTime(row.created_at);
               const product = row.orders?.products?.[0] || {};
               const stockist = row.orders?.stockist || {};

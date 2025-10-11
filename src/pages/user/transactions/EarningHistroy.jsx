@@ -10,7 +10,7 @@ const EarningWallet = () => {
     data: [],
     current_page: 1,
     last_page: 1,
-    per_page: 10,
+    per_page: 15, // Aligned with Deposit
     total: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -26,42 +26,41 @@ const EarningWallet = () => {
           data: [],
           current_page: 1,
           last_page: 1,
-          per_page: 10,
+          per_page: 15,
           total: 0,
         });
         return;
       }
 
-      // Note: Endpoint uses hardcoded user ID '2'. Consider using `userId` for dynamic user data: `/api/users_repurchase/${userId}`
-      const response = await api.get(
-        `/api/users_repurchase/2?page=${page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              user?.token ||
-              JSON.parse(localStorage.getItem("user") || "{}").token
-            }`,
-          },
-        }
-      );
+      // Note: Using Deposit's endpoint as it may be correct for earnings; adjust if needed
+      const response = await api.get(`/api/users/${userId}/fund-e-wallets?page=${page}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${
+            user?.token || JSON.parse(localStorage.getItem("user") || "{}").token
+          }`,
+        },
+      });
 
-      console.log("response", response)
+      console.log("API Response:", response); // Debug: Inspect full response
+      console.log("Extracted Data:", response.data.data?.data); // Debug: Check extracted data
 
-      if (response.status === 200) {
+      if (response.data.ok) {
+        const responseData = response.data.data?.data || [];
         setEarningData({
-          data: response.data.data || [],
+          data: Array.isArray(responseData) ? responseData : [],
           current_page: page,
-          last_page: Math.ceil((response.data.data.total || 0) / 10),
-          per_page: 10,
-          total: response.data.data.total || 0,
+          last_page: Math.ceil((response.data.data?.total || 0) / 15),
+          per_page: 15,
+          total: response.data.data?.total || 0,
         });
       } else {
+        console.warn("Non-successful response:", response.data);
         setEarningData({
           data: [],
           current_page: 1,
           last_page: 1,
-          per_page: 10,
+          per_page: 15,
           total: 0,
         });
       }
@@ -71,7 +70,7 @@ const EarningWallet = () => {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 10,
+        per_page: 15,
         total: 0,
       });
     } finally {
@@ -102,7 +101,7 @@ const EarningWallet = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case "success":
       case "successful":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
@@ -117,6 +116,8 @@ const EarningWallet = () => {
   };
 
   const { data: earnings, current_page, last_page } = earningData;
+
+  console.log("Earnings before render:", earnings); // Debug: Check earnings value
 
   return (
     <div className="bg-[var(--color-tetiary)]">
@@ -138,7 +139,7 @@ const EarningWallet = () => {
               <LazyLoader />
               <span className="text-black/60">Loading...</span>
             </div>
-          ) : earnings.length === 0 ? (
+          ) : !Array.isArray(earnings) || earnings.length === 0 ? (
             <div className="text-center py-4">No earning records found.</div>
           ) : (
             earnings.map((item, idx) => {
@@ -149,13 +150,13 @@ const EarningWallet = () => {
                   className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
                 >
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                    00{idx + 1}
+                    {String(idx + 1).padStart(3, "0")}
                   </span>
                   <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
-                    {item.transaction_type.replace(/_/g, " ")}
+                    {(item.transaction_type || "N/A").replace(/_/g, " ")}
                   </span>
                   <span className="font-medium text-sm w-[20%] text-center">
-                    ₦{parseFloat(item.amount).toLocaleString()}
+                    ₦{item.amount ? parseFloat(item.amount).toLocaleString() : "N/A"}
                   </span>
                   <span className="w-[20%] text-center">
                     <div
@@ -163,7 +164,7 @@ const EarningWallet = () => {
                         item.status
                       )}`}
                     >
-                      {item.status
+                      {(item.status || "N/A")
                         .replace(/_/g, " ")
                         .replace(/\b\w/g, (c) => c.toUpperCase())}
                     </div>

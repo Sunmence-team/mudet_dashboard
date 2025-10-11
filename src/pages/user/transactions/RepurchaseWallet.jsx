@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiEye } from "react-icons/fi";
-import { useUser } from "../../../context/UserContext"; // Adjust to "@context/UserContext" if using alias
+import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import LazyLoader from "../../../components/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
@@ -16,14 +16,6 @@ const RepurchaseWallet = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [activeTab, setActiveTab] = useState("all");
-
-  const tabs = [
-    { value: "all", label: "All" },
-    { value: "pending", label: "Pending" },
-    { value: "success", label: "Success" },
-    { value: "failed", label: "Failed" },
-  ];
 
   const userId = user?.id;
 
@@ -42,8 +34,7 @@ const RepurchaseWallet = () => {
         return;
       }
 
-      // Note: Endpoint uses hardcoded user ID '2'. Consider using `userId` for dynamic user data: `/api/users/${userId}/repurchase`
-      const response = await api.get(`/api/users/2/fund-purchased-wallets?page=${page}`, {
+      const response = await api.get(`/api/users/${userId}/fund-purchased-wallets?page=${page}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${
@@ -52,10 +43,9 @@ const RepurchaseWallet = () => {
         },
       });
 
-
       if (response.status === 200) {
         setRepurchaseData({
-          data: response?.data?.data?.data,
+          data: response?.data?.data?.data || [],
           current_page: page,
           last_page: Math.ceil((response.data.total || 0) / 10),
           per_page: 10,
@@ -108,7 +98,7 @@ const RepurchaseWallet = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "success":
       case "successful":
       case "delivered":
@@ -128,29 +118,8 @@ const RepurchaseWallet = () => {
 
   const { data: repurchases, current_page, per_page } = repurchaseData;
 
-  // Filter repurchases based on activeTab
-  const filteredRepurchases = activeTab === "all"
-    ? repurchases
-    : repurchases.filter((row) => row.status?.toLowerCase() === activeTab.toLowerCase());
-
   return (
     <div className="bg-[var(--color-tetiary)]">
-      {/* Select Dropdown */}
-      <div className="mb-4 w-full max-w-xs">
-        <select
-          value={activeTab}
-          onChange={(e) => setActiveTab(e.target.value)}
-          className="appearance-none w-full bg-white border border-black/20 text-[var(--color-primary)] font-medium px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-black/20 focus:border-black/20 outline-0 transition duration-200 cursor-pointer"
-          aria-label="Select repurchase status"
-        >
-          {tabs.map((tab) => (
-            <option key={tab.value} value={tab.value}>
-              {tab.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className="overflow-x-auto">
         {/* Header */}
         <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] min-w-[900px] text-center uppercase text-[17px]">
@@ -169,10 +138,10 @@ const RepurchaseWallet = () => {
               <LazyLoader />
               <span className="text-black/60">Loading...</span>
             </div>
-          ) : filteredRepurchases.length === 0 ? (
+          ) : repurchases.length === 0 ? (
             <div className="text-center py-4">No repurchase records found.</div>
           ) : (
-            filteredRepurchases?.map((row, idx) => {
+            repurchases.map((row, idx) => {
               const { date, time } = formatDateTime(row.created_at);
               const serialNumber = (current_page - 1) * per_page + idx + 1;
               return (
@@ -189,14 +158,14 @@ const RepurchaseWallet = () => {
                   <span className="font-medium text-sm w-[15%] text-center lg:ps-43 ps-22">
                     ₦{row.amount ? parseFloat(row.amount).toLocaleString() : "N/A"}
                   </span>
-                  <span   
+                  <span
                     className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border border-black/20 mx-auto text-center lg:me-30 me-13 ${getStatusColor(
                       row.status || "N/A"
                     )}`}
                   >
                     {(row.status || "N/A").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                   </span>
-                  <span className="w-[15%] text-center text-sm font-medium lg:ps-9 pe-9">
+                  <span className="w-[15%] text-sm font-medium lg:ps-9 ps-4 pe-9">
                     {(row.transaction_type || "N/A").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                   </span>
                   <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-center w-[15%] ps-5">
@@ -220,8 +189,6 @@ const RepurchaseWallet = () => {
           />
         </div>
       )}
-
-      
     </div>
   );
 };
