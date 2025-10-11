@@ -52,7 +52,7 @@ const RepurchaseHistory = () => {
         }
       );
 
-      console.log("Repurchase history response:", JSON.stringify(response.data, null, 2));
+      console.log("Repurchase history response:", response);
 
       if (response.data.ok && response.data.transactions) {
         // Filter for manual_purchase transactions only
@@ -161,7 +161,7 @@ const RepurchaseHistory = () => {
                 >
                   {/* SN */}
                   <td className="p-3 text-start rounded-s-lg border-y border-s-1 border-black/10 font-semibold text-primary">
-                    {String(index + 1).padStart(3, "000")}
+                    {String(index + 1).padStart(3, "0")}
                   </td>
 
                   {/* Product Names with Quantities */}

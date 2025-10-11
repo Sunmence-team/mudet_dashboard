@@ -3,9 +3,10 @@ import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
+import { formatISODateToCustom } from "../../../utilities/formatterutility";
 
 const Deposit = () => {
-  const { user } = useUser();
+  const { user, token } = useUser();
   const [depositsData, setDepositsData] = useState({
     data: [],
     current_page: 1,
@@ -20,8 +21,8 @@ const Deposit = () => {
   const fetchDeposits = async (page = 1) => {
     setLoading(true);
     try {
-      if (!userId) {
-        console.error("User ID is undefined. Please log in.");
+      if (!userId || token) {
+        console.error("User ID or token is undefined. Please log in.");
         setDepositsData({
           data: [],
           current_page: 1,
@@ -37,10 +38,7 @@ const Deposit = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              user?.token ||
-              JSON.parse(localStorage.getItem("user") || "{}").token
-            }`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -78,27 +76,11 @@ const Deposit = () => {
     }
   };
 
+  const { data: deposits, current_page, last_page } = depositsData;
+
   useEffect(() => {
     fetchDeposits();
-  }, []);
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= depositsData.last_page) {
-      fetchDeposits(page);
-    }
-  };
-
-  const formatDateTime = (dateString) => {
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString("en-CA"),
-      time: date.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      }),
-    };
-  };
+  }, [userId, token, current_page]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -113,8 +95,6 @@ const Deposit = () => {
         return "bg-gray-100 text-gray-600";
     }
   };
-
-  const { data: deposits, current_page, last_page } = depositsData;
 
   return (
     <div className="bg-[var(--color-tetiary)]">
@@ -140,7 +120,6 @@ const Deposit = () => {
             <div className="text-center py-4">No deposits found.</div>
           ) : (
             deposits.map((item, idx) => {
-              const { date, time } = formatDateTime(item.created_at);
               return (
                 <div
                   key={idx}
@@ -148,7 +127,7 @@ const Deposit = () => {
                 >
                   {/* SN */}
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                    00{idx + 1}
+                    {String(idx+1).padStart(3, "0")}
                   </span>
 
                   {/* Type */}
@@ -176,9 +155,9 @@ const Deposit = () => {
 
                   {/* Date & Time */}
                   <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
-                    <span>{date}</span>
+                    <span>{formatISODateToCustom(item.created_at).split(" ")[0]}</span>
                     <span className="text-[var(--color-primary)] font-bold pe-2">
-                      {time}
+                      {formatISODateToCustom(item.created_at).split(" ")[1]}
                     </span>
                   </span>
                 </div>

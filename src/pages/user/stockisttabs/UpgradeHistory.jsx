@@ -60,10 +60,7 @@ const UpgradeHistory = () => {
         }
       );
 
-      console.log(
-        "Upgrade history response:",
-        response
-      );
+      console.log("Upgrade history response:", response);
 
       if (response.data.ok && response.data.transactions) {
         // Filter for upgrade_debit transactions only
@@ -71,16 +68,7 @@ const UpgradeHistory = () => {
           (transaction) => transaction.transaction_type === "upgrade_debit"
         );
 
-        // ✅ Log transaction details for confirmation tracking
-        filteredTransactions.forEach((t, i) => {
-          console.log(
-            `#${i + 1}: ${
-              t.orders?.products?.map((p) => p.product_name).join(", ") || "N/A"
-            } | Order ID: ${t.orders?.id} | Status: ${
-              t.orders?.status
-            } | Delivery: ${t.orders?.delivery}`
-          );
-        });
+        console.log("filteredTransactions", filteredTransactions)
 
         setTransactions(filteredTransactions || []);
         setCurrentPage(response.data.transactions.current_page || 1);
@@ -117,6 +105,8 @@ const UpgradeHistory = () => {
           },
         }
       );
+
+      console.log("confirm response", response)
 
       if (response.data.ok) {
         toast.success("Order confirmed successfully");
@@ -179,7 +169,7 @@ const UpgradeHistory = () => {
               >
                 {/* SN */}
                 <td className="p-3 text-start rounded-s-lg border-y border-s-1 border-black/10 text-primary">
-                  {String(index + 1).padStart(3, "000")}
+                  {String(index + 1).padStart(3, "0")}
                 </td>
 
                 {/* Product Names with Quantities */}
@@ -208,10 +198,10 @@ const UpgradeHistory = () => {
                 <td className="p-4 border-y border-black/10">
                   <div
                     className={`px-3 py-2 w-[100px] rounded-full text-sm font-medium border border-black/10 mx-auto ${getStatusColor(
-                      transaction.status
+                      transaction.orders?.delivery
                     )}`}
                   >
-                    {transaction.status
+                    {transaction.orders?.delivery
                       .replace(/_/g, " ")
                       .replace(/\b\w/g, (c) => c.toUpperCase())}
                   </div>
@@ -221,11 +211,11 @@ const UpgradeHistory = () => {
                 <td className="p-3 text-start rounded-e-xl border-y border-e-1 border-black/10">
                   <div className="flex items-center justify-end">
                     <button
-                      onClick={() => confirmOrder(transaction.orders?.id)}
+                      onClick={() => confirmOrder(transaction?.orders?.transaction_id)}
                       className="p-2 bg-[var(--color-primary)] text-white rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Confirm Order"
                       disabled={
-                        !transaction.orders?.id ||
+                        !transaction.id ||
                         transaction.orders?.delivery === "picked"
                       }
                     >

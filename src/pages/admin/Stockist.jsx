@@ -276,7 +276,7 @@ const Stockist = () => {
                                     const user = isRequests ? item.user : item;
                                     return (
                                         <tr key={idx} className="bg-white rounded-xl text-sm transition-colors">
-                                            <td className="px-6 py-4 border-y border-black/10 border-s-1 rounded-s-lg whitespace-nowrap text-sm text-gray-900">{String(idx+1).padStart(3, "000") || "N/A"}</td>
+                                            <td className="px-6 py-4 border-y border-black/10 border-s-1 rounded-s-lg whitespace-nowrap text-sm text-gray-900">{String(idx+1).padStart(3, "0") || "N/A"}</td>
                                             <td className="px-6 py-4 text-center border-y border-black/10 whitespace-nowrap text-sm text-gray-900">{user.username || "N/A"}</td>
                                             <td className="px-6 py-4 capitalize text-center border-y border-black/10 whitespace-nowrap text-sm text-gray-900">
                                                 {`${user.first_name || ""} ${user.last_name || ""}`.trim() || "N/A"}
