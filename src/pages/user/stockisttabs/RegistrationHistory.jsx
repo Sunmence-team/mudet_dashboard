@@ -18,7 +18,6 @@ const RegistrationHistory = () => {
 
   const userId = user?.id;
 
-  // Get status color classes
   const getStatusColor = (status) => {
     switch (status) {
       case "success":
@@ -33,8 +32,7 @@ const RegistrationHistory = () => {
     }
   };
 
-  // Fetch transactions
-  const fetchTransactions = async (page = 1) => {
+  const fetchRegistration = async (page = 1) => {
     setLoading(true);
     setError(null);
     try {
@@ -52,15 +50,13 @@ const RegistrationHistory = () => {
         }
       );
 
-      console.log("fetchTransactions history response:", response);
+      console.log("Registration history response:", response);
 
       if (response.data.ok && response.data.registrations) {
-        // Filter for manual_purchase transactions only
         const filteredTransactions = response.data?.registrations.data.filter(
           (transaction) => transaction.transaction_type === "manual_purchase"
         );
 
-        // ✅ Log confirmation states here INSIDE the function
         filteredTransactions.forEach((t, i) => {
           console.log(
             `#${i + 1}: ${t.orders?.products
@@ -88,7 +84,6 @@ const RegistrationHistory = () => {
     }
   };
 
-  // Confirm order
   const confirmOrder = async (orderId) => {
     try {
       const response = await api.put(
@@ -104,7 +99,7 @@ const RegistrationHistory = () => {
 
       if (response.data.ok) {
         toast.success("Order confirmed successfully");
-        fetchTransactions(currentPage); // Refresh the list
+        fetchRegistration(currentPage);
         refreshUser();
       } else {
         throw new Error(response.data.message || "Failed to confirm order");
@@ -120,7 +115,7 @@ const RegistrationHistory = () => {
 
 
   useEffect(() => {
-    fetchTransactions(currentPage);
+    fetchRegistration(currentPage);
   }, [currentPage, userId, token]);
 
   return (
