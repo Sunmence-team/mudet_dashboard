@@ -5,16 +5,19 @@ import api from "../../../utilities/api";
 import PaginationControls from "../../../utilities/PaginationControls";
 import { FaCheck } from "react-icons/fa";
 import LazyLoader from "../../../components/loaders/LazyLoader";
-import { formatterUtility, formatTransactionType } from "../../../utilities/formatterutility";
-
+import {
+  formatterUtility,
+  formatTransactionType,
+} from "../../../utilities/formatterutility";
 
 const RegistrationHistory = () => {
   const { user, token, refreshUser } = useUser();
-  const [transactions, setTransactions] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const apiItemsPerPage = 5;
 
   const userId = user?.id;
 
@@ -32,53 +35,47 @@ const RegistrationHistory = () => {
     }
   };
 
-  const fetchRegistration = async (page = 1) => {
+  const fetchRegistration = async () => {
     setLoading(true);
     setError(null);
     try {
       if (!userId) throw new Error("User ID not found. Please log in.");
-      if (!token) throw new Error("No authentication token found. Please log in.");
+      if (!token)
+        throw new Error("No authentication token found. Please log in.");
 
-      const response = await api.post(
-        `/api/stockists/${userId}/user`,
-        { transactions_page: page },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await api.get(`/api/stockists/${userId}/reg`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          page: currentPage,
+          perPage: apiItemsPerPage
         }
-      );
+      });
 
       console.log("Registration history response:", response);
 
-      if (response.data.ok && response.data.registrations) {
-        const filteredTransactions = response.data?.registrations.data.filter(
-          (transaction) => transaction.transaction_type === "manual_purchase"
-        );
+      if (response.status === 200 && response.data.success) {
+        const { data, current_page, last_page } = response.data.registrations;
 
-        filteredTransactions.forEach((t, i) => {
-          console.log(
-            `#${i + 1}: ${t.orders?.products
-              ?.map((p) => p.product_name)
-              .join(", ") || "N/A"} | Order ID: ${t.orders?.id} | Status: ${t.orders?.status} | Delivery: ${t.orders?.delivery}`
-          );
-        });
-
-        setTransactions(filteredTransactions || []);
-        setCurrentPage(response.data?.registrations.current_page || 1);
-        setTotalPages(response.data?.registrations.last_page || 1);
+        setRegistrations(data || []);
+        setCurrentPage(current_page);
+        setTotalPages(last_page);
       } else {
-        throw new Error(response.data.message || "Failed to fetch registrations");
+        throw new Error(
+          response.data.message || "Failed to fetch registrations"
+        );
       }
-
     } catch (error) {
       console.error("Error fetching registrations:", error);
       const errorMessage =
-        error.response?.data?.message || error.message || "Failed to fetch registrations";
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch registrations";
       setError(errorMessage);
       toast.error(errorMessage);
-      setTransactions([]);
+      setRegistrations([]);
     } finally {
       setLoading(false);
     }
@@ -107,12 +104,12 @@ const RegistrationHistory = () => {
     } catch (error) {
       console.error("Error confirming order:", error);
       const errorMessage =
-        error.response?.data?.message || error.message || "Failed to confirm order";
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to confirm order";
       toast.error(errorMessage);
     }
   };
-
-
 
   useEffect(() => {
     fetchRegistration(currentPage);
@@ -142,14 +139,21 @@ const RegistrationHistory = () => {
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={6} className="text-center py-4 text-red-500 text-lg">{error}</td>
+                <td
+                  colSpan={6}
+                  className="text-center py-4 text-red-500 text-lg"
+                >
+                  {error}
+                </td>
               </tr>
-            ) : transactions.length === 0 ? (
+            ) : registrations.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-4 text-black/60">No manual purchase transactions found.</td>
+                <td colSpan={6} className="text-center py-4 text-black/60">
+                  No manual purchase registrations found.
+                </td>
               </tr>
             ) : (
-              transactions.map((transaction, index) => (
+              registrations.map((transaction, index) => (
                 <tr
                   key={index}
                   className="bg-white text-sm text-center capitalize"
@@ -162,7 +166,12 @@ const RegistrationHistory = () => {
                   {/* Product Names with Quantities */}
                   <td className="p-4 border-y border-black/10 whitespace-pre">
                     {transaction.orders?.products
-                      ?.map((product) => `${product.product_name.trim()} (Qty: ${product.product_quantity})`)
+                      ?.map(
+                        (product) =>
+                          `${product.product_name.trim()} (Qty: ${
+                            product.product_quantity
+                          })`
+                      )
                       .join(", \n") || "N/A"}
                   </td>
 
@@ -199,11 +208,9 @@ const RegistrationHistory = () => {
                         !transaction.orders?.id ||
                         transaction.orders?.delivery === "picked"
                       }
-
                     >
                       <FaCheck size={16} />
                     </button>
-
                   </td>
                 </tr>
               ))
@@ -212,7 +219,7 @@ const RegistrationHistory = () => {
         </table>
       </div>
 
-      {!loading && transactions.length > 0 && (
+      {!loading && registrations.length > 0 && (
         <div className="mt-4">
           <PaginationControls
             currentPage={currentPage}
