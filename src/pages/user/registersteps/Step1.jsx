@@ -185,10 +185,7 @@ const Step1 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
               last_name: item.user.fullname.split(" ").slice(1).join(" ") || "",
             }))
           : [];
-        if (suggestions.length === 1 && suggestions[0].id === user?.id) {
-          console.warn("Sponsor search returned only logged-in user:", suggestions);
-          toast.warning("Sponsor search is limited. Please try a different username or contact support.");
-        }
+       
         setSponsorSuggestions(suggestions);
         setShowSponsorDropdown(suggestions.length > 0);
       } catch (error) {

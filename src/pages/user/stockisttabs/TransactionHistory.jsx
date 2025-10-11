@@ -3,38 +3,18 @@ import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import PaginationControls from "../../../utilities/PaginationControls";
-import LazyLoader from "../../../components/LazyLoader";
+import LazyLoader from "../../../components/loaders/LazyLoader";
+import { formatISODateToCustom, formatterUtility, formatTransactionType } from "../../../utilities/formatterutility";
 
 const TransactionHistory = () => {
-  const { token } = useUser();
+  const { user, token } = useUser();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Format amount as currency (e.g., ₦5,000)
-  const formatAmount = (amount) => {
-    if (!amount) return "₦0";
-    return `₦${parseFloat(amount).toLocaleString("en-NG", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })}`;
-  };
-
-  // Format date and time (e.g., { date: "2025-10-10", time: "12:56 AM" })
-  const formatDateTime = (dateString) => {
-    if (!dateString) return { date: "N/A", time: "N/A" };
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString("en-CA"),
-      time: date.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      }),
-    };
-  };
+  const userId = user?.id;
 
   // Get status color classes
   const getStatusColor = (status) => {
@@ -56,33 +36,37 @@ const TransactionHistory = () => {
     setLoading(true);
     setError(null);
     try {
+      if (!userId) {
+        throw new Error("User ID not found. Please log in.");
+      }
       if (!token) {
         throw new Error("No authentication token found. Please log in.");
       }
 
-      const response = await api.post(
-        "/api/stockists/3/user",
-        { transactions_page: page },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get(`/api/stockists/bonus/${userId}?page=${page}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      console.log("Transaction history response:", JSON.stringify(response.data, null, 2));
+      console.log("Transaction history response:", response);
 
-      if (response.data.ok && response.data.transactions) {
-        setTransactions(response.data.transactions.data || []);
-        setCurrentPage(response.data.transactions.current_page || 1);
-        setTotalPages(response.data.transactions.last_page || 1);
+      if (response.data.ok && response.data.data) {
+        setTransactions(response.data.data.data || []);
+        setCurrentPage(response.data.data.current_page || 1);
+        setTotalPages(response.data.data.last_page || 1);
       } else {
-        throw new Error(response.data.message || "Failed to fetch transactions");
+        throw new Error(
+          response.data.message || "Failed to fetch transactions"
+        );
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Failed to fetch transactions";
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch transactions";
       setError(errorMessage);
       toast.error(errorMessage);
       setTransactions([]);
@@ -93,71 +77,74 @@ const TransactionHistory = () => {
 
   useEffect(() => {
     fetchTransactions(currentPage);
-  }, [currentPage, token]);
+  }, [currentPage, userId, token]);
 
   return (
-    <div className="bg-[var(--color-tetiary)] w-full flex items-center justify-center py-12">
-      {/* Table container */}
-      <div className="overflow-x-auto w-[95%]">
-        {/* Header */}
-        <div className="flex justify-between py- font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
-          <span className="text-start ps-4 w-[15%]">SN</span>
-          <span className="text-start w-[25%]">Type</span>
-          <span className="w-[20%] text-center">Amount</span>
-          <span className="w-[20%] text-center">Status</span>
-          <span className="text-end pe-8 w-[20%]">Date</span>
-        </div>
+    <div>
+      <div className="overflow-x-auto min-w-full">
+        <table className="w-full">
+          <thead>
+            <tr className="text-black/70 text-xs uppercase">
+              <th className="ps-2 p-5 text-start">SN</th>
+              <th className="p-5 text-center">Type</th>
+              <th className="p-5 text-center">Amount</th>
+              <th className="p-5 text-center">Status</th>
+              <th className="pe-2 p-5 text-end">Date</th>
+            </tr>
+          </thead>
 
-        {/* Rows */}
-        <div className="space-y-3 w-full mt-8">
-          {loading ? (
-            <div className="text-center py-4">
-              <LazyLoader color="var(--color-primary)" width="35px" />
-              <span className="text-black/60">Loading...</span>
-            </div>
-          ) : error ? (
-            <div className="text-center py-4 text-red-500 text-lg">{error}</div>
-          ) : transactions.length === 0 ? (
-            <div className="text-center py-4 text-black/60">No transactions found.</div>
-          ) : (
-            transactions.map((transaction, idx) => {
-              const { date, time } = formatDateTime(transaction.created_at);
-              return (
-                <div
-                  key={transaction.id}
-                  className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
-                >
-                  <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                    {transaction.id}
-                  </span>
-                  <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
-                    {transaction.transaction_type.replace(/_/g, " ")}
-                  </span>
-                  <span className="font-medium text-sm w-[20%] text-center">
-                    {formatAmount(transaction.amount)}
-                  </span>
-                  <span className="w-[20%] text-center">
-                    <div
-                      className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border border-black/10 mx-auto ${getStatusColor(
-                        transaction.status
-                      )}`}
-                    >
-                      {transaction.status
-                        .replace(/_/g, " ")
-                        .replace(/\b\w/g, (c) => c.toUpperCase())}
-                    </div>
-                  </span>
-                  <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
-                    <span>{date}</span>
-                    <span className="text-[var(--color-primary)] font-bold pe-2">
-                      {time}
-                    </span>
-                  </span>
-                </div>
-              );
-            })
-          )}
-        </div>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="5" className="text-center p-8">
+                  <LazyLoader color={"green"} />
+                </td>
+              </tr>
+            ) : error ? (
+              <tr className="text-center text-red-500 text-lg py-4">
+                <td colSpan={5}>{error}</td>
+              </tr>
+            ) : transactions.length === 0 ? (
+              <tr className="text-center text-black/60 text-lg py-4">
+                <td colSpan={5}>No transactions found.</td>
+              </tr>
+            ) : (
+              transactions.map((transaction, index) => {
+                return (
+                  <tr
+                    key={transaction.id}
+                    className="bg-white font-medium text-center capitalize"
+                  >
+                    <td className="font-semibold text-primary p-3 text-start rounded-s-lg border-y border-s-1 border-black/10">
+                      {String(index + 1).padStart(3, "0")}
+                    </td>
+                    <td className="px-4 py-3 border-y border-black/10">
+                      {formatTransactionType(transaction.transaction_type, true)}
+                    </td>
+                    <td className="px-4 py-3 border-y border-black/10">
+                      {formatterUtility(transaction.amount)}
+                    </td>
+                    <td className="px-4 py-3 border-y border-black/10">
+                      <div
+                        className={`px-3 py-2 w-max rounded-full text-xs font-medium border border-black/10 mx-auto ${getStatusColor(
+                          transaction.status
+                        )}`}
+                      >
+                        {transaction.status
+                          .replace(/_/g, " ")
+                          .replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </div>
+                    </td>
+                    <td className="text-primary px-4 py-3 text-end text-sm text-pryClr font-semibold border-e-1 rounded-e-lg border-y border-black/10">
+                      <span className="block">{formatISODateToCustom(transaction?.created_at).split(" ")[0]}</span>
+                      <span className="block">{formatISODateToCustom(transaction?.created_at).split(" ")[1]}</span>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Pagination Component */}

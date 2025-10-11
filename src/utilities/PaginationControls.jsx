@@ -66,7 +66,7 @@ const PaginationControls = ({ currentPage, totalPages, setCurrentPage }) => {
             <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="px-3 py-2.5 opacity-100 rounded-md bg-primary/20 cursor-pointer disabled:cursor-not-allowed disabled:opacity-25"
+                className="px-3 py-2.5 opacity-100 rounded-md bg-primary/30 cursor-pointer disabled:cursor-not-allowed disabled:opacity-5"
             >
                 <MdKeyboardArrowLeft />
             </button>
@@ -97,7 +97,7 @@ const PaginationControls = ({ currentPage, totalPages, setCurrentPage }) => {
             <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className="px-3 py-2.5 opacity-100 rounded-md bg-primary/20 cursor-pointer disabled:cursor-not-allowed disabled:opacity-25"
+                className="px-3 py-2.5 opacity-100 rounded-md bg-primary/30 cursor-pointer disabled:cursor-not-allowed disabled:opacity-25"
             >
                 <MdKeyboardArrowRight />
             </button>

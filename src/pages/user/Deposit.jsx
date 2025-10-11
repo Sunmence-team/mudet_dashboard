@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 const Deposit = () => {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hasClicked, setHasClicked] = useState(false); // Track button click
 
   const user = JSON.parse(localStorage.getItem("user"));
   const user_id = user?.id;
@@ -15,11 +16,13 @@ const Deposit = () => {
   const eWallet = user?.e_wallet || "0.00";
 
   const handleConfirm = async () => {
+    if (hasClicked) return; // Prevent multiple clicks
     if (!amount || parseFloat(amount) <= 0) {
       toast.error("Please enter a valid amount.");
       return;
     }
 
+    setHasClicked(true); // Disable button after first click
     setLoading(true);
 
     try {
@@ -33,12 +36,14 @@ const Deposit = () => {
       if (response.data.ok) {
         toast.success("Payment initialized.");
         window.open(response.data.authorization_url, "_self");
-
+        // Note: hasClicked remains true as the page will redirect
       } else {
         toast.error(response.data.message || "Something went wrong.");
+        setHasClicked(false); // Re-enable button on failure
       }
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed to initialize payment.");
+      setHasClicked(false); // Re-enable button on error
     } finally {
       setLoading(false);
     }
@@ -116,7 +121,7 @@ const Deposit = () => {
 
         <button
           onClick={handleConfirm}
-          disabled={loading}
+          disabled={loading || hasClicked}
           className="bg-[var(--color-primary)] text-white w-full py-3 sm:py-4 rounded-xl hover:opacity-90 transition disabled:opacity-50"
         >
           {loading ? (
