@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { formatTransactionType } from "../../utilities/formatterutility";
+import PaginationControls from "../../utilities/PaginationControls";
+import LazyLoader from "../../components/loaders/LazyLoader";
 
 const Stockist = () => {
     const { token } = useUser();
@@ -15,7 +17,6 @@ const Stockist = () => {
     const [loading, setLoading] = useState(true);
     const [loadingEnable, setLoadingEnable] = useState({});
     const [loadingUpgrade, setLoadingUpgrade] = useState(null);
-    const [paginationLinks, setPaginationLinks] = useState([]);
     const [upgradeData, setUpgradeData] = useState({ id: null, location: "" });
     const [showProductPopup, setShowProductPopup] = useState(false);
     const [selectedStockistId, setSelectedStockistId] = useState(null);
@@ -24,6 +25,10 @@ const Stockist = () => {
     const [formData, setFormData] = useState([{ product_name: "", quantity: "" }]);
     const [allProducts, setAllProducts] = useState([]);
     const [stockistUsername, setStockistUsername] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const [perPage, setPerPage] = useState(5);
+    
 
     useEffect(() => {
         if (activeTab === "requests") fetchRequests();
@@ -41,9 +46,11 @@ const Stockist = () => {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             });
             console.log("fetchRequests response:", response);
-            const allRequests = response.data.data?.data || [];
-            setRequests(allRequests);
-            if (response.data.data?.links) setPaginationLinks(response.data.data.links);
+            const { data, current_page, last_page, per_page } = response.data.data;
+            setRequests(data);
+            setCurrentPage(current_page);
+            setLastPage(last_page);
+            setPerPage(per_page);
         } catch (error) {
             console.error("Error fetching requests:", error);
             toast.error(error.response?.data?.message || "Failed to fetch requests.");
@@ -61,9 +68,9 @@ const Stockist = () => {
             const response = await api.get(url, {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             });
+
             console.log("fetchStockists response:", response);
             setStockists(response.data.data || []);
-            if (response.data.links) setPaginationLinks(response.data.links);
         } catch (error) {
             console.error("Error fetching stockists:", error);
             toast.error(error.response?.data?.message || "Failed to fetch stockists.");
@@ -96,27 +103,27 @@ const Stockist = () => {
         }
     };
 
-    const handleEnableStockist = async (id) => {
-        setLoadingEnable(prev => ({ ...prev, [id]: true }));
+    const handleEnableStockist = async (item) => {
+        setLoadingEnable(prev => ({ ...prev, [item?.user_id]: true }));
         try {
             if (!token) {
                 toast.error("No authentication token found. Please log in.");
                 return;
             }
-            const payload = { stockist_plan: "max_owner", stockist_location: "kooo" };
-            const response = await api.post(`/api/users/${id}/enable-stockist`, payload, {
+            const payload = { stockist_plan: item?.stockist_plan, stockist_location: item?.stockist_location };
+            const response = await api.post(`/api/users/${item?.user_id}/enable-stockist`, payload, {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             });
-            console.log("handleEnableStockist response:", JSON.stringify(response.data, null, 2));
+            console.log("handleEnableStockist response:", response);
             if (response.data.message) {
                 toast.success(response.data.message);
-                fetchRequests(); // Refresh requests table
+                fetchRequests();
             }
         } catch (error) {
             console.error("Error enabling stockist:", error);
             toast.error(error.response?.data?.message || "Failed to enable stockist.");
         } finally {
-            setLoadingEnable(prev => ({ ...prev, [id]: false }));
+            setLoadingEnable(prev => ({ ...prev, [item?.user_id]: false }));
         }
     };
 
@@ -238,11 +245,12 @@ const Stockist = () => {
                 <div className="overflow-x-auto">
                     <table className="min-w-full">
                         <thead>
-                            <tr className="text-black/70 text-[12px] uppercase">
+                            <tr className="text-black/70 uppercase">
+                                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider">S/N</th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider">Username</th>
                                 <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Name</th>
                                 <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Location</th>
-                                {isRequests && <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Status</th>}
+                                {isRequests && <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Payment Status</th>}
                                 <th className="px-6 py-3 text-center text-xs font-semibold tracking-wider">Plan</th>
                                 <th className="px-6 py-3 text-right text-xs font-semibold tracking-wider">Actions</th>
                             </tr>
@@ -250,14 +258,16 @@ const Stockist = () => {
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={isRequests ? 6 : 5} className="text-center py-6">
-                                        <FaSpinner className="animate-spin h-8 w-8 text-primary mx-auto" />
-                                        <span className="mt-2 block text-gray-600">Loading...</span>
+                                    <td colSpan={isRequests ? 7 : 5} className="text-center py-6">
+                                        <LazyLoader 
+                                            color={"green"}
+                                            size={30}
+                                        />
                                     </td>
                                 </tr>
                             ) : !Array.isArray(data) || data.length === 0 ? (
                                 <tr>
-                                    <td colSpan={isRequests ? 6 : 5} className="text-center py-6 text-gray-500">
+                                    <td colSpan={isRequests ? 7 : 6} className="text-center py-6 text-gray-500">
                                         No data found.
                                     </td>
                                 </tr>
@@ -266,14 +276,15 @@ const Stockist = () => {
                                     const user = isRequests ? item.user : item;
                                     return (
                                         <tr key={idx} className="bg-white rounded-xl text-sm transition-colors">
-                                            <td className="px-6 py-4 border-y border-black/10 border-s-1 rounded-s-lg whitespace-nowrap text-sm text-gray-900">{user.username || "N/A"}</td>
+                                            <td className="px-6 py-4 border-y border-black/10 border-s-1 rounded-s-lg whitespace-nowrap text-sm text-gray-900">{String(idx+1).padStart(3, "0") || "N/A"}</td>
+                                            <td className="px-6 py-4 text-center border-y border-black/10 whitespace-nowrap text-sm text-gray-900">{user.username || "N/A"}</td>
                                             <td className="px-6 py-4 capitalize text-center border-y border-black/10 whitespace-nowrap text-sm text-gray-900">
                                                 {`${user.first_name || ""} ${user.last_name || ""}`.trim() || "N/A"}
                                             </td>
                                             <td className="px-6 py-4 text-center border-y border-black/10 whitespace-nowrap text-sm text-gray-900">{item.stockist_location || "N/A"}</td>
                                             {isRequests && (
-                                                <td className="px-6 py-4 border-y border-black/10 whitespace-nowrap text-sm text-center">
-                                                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                                                <td className="px-6 py-4 border-y border-black/10 whitespace-nowrap text-center">
+                                                    <span className={`inline-flex px-3 py-1 rounded-full text-[10px] font-medium ${getStatusColor(item.status)}`}>
                                                         {item.status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}
                                                     </span>
                                                 </td>
@@ -282,9 +293,9 @@ const Stockist = () => {
                                             <td className="px-6 py-4 border-y border-black/10 border-e-1 rounded-e-lg whitespace-nowrap text-sm">
                                                 {isRequests ? (
                                                     <button
-                                                        onClick={() => handleEnableStockist(item.user_id)}
-                                                        disabled={item.status === "success" || loadingEnable[item.user_id]}
-                                                        className={`flex ms-auto items-center space-x-2 px-4 py-2 rounded-full ${item.status === "success" || loadingEnable[item.user_id] ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary"}`}
+                                                        onClick={() => handleEnableStockist(item)}
+                                                        disabled={loadingEnable[item.user_id]}
+                                                        className={`flex ms-auto items-center space-x-2 px-4 py-2 rounded-full ${loadingEnable[item.user_id] ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary"}`}
                                                         title="Enable Stockist"
                                                     >
                                                         {loadingEnable[item.user_id] ? <FaSpinner className="animate-spin h-4 w-4" /> : <FaCheck className="h-4 w-4" />}
@@ -317,40 +328,13 @@ const Stockist = () => {
                         </tbody>
                     </table>
                 </div>
-                {paginationLinks.length > 0 && (
-                    <div className="flex justify-center mt-4 gap-2 py-8">
-                        <button
-                            onClick={() => {
-                                const prevLink = paginationLinks.find(link => link.label === "« Previous");
-                                if (prevLink?.url) (activeTab === "requests" ? fetchRequests(prevLink.url) : fetchStockists(prevLink.url));
-                            }}
-                            disabled={!paginationLinks.find(link => link.label === "« Previous")?.url}
-                            className={`px-4 py-2 rounded-md ${!paginationLinks.find(link => link.label === "« Previous")?.url ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
-                        >
-                            &lt;
-                        </button>
-                        {paginationLinks
-                            .filter(link => !isNaN(parseInt(link.label)))
-                            .map((link, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => (activeTab === "requests" ? fetchRequests(link.url) : fetchStockists(link.url))}
-                                    className={`px-4 py-2 rounded-md ${link.active ? "bg-primary text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
-                                    disabled={!link.url}
-                                >
-                                    {link.label}
-                                </button>
-                            ))}
-                        <button
-                            onClick={() => {
-                                const nextLink = paginationLinks.find(link => link.label === "Next »");
-                                if (nextLink?.url) (activeTab === "requests" ? fetchRequests(nextLink.url) : fetchStockists(nextLink.url));
-                            }}
-                            disabled={!paginationLinks.find(link => link.label === "Next »")?.url}
-                            className={`px-4 py-2 rounded-md ${!paginationLinks.find(link => link.label === "Next »")?.url ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
-                        >
-                            &gt;
-                        </button>
+                {!loading && data.length > 0 && (
+                    <div className="flex justify-center items-center gap-2 p-4">
+                        <PaginationControls
+                            currentPage={currentPage}
+                            totalPages={lastPage}
+                            setCurrentPage={setCurrentPage}
+                        />
                     </div>
                 )}
             </div>

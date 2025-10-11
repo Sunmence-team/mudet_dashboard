@@ -133,7 +133,7 @@ const EHistory = () => {
                   className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
                 >
                   <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                    00{idx + 1}
+                    {String(idx+1).padStart(3, "0")}
                   </span>
                   <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
                     {item.transaction_type.replace(/_/g, " ")}
