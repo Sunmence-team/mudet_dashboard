@@ -21,13 +21,6 @@ const ProductsHis = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [activeTab, setActiveTab] = useState("all");
-
-  const tabs = [
-    { value: "all", label: "All" },
-    { value: "pending", label: "Pending" },
-    { value: "delivered", label: "Delivered" },
-  ];
 
   const userId = user?.id;
 
@@ -105,7 +98,7 @@ const ProductsHis = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "delivered":
       case "success":
       case "picked":
