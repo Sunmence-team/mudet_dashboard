@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
-import LazyLoader from "../../../components/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 import { FaCheck } from "react-icons/fa";
+import LazyLoader from "../../../components/loaders/LazyLoader";
+import { formatTransactionType } from "../../../utilities/formatterutility";
 
 const RepurchaseHistory = () => {
-  const { user, token } = useUser();
+  const { user, token, refreshUser } = useUser();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -112,6 +113,7 @@ const RepurchaseHistory = () => {
       if (response.data.ok) {
         toast.success("Order confirmed successfully");
         fetchTransactions(currentPage); // Refresh the list
+        refreshUser();
       } else {
         throw new Error(response.data.message || "Failed to confirm order");
       }
@@ -174,7 +176,7 @@ const RepurchaseHistory = () => {
 
                 {/* Transaction Type */}
                 <span className="capitalize px-2 break-words text-base text-start w-[15%]">
-                  {transaction.transaction_type.replace(/_/g, " ")}
+                  {formatTransactionType(transaction.transaction_type)}
                 </span>
 
                 {/* Amount */}

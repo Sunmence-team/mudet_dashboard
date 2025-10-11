@@ -118,6 +118,11 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
+      name: "Manage Products",
+      path: "/admin/product-upload",
+      role: ["admin"],
+    },
+    {
       name: "Upgrade Package",
       path: "/user/upgrade-package",
       role: ["user"],
@@ -150,11 +155,6 @@ const Navbar = () => {
     {
       name: "Testimonials",
       path: "/admin/testimonials",
-      role: ["admin"],
-    },
-    {
-      name: "Package Upload",
-      path: "/admin/package-upload",
       role: ["admin"],
     },
     {

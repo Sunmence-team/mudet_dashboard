@@ -14,12 +14,12 @@ import { BiSolidMessageEdit } from "react-icons/bi";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { ArrowUpCircle } from "lucide-react";
+import { formatTransactionType } from "../utilities/formatterutility";
 
 const StockistUser = () => {
   const [stockistChoice, setStockistChoice] = useState("");
   const [requesting, setRequesting] = useState(false);
   const [activeTab, setActiveTab] = useState("Inventory");
-  const [activeUser, setActiveUser] = useState({});
   const tabs = [
     "Inventory",
     "Repurchase Order",
@@ -27,15 +27,12 @@ const StockistUser = () => {
     "Upgrade Order",
     "Transaction History",
   ];
-  const backUpuser = JSON.parse(localStorage.getItem("user"));
-  const backUpMiscellaneousDetails = JSON.parse(
-    localStorage.getItem("miscellaneousDetails")
-  );
-  const { user, refreshUser, miscellaneousDetails } = useUser();
+  
+  const { token, user, refreshUser, miscellaneousDetails } = useUser();
   const stockistWallet = {
     type: "wallet",
     walletType: "Stockist Balance",
-    walletBalance: +user?.stockist_balance || +backUpuser.stockist_balance,
+    walletBalance: +user?.stockist_balance,
     path: "/user/transfer",
     pathName: "Withdraw",
     color: "deepGreen",
@@ -99,13 +96,12 @@ const StockistUser = () => {
   });
 
   useEffect(() => {
-    setActiveUser(user || backUpuser);
-  }, []);
+    refreshUser();
+  }, [token]);
 
   return (
     <div className="w-full flex flex-col gap-4 items-center justify-center">
-      {miscellaneousDetails?.planDetails?.name !== "legend" ||
-      backUpMiscellaneousDetails?.planDetails?.name !== "legend" ? (
+      {miscellaneousDetails?.planDetails?.name !== "legend" ? (
         <>
           <div className="flex flex-col justify-center gap-8 items-center bg-white rounded-xl shadow-2xl ring-1 ring-gray-100 w-1/2 m-auto py-12 px-6 sm:px-10">
             <div className="rounded-full p-6 bg-primary/10 text-primary text-5xl lg:text-6xl">
@@ -145,11 +141,11 @@ const StockistUser = () => {
             </div>
           </div>
         </>
-      ) : activeUser.stockist_enabled === 0 &&
-        activeUser.stockist_active === null ? (
+      ) : user?.stockist_enabled === 0 &&
+        user?.stockist_active === null ? (
         stockistChoice === "" ? (
           <>
-            <p className="text-lg font-semibold">Stockist</p>
+            <h3 className="text-start w-full text-xl font-semibold">Stockist</h3>
             <div className="w-full flex flex-col gap-8">
               <div className="w-full rounded-lg border border-black/10 bg-white p-8 flex flex-col gap-4">
                 <p className="text-lg md:text-2xl font-semibold">
@@ -430,14 +426,14 @@ const StockistUser = () => {
           </>
         ) : (
           <>
-            <p className="text-lg font-semibold">Stockist Registration</p>
+            <h3 className="text-start w-full text-xl font-semibold">Stockist Registration</h3>
             <form
               onSubmit={formik.handleSubmit}
               className="w-full flex flex-col gap-4"
             >
               <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
                 <p className="text-xl md:text-2xl font-semibold">
-                  Store Information
+                  Selected Plan
                 </p>
 
                 <div className="flex flex-col w-full">
@@ -458,7 +454,7 @@ const StockistUser = () => {
                     type="text"
                     id="stockist_plan"
                     name="stockist_plan"
-                    value={formik.values.stockist_plan}
+                    value={formatTransactionType(formik.values.stockist_plan)}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     disabled
@@ -533,7 +529,8 @@ const StockistUser = () => {
 
                 <button
                   type="submit"
-                  className="bg-primary text-white px-6 py-2 rounded-full w-full sm:w-auto"
+                  className="bg-primary text-white px-6 py-2 rounded-full w-full sm:w-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={requesting}
                 >
                   {requesting
                     ? "Requesting registration...."
@@ -543,8 +540,8 @@ const StockistUser = () => {
             </form>
           </>
         )
-      ) : activeUser.stockist_enabled === 0 &&
-        activeUser.stockist_active === "pending" ? (
+      ) : user?.stockist_enabled === 0 &&
+        user?.stockist_active === "pending" ? (
         <>
           <div className="flex flex-col translate-y-[4rem] justify-center gap-8  items-center bg-white rounded-lg lg:w-1/2 py-8 mx-auto">
             <div className="rounded-full p-6 bg-primary/10 text-primary text-4xl lg:text-5xl">
@@ -576,8 +573,8 @@ const StockistUser = () => {
                 <OverviewCard details={stockistWallet} />
               </div>
 
-              <div className="rounded-lg shadow border border-gray-200 flex flex-col ">
-                <div className="flex border-b rounded-b-lg shadow border-gray-200 no-scrollbar overflow-x-auto bg-gray-50 justify-between">
+              <div className="flex flex-col">
+                <div className="flex border-b rounded-s-lg rounded-e-lg shadow border-gray-200 no-scrollbar overflow-x-auto bg-gray-50 justify-between">
                   {tabs.map((tab) => (
                     <button
                       key={tab}
@@ -594,17 +591,33 @@ const StockistUser = () => {
                   ))}
                 </div>
                 <div className="overflow-x-auto w-full">
-                  {activeTab === "Inventory" ? (
-                    <InventoryHistory />
-                  ) : activeTab === "Repurchase Order" ? (
-                    <RepurchaseHistory />
-                  ) : activeTab === "Registration Order" ? (
-                    <RegistrationHistory />
-                  ) : activeTab === "Upgrade Order" ? (
-                    <UpgradeHistory />
-                  ) : activeTab === "Transaction History" ? (
-                    <TransactionHistory />
-                  ) : null}
+                  {
+                    user?.stockist_enabled === 1 &&
+                    user?.stockist_active === "active" && 
+                    (
+                      activeTab === "Inventory" 
+                        ? (
+                          <InventoryHistory />
+                        ) 
+                        : activeTab === "Repurchase Order" 
+                          ? (
+                            <RepurchaseHistory />
+                          ) 
+                          : activeTab === "Registration Order" 
+                            ? (
+                              <RegistrationHistory />
+                            ) 
+                            : activeTab === "Upgrade Order" 
+                              ? (
+                                <UpgradeHistory />
+                              ) 
+                              : activeTab === "Transaction History" 
+                                ? (
+                                  <TransactionHistory />
+                                ) 
+                                : null
+                    )
+                  }
                 </div>
               </div>
             </div>
