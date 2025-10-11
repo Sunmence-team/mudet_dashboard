@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect }, { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { useUser } from "../../../context/UserContext";
+import api from "../../../utilities/api";
+import LazyLoader from "../../../components/loaders/LazyLoader";
 import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
@@ -51,58 +55,62 @@ const InventoryHistory = () => {
   }, [userId, token]);
 
   return (
-    <div className="bg-[var(--color-tetiary)] w-full flex items-center justify-center py-12">
-      {/* Table container */}
-      <div className="overflow-x-auto w-[95%]">
-        {/* Header */}
-        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
-          <span className="text-start ps-4 w-[15%]">SN</span>
-          <span className="text-start w-[35%]">Product Name</span>
-          <span className="w-[25%] text-center">Total In Stock</span>
-          <span className="w-[25%] text-center">Total Sold</span>
-        </div>
+    <div className="overflow-x-auto min-w-full">
+      <table className="w-full">
+        <thead>
+          <tr className="text-black/70 text-xs font-semibold uppercase">
+            <th className="ps-2 p-5 text-start">SN</th>
+            <th className="p-5 text-center">Product Name</th>
+            <th className="p-5 text-center">Total In Stock</th>
+            <th className="ps-2 p-5 text-end">Total Sold</th>
+          </tr>
+        </thead>
 
-        {/* Rows */}
-        <div className="space-y-3 w-full mt-8">
+        <tbody className="space-y-3 w-full mt-8">
           {loading ? (
-            <div className="text-center py-4">
-              <LazyLoader color="var(--color-primary)" width="35px" />
-              <span className="text-black/60">Loading...</span>
-            </div>
+            <tr className="text-center py-4">
+              <td colSpan={4}>
+                <LazyLoader color="var(--color-primary)" width="35px" />
+              </td>
+            </tr>
           ) : error ? (
-            <div className="text-center py-4 text-red-500 text-lg">{error}</div>
+            <tr className="text-center text-red-500 text-lg py-4">
+              <td colSpan={4}>{error}</td>
+            </tr>
           ) : products.length === 0 ? (
-            <div className="text-center py-4 text-black/60">No products found.</div>
+            <tr className="text-center text-black/60 text-lg py-4">
+              <td colSpan={4}>No products found.</td>
+            </tr>
           ) : (
             products.map((product, index) => (
-              <div
+              <tr
                 key={index}
-                className="flex justify-between items-center py-6 bg-white rounded-md shadow-sm text-black/80 font-medium hover:bg-gray-50 transition"
+                className="bg-white text-sm font-medium text-center capitalize"
               >
                 {/* SN */}
-                <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                  {index + 1}
-                </span>
+                <td className="p-3 text-primary text-start rounded-s-lg border-y border-s-1 border-black/10">
+                  {String(index + 1).padStart(3, "000")}
+                </td>
 
                 {/* Product Name */}
-                <span className="capitalize px-2 break-words text-base text-start w-[35%]">
+                <td className="p-4 border-y border-black/10">
                   {product.product_name}
-                </span>
+                </td>
 
                 {/* Total In Stock */}
-                <span className="font-medium text-base w-[25%] text-center">
+                <td className="p-4 border-y border-black/10">
                   {product.total_in_stock}
-                </span>
+                </td>
 
                 {/* Total Sold */}
-                <span className="font-medium text-base w-[25%] text-center">
+                <td className="p-4 text-end text-sm text-pryClr font-semibold border-e-1 rounded-e-lg border-y border-black/10">
                   {product.total_sold}
-                </span>
-              </div>
+                </td>
+              </tr>
             ))
           )}
-        </div>
-      </div>
+        </tbody>
+      </table>
     </div>
   );
 };

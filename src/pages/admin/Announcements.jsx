@@ -355,7 +355,7 @@ const Announcements = () => {
 
             <div className="w-full">
                 <AnnouncementCard 
-                    style={"max-h-[400px]"}
+                    style={"h-[400px]"}
                     refresh={refresh}
                     pagination={true}
                 />

@@ -73,21 +73,6 @@ const Navbar = () => {
       role: ["admin"],
     },
     {
-      name: "Stockist",
-      path: "/admin/stockist",
-      role: ["admin"],
-    },
-    {
-      name: "Contact",
-      path: "/admin/contact",
-      role: ["admin"],
-    },
-    {
-      name: "Announcements",
-      path: "/admin/announcements",
-      role: ["admin"],
-    },
-    {
       name: "Network",
       path: "/user/network",
       role: ["user"],
@@ -118,9 +103,24 @@ const Navbar = () => {
       role: ["user"],
     },
     {
-      name: "AllTransactions",
+      name: "Transactions",
       path: "/user/transactions",
       role: ["user"],
+    },
+    {
+      name: "Manage Transactions",
+      path: "/admin/transactions",
+      role: ["admin"],
+    },
+    {
+      name: "Stockist",
+      path: "/admin/stockist",
+      role: ["admin"],
+    },
+    {
+      name: "Manage Products",
+      path: "/admin/product-upload",
+      role: ["admin"],
     },
     {
       name: "Upgrade Package",
@@ -138,18 +138,28 @@ const Navbar = () => {
       role: ["user"],
     },
     {
+      name: "Package Upload",
+      path: "/admin/package-upload",
+      role: ["admin"],
+    },
+    {
+      name: "Contact",
+      path: "/admin/contact",
+      role: ["admin"],
+    },
+    {
+      name: "Announcements",
+      path: "/admin/announcements",
+      role: ["admin"],
+    },
+    {
       name: "Testimonials",
       path: "/admin/testimonials",
       role: ["admin"],
     },
     {
-      name: "Product Upload",
-      path: "/admin/product-upload",
-      role: ["admin"],
-    },
-    {
-      name: "Package Upload",
-      path: "/admin/package-upload",
+      name: "Newsletter",
+      path: "/admin/newsletter",
       role: ["admin"],
     },
   ];
@@ -178,7 +188,6 @@ const Navbar = () => {
             className="object-cover md:block hidden"
           />
 
-          {/* Scrollable links section */}
           <div className="relative flex items-center overflow-hidden w-3/4">
             {/* Left scroll */}
             {canScrollLeft && (
@@ -244,7 +253,7 @@ const Navbar = () => {
           </Link>
           <Link
             to={"/user/profile"}
-            className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-xl bg-tetiary text-primary"
+            className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-lg bg-tetiary text-primary"
           >
             <h3>
               {" "}

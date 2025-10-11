@@ -28,7 +28,7 @@ const Transactions = () => {
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value)}
-              className="appearance-none w-full bg-white border border-[var(--color-primary)] text-[var(--color-primary)] font-medium px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] transition duration-200 cursor-pointer"
+              className="appearance-none w-full bg-transparent border-1 border-black/20 text-[var(--color-primary)] font-medium px-3 py-2 rounded-lg  focus:ring-black/20  outline-0 transition duration-200 cursor-pointer"
               aria-label="Select transaction type"
             >
               {tabs.map((tab) => (

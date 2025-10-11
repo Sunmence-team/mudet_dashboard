@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
-import LazyLoader from "../../../components/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 import { FaCheck } from "react-icons/fa";
+import LazyLoader from "../../../components/loaders/LazyLoader";
+import { formatterUtility, formatTransactionType } from "../../../utilities/formatterutility";
+
 
 const RepurchaseHistory = () => {
-  const { user, token } = useUser();
+  const { user, token, refreshUser } = useUser();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,15 +17,6 @@ const RepurchaseHistory = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   const userId = user?.id;
-
-  // Format amount as currency (e.g., ₦1,150)
-  const formatAmount = (amount) => {
-    if (!amount) return "₦0";
-    return `₦${parseFloat(amount).toLocaleString("en-NG", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })}`;
-  };
 
   // Get status color classes
   const getStatusColor = (status) => {
@@ -112,6 +105,7 @@ const RepurchaseHistory = () => {
       if (response.data.ok) {
         toast.success("Order confirmed successfully");
         fetchTransactions(currentPage); // Refresh the list
+        refreshUser();
       } else {
         throw new Error(response.data.message || "Failed to confirm order");
       }
@@ -130,95 +124,100 @@ const RepurchaseHistory = () => {
   }, [currentPage, userId, token]);
 
   return (
-    <div className="bg-[var(--color-tetiary)] w-full flex items-center justify-center py-12">
-      {/* Table container */}
-      <div className="overflow-x-auto w-[95%]">
-        {/* Header */}
-        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
-          <span className="text-start ps-4 w-[10%]">SN</span>
-          <span className="text-start w-[35%]">Product Name(s) & Qty</span>
-          <span className="text-start w-[15%]">Transaction Type</span>
-          <span className="w-[15%] text-center">Amount</span>
-          <span className="w-[15%] text-center">Status</span>
-          <span className="w-[10%] text-center">Confirm</span>
-        </div>
+    <div>
+      <div className="overflow-x-auto min-w-full">
+        <table className="w-full">
+          <thead>
+            <tr className="text-black/70 text-[12px] uppercase font-semibold">
+              <td className="ps-2 p-5 text-start">SN</td>
+              <td className="p-5 text-center">Product Name(s) & Qty</td>
+              <td className="p-5 text-center">Transaction Type</td>
+              <td className="p-5 text-center">Amount</td>
+              <td className="p-5 text-center">Status</td>
+              <td className="pe-2 p-5 text-end">Action</td>
+            </tr>
+          </thead>
 
-        {/* Rows */}
-        <div className="space-y-3 w-full mt-8">
-          {loading ? (
-            <div className="text-center py-4">
-              <LazyLoader color="var(--color-primary)" width="35px" />
-              <span className="text-black/60">Loading...</span>
-            </div>
-          ) : error ? (
-            <div className="text-center py-4 text-red-500 text-lg">{error}</div>
-          ) : transactions.length === 0 ? (
-            <div className="text-center py-4 text-black/60">No manual purchase transactions found.</div>
-          ) : (
-            transactions.map((transaction, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center py-6 bg-white rounded-md shadow-sm text-black/80 font-medium hover:bg-gray-50 transition"
-              >
-                {/* SN */}
-                <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[10%]">
-                  {index + 1}
-                </span>
+          <tbody className="">
+            {loading ? (
+              <tr>
+                <td colSpan="6" className="text-center p-8">
+                  <LazyLoader color={"green"} />
+                </td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td colSpan={6} className="text-center py-4 text-red-500 text-lg">{error}</td>
+              </tr>
+            ) : transactions.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-4 text-black/60">No manual purchase transactions found.</td>
+              </tr>
+            ) : (
+              transactions.map((transaction, index) => (
+                <tr
+                  key={index}
+                  className="bg-white text-sm text-center capitalize"
+                >
+                  {/* SN */}
+                  <td className="p-3 text-start rounded-s-lg border-y border-s-1 border-black/10 font-semibold text-primary">
+                    {String(index + 1).padStart(3, "000")}
+                  </td>
 
-                {/* Product Names with Quantities */}
-                <span className="capitalize px-2 break-words text-base text-start w-[35%]">
-                  {transaction.orders?.products
-                    ?.map((product) => `${product.product_name.trim()} (Qty: ${product.product_quantity})`)
-                    .join(", ") || "N/A"}
-                </span>
+                  {/* Product Names with Quantities */}
+                  <td className="p-4 border-y border-black/10 whitespace-pre">
+                    {transaction.orders?.products
+                      ?.map((product) => `${product.product_name.trim()} (Qty: ${product.product_quantity})`)
+                      .join(", \n") || "N/A"}
+                  </td>
 
-                {/* Transaction Type */}
-                <span className="capitalize px-2 break-words text-base text-start w-[15%]">
-                  {transaction.transaction_type.replace(/_/g, " ")}
-                </span>
+                  {/* Transaction Type */}
+                  <td className="p-4 border-y border-black/10">
+                    {formatTransactionType(transaction.transaction_type)}
+                  </td>
 
-                {/* Amount */}
-                <span className="font-medium text-base w-[15%] text-center">
-                  {formatAmount(transaction.amount)}
-                </span>
+                  {/* Amount */}
+                  <td className="p-4 border-y border-black/10">
+                    {formatterUtility(transaction.amount)}
+                  </td>
 
-                {/* Status */}
-                <span className="w-[15%] text-center">
-                  <div
-                    className={`px-3 py-2 w-[100px] rounded-[10px] text-sm font-medium border border-black/10 mx-auto ${getStatusColor(
-                      transaction.status
-                    )}`}
-                  >
-                    {transaction.status
-                      .replace(/_/g, " ")
-                      .replace(/\b\w/g, (c) => c.toUpperCase())}
-                  </div>
-                </span>
+                  {/* Status */}
+                  <td className="p-4 border-y border-black/10">
+                    <div
+                      className={`px-3 py-2 w-[100px] rounded-full text-sm font-medium border border-black/10 mx-auto ${getStatusColor(
+                        transaction.status
+                      )}`}
+                    >
+                      {transaction.status
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (c) => c.toUpperCase())}
+                    </div>
+                  </td>
 
-                {/* Confirm Button */}
-                <span className="w-[10%] text-center">
-                  <button
-                    onClick={() => confirmOrder(transaction.orders?.id)}
-                    className="p-2 bg-[var(--color-primary)] text-white rounded-md hover:bg-[var(--color-primary-dark)] transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Confirm Order"
-                    disabled={
-                      !transaction.orders?.id ||
-                      transaction.orders?.delivery === "picked"
-                    }
+                  {/* Confirm Button */}
+                  <td className="p-4 text-end text-sm text-pryClr font-semibold border-e-1 rounded-e-lg border-y border-black/10">
+                    <button
+                      onClick={() => confirmOrder(transaction.orders?.id)}
+                      className="p-2 bg-[var(--color-primary)] text-white rounded-md cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Confirm Order"
+                      disabled={
+                        !transaction.orders?.id ||
+                        transaction.orders?.delivery === "picked"
+                      }
 
-                  >
-                    <FaCheck size={16} />
-                  </button>
+                    >
+                      <FaCheck size={16} />
+                    </button>
 
-                </span>
-              </div>
-            ))
-          )}
-        </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Pagination Component */}
-      {totalPages > 1 && (
+      {!loading && transactions.length > 0 && (
         <div className="mt-4">
           <PaginationControls
             currentPage={currentPage}

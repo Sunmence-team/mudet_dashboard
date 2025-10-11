@@ -5,6 +5,9 @@ import * as Yup from "yup";
 import api from "../../utilities/api";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
+import LazyLoader from "../../components/loaders/LazyLoader";
+import { formatISODateToCustom } from "../../utilities/formatterutility";
+import PaginationControls from "../../utilities/PaginationControls";
 
 const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, setFormValidity, setSubmitting }, ref) => {
   const { token } = useUser();
@@ -12,15 +15,17 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
   const [testimonials, setTestimonials] = useState([]);
   const [loadingTestimonials, setLoadingTestimonials] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const [loadingView, setLoadingView] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [viewData, setViewData] = useState(null);
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [perPage, setPerPage] = useState(2);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchTestimonials();
-  }, []);
+  }, [token]);
 
   const fetchTestimonials = async () => {
     try {
@@ -34,12 +39,22 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          page: currentPage,
+          perPage: perPage,
+        },
       });
-      setTestimonials(response.data.data?.data || []);
+      console.log("response", response)
+      if (response.status === 200) {
+        const { data, current_page, last_page, per_page } = response.data.data;
+        setTestimonials(data || []);
+        setCurrentPage(current_page);
+        setLastPage(last_page);
+        setPerPage(per_page);
+      }
     } catch (error) {
       console.error("Error fetching testimonials:", error);
       toast.error(error.response?.data?.message || "Failed to fetch testimonials.");
-      setSubmitting(false);
     } finally {
       setLoadingTestimonials(false);
     }
@@ -67,7 +82,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
       image: formData.image || null,
     },
     validationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
       setLoadingSubmit(true);
       setSubmitting(true);
       try {
@@ -95,7 +110,9 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           },
         });
 
-        if (response.data.status === "success") {
+        console.log("response", response)
+
+        if ((response.status === 200 || response.status === 201) && response.data.status === "success") {
           toast.success(response.data.message || "Testimonial created successfully");
           fetchTestimonials();
           formik.resetForm();
@@ -140,24 +157,6 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
     },
   }));
 
-  const handleView = async (id) => {
-    setLoadingView(id);
-    try {
-      const response = await api.get(`/api/testimonial/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setViewData(response.data.data);
-    } catch (error) {
-      console.error("Error viewing testimonial:", error);
-      toast.error(error.response?.data?.message || "Failed to view testimonial.");
-    } finally {
-      setLoadingView(null);
-    }
-  };
-
   const handleEdit = async (id) => {
     try {
       const response = await api.get(`/api/testimonial/${id}`, {
@@ -167,6 +166,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
         },
       });
       const testimonial = response.data.data;
+      window.scrollTo(0, 0);
       formik.setValues({
         name: testimonial.full_name,
         rating: testimonial.rating,
@@ -191,7 +191,8 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.data.status === "success") {
+      console.log("response", response)
+      if (response.status === 200) {
         toast.success(response.data.message || "Testimonial deleted successfully.");
         fetchTestimonials();
       } else {
@@ -210,7 +211,7 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
   }, [formik.isValid, formik.dirty, setFormValidity]);
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
+    <div className="w-full h-full flex flex-col gap-8 items-center justify-center">
       <form onSubmit={formik.handleSubmit} className="w-full flex flex-col gap-4">
         <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
           <p className="text-xl md:text-2xl font-semibold">{isEditing ? "Update Testimonial" : "Create Testimonial"}</p>
@@ -260,57 +261,54 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
               />
             </div>
           </div>
-       <div className="flex flex-col sm:flex-row gap-4">
-  <div className="flex flex-col w-full sm:w-1/2">
-    <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
-      Image {formik.touched.image && formik.errors.image && <span className="text-red-500 text-xs"> - {formik.errors.image}</span>}
-    </label>
-    <div className="h-full min-h-[160px] border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-gray-500">
-      <FaImage size={32} className="mb-2" />
-      <input
-        type="file"
-        id="image"
-        name="image"
-        className="hidden"
-        accept="image/jpeg,image/png,image/jpg"
-        onChange={(event) => {
-          const file = event.currentTarget.files[0];
-          formik.setFieldValue("image", file);
-          formik.setFieldTouched("image", true);
-        }}
-      />
-      <div className="flex items-center gap-3">
-        <label
-          htmlFor="image"
-          className="px-6 text-xs py-2 bg-pryClr text-black border border-black/50 rounded-lg cursor-pointer hover:bg-pryClr/90"
-        >
-          Choose File
-        </label>
-        {formik.values.image ? (
-          <span className="text-sm text-gray-700">{formik.values.image.name}</span>
-        ) : (
-          <span className="text-sm text-gray-500">No file chosen</span>
-        )}
-      </div>
-    </div>
-  </div>
-
-  <div className="flex flex-col w-full sm:w-1/2">
-    <label htmlFor="comment" className="text-sm font-medium text-gray-700 mb-1">
-      Comment {formik.touched.comment && formik.errors.comment && <span className="text-red-500 text-xs"> - {formik.errors.comment}</span>}
-    </label>
-    <textarea
-      id="comment"
-      name="comment"
-      value={formik.values.comment}
-      onChange={formik.handleChange}
-      onBlur={formik.handleBlur}
-      className={`h-full min-h-[160px] px-4 py-2 border w-full ${
-        formik.touched.comment && formik.errors.comment ? "border-red-500" : "border-gray-300"
-      } rounded-lg focus:ring-pryClr focus:border-pryClr resize-none`}
-    />
-  </div>
-</div>
+          <div className="flex flex-col w-full">
+            <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
+              Image {formik.touched.image && formik.errors.image && <span className="text-red-500 text-xs"> - {formik.errors.image}</span>}
+            </label>
+            <div className="h-full min-h-[160px] border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-gray-500">
+              <FaImage size={32} className="mb-2" />
+              <input
+                type="file"
+                id="image"
+                name="image"
+                className="hidden"
+                accept="image/jpeg,image/png,image/jpg"
+                onChange={(event) => {
+                  const file = event.currentTarget.files[0];
+                  formik.setFieldValue("image", file);
+                  formik.setFieldTouched("image", true);
+                }}
+              />
+              <div className="flex items-center gap-3">
+                <label
+                  htmlFor="image"
+                  className="px-6 text-xs py-2 bg-pryClr text-black border border-black/50 rounded-lg cursor-pointer hover:bg-pryClr/90"
+                >
+                  Choose File
+                </label>
+                {formik.values.image ? (
+                  <span className="text-sm text-gray-700">{formik.values.image.name}</span>
+                ) : (
+                  <span className="text-sm text-gray-500">No file chosen</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col w-full">
+            <label htmlFor="comment" className="text-sm font-medium text-gray-700 mb-1">
+              Comment {formik.touched.comment && formik.errors.comment && <span className="text-red-500 text-xs"> - {formik.errors.comment}</span>}
+            </label>
+            <textarea
+              id="comment"
+              name="comment"
+              value={formik.values.comment}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-full min-h-[160px] px-4 py-2 border w-full ${
+                formik.touched.comment && formik.errors.comment ? "border-red-500" : "border-gray-300"
+              } rounded-lg focus:ring-pryClr focus:border-pryClr resize-none`}
+            />
+          </div>
 
           <button
             type="submit"
@@ -327,121 +325,127 @@ const Testimonials = forwardRef(({ prevStep, nextStep, formData = {}, updateForm
       </form>
 
       {/* Testimonials Table */}
-      <div className="w-full">
-        <div className="bg-white border border-black/10 rounded-lg p-4 md:p-8">
-          <h3 className="text-xl font-semibold mb-4">All Testimonials</h3>
-          {loadingTestimonials ? (
-            <div className="flex items-center justify-center py-8">
-              <FaSpinner className="animate-spin h-8 w-8 text-primary" />
-            </div>
-          ) : testimonials.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                    <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                    <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comment</th>
-                    <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                    <th className="px-6 py-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {testimonials.map((testimonial) => (
-                    <tr key={testimonial.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {testimonial.full_name || "N/A"}
-                      </td>
-                      <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">
-                        {testimonial.position || "N/A"}
-                      </td>
-                      <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">
-                        {testimonial.rating || "N/A"}
-                      </td>
-                      <td className="px-6 py-6 text-sm text-gray-900 max-w-xs truncate">
+      <div className="w-full mt-8">
+        <h3 className="text-xl font-semibold mb-4">All Testimonials</h3>
+        {loadingTestimonials ? (
+          <div className="flex items-center justify-center py-8">
+            <LazyLoader color={"#2b7830"} size={32} />
+          </div>
+        ) : testimonials.length > 0 ? (
+          <div className="overflow-x-auto styled-scrollbar">
+            <table className="min-w-full">
+              <thead>
+                <tr className="font-semibold">
+                  <th className="py-4 ps-2 text-start text-xs text-gray-500 uppercase">Name</th>
+                  <th className="p-4 text-center text-xs text-gray-500 uppercase">Position</th>
+                  <th className="p-4 text-center text-xs text-gray-500 uppercase">Rating</th>
+                  <th className="p-4 text-center text-xs text-gray-500 uppercase">Comment</th>
+                  <th className="p-4 text-center text-xs text-gray-500 uppercase">Image</th>
+                  <th className="py-4 pe-2 text-end text-xs text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {testimonials.map((testimonial) => (
+                  <tr key={testimonial.id} className="bg-white text-sm text-center">
+                    <td className="p-3 text-start rounded-s-xl border-y border-s-1 border-black/10 capitalize">
+                      {testimonial.full_name || "N/A"}
+                    </td>
+                    <td className="p-4 border-y border-black/10 capitalize">
+                      {testimonial.position || "N/A"}
+                    </td>
+                    <td className="p-4 border-y border-black/10">
+                      {testimonial.rating || "N/A"}
+                    </td>
+                    <td className="p-4 border-y border-black/10">
+                      <p className="line-clamp-1 max-w-xs mx-auto text-center">
                         {testimonial.comment || "N/A"}
-                      </td>
-                      <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">
-                        {testimonial.image ? (
-                          <img
-                            src={`${imageBaseUrl}/${testimonial.image}`}
-                            alt="Testimonial"
-                            className="border border-gray-300 rounded-lg h-10 w-10 object-cover"
-                          />
-                        ) : (
-                          "No Image"
-                        )}
-                      </td>
-                      <td className="px-6 py-6 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-4">
-                          <button
-                            onClick={() => handleView(testimonial.id)}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="View"
-                            disabled={loadingView === testimonial.id}
-                          >
-                            {loadingView === testimonial.id ? (
-                              <FaSpinner className="animate-spin h-4 w-4" />
-                            ) : (
-                              <FaEye size={16} className="text-primary" />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => handleEdit(testimonial.id)}
-                            className="text-green-600 hover:text-green-900"
-                            title="Edit"
-                          >
-                            <FaEdit size={16} className="text-primary" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(testimonial.id)}
-                            className="text-red-600 hover:text-red-900"
-                            title="Delete"
-                          >
-                            <FaTrash size={16} className="text-primary" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-center text-gray-500 py-8">No testimonials available</p>
-          )}
-        </div>
+                      </p>
+                    </td>
+                    <td className="p-4 border-y border-black/10">
+                      {testimonial.image ? (
+                        <img
+                          src={`${imageBaseUrl}/${testimonial.image}`}
+                          alt="Testimonial"
+                          className="border border-gray-300 rounded-lg h-10 w-10 mx-auto object-cover"
+                        />
+                      ) : (
+                        "No Image"
+                      )}
+                    </td>
+                    <td className="p-3 text-start rounded-e-xl border-y border-e-1 border-black/10">
+                      <div className="flex justify-end space-x-4">
+                        <button
+                          onClick={() => setSelectedTestimonial(testimonial)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="View"
+                        >
+                          <FaEye size={16} className="text-primary" />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(testimonial.id)}
+                          className="text-green-600 hover:text-green-900"
+                          title="Edit"
+                        >
+                          <FaEdit size={16} className="text-primary" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(testimonial.id)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete"
+                        >
+                          <FaTrash size={16} className="text-primary" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {!loadingTestimonials && testimonials.length > 0 && (
+              <div className="flex justify-center items-center gap-2 p-4">
+                <PaginationControls
+                  currentPage={currentPage}
+                  totalPages={lastPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 py-8">No testimonials available</p>
+        )}
       </div>
 
       {/* View Popup */}
-      {viewData && (
+      {selectedTestimonial && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-xl font-semibold mb-4">Testimonial Details</h3>
-            <div className="flex flex-col gap-4">
-              <p><strong>ID:</strong> {viewData.id || "N/A"}</p>
-              <p><strong>Name:</strong> {viewData.full_name || "N/A"}</p>
-              <p><strong>Position:</strong> {viewData.position || "N/A"}</p>
-              <p><strong>Rating:</strong> {viewData.rating || "N/A"}</p>
-              <p><strong>Comment:</strong> {viewData.comment || "N/A"}</p>
-              <div>
-                <strong>Image:</strong>
-                {viewData.image ? (
-                  <img
-                    src={`${imageBaseUrl}/${viewData.image}`}
-                    alt="Testimonial"
-                    className="border border-gray-300 rounded-lg h-20 w-20 object-cover mt-2"
-                  />
-                ) : (
-                  <span className="ml-2">No Image</span>
-                )}
+          <div className="bg-white rounded-lg p-4 w-full max-w-md mx-4 shadow-xl">
+            <div className="w-full max-h-[400px] overflow-y-scroll styled-scrollbar">
+              <h3 className="text-xl font-semibold mb-4">Testimonial Details</h3>
+              <div className="flex flex-col gap-3 text-sm text-gray-700">
+                <p><strong>Name:</strong> {selectedTestimonial.full_name || "N/A"}</p>
+                <div className="flex md:flex-row flex-col items-center justify-between">
+                  <p><strong>Position:</strong> {selectedTestimonial.position || "N/A"}</p>
+                  <p><strong>Rating:</strong> {selectedTestimonial.rating || "N/A"}</p>
+                </div>
+                <p><strong>Comment:</strong> {selectedTestimonial.comment+"Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem nobis asperiores ratione maxime error autem fugiat alias praesentium dolorum quo! Error fuga unde eligendi illum, dolorem labore natus eaque, in tempore perspiciatis ipsum adipisci cumque esse facere eum delectus doloremque deserunt dolor blanditiis ab magnam nam ipsa. Nostrum fuga enim obcaecati nemo animi. Voluptates quasi possimus dignissimos atque provident repellat natus minus voluptate. Architecto ex harum dolores enim, temporibus aperiam, ducimus expedita nisi modi perspiciatis hic atque est ipsa dolorem dignissimos! Id quaerat harum natus quia adipisci maxime ipsum deleniti ipsa? Alias adipisci voluptate, veritatis itaque rerum beatae repellendus deserunt?" || "N/A"}</p>
+                <div>
+                  <strong>Image:</strong>
+                  {selectedTestimonial.image ? (
+                    <img
+                      src={`${imageBaseUrl}/${selectedTestimonial.image}`}
+                      alt="Testimonial"
+                      className="border border-gray-300 rounded-lg h-20 w-20 object-cover mt-2"
+                    />
+                  ) : (
+                    <span className="ml-2">No Image</span>
+                  )}
+                </div>
+                <p><strong>Date:</strong> {formatISODateToCustom(selectedTestimonial.created_at) || "N/A"}</p>
               </div>
-              <p><strong>Created At:</strong> {viewData.created_at ? new Date(viewData.created_at).toLocaleString() : "N/A"}</p>
-              <p><strong>Updated At:</strong> {viewData.updated_at ? new Date(viewData.updated_at).toLocaleString() : "N/A"}</p>
             </div>
             <button
-              onClick={() => setViewData(null)}
+              onClick={() => setSelectedTestimonial(null)}
               className="mt-6 w-full bg-primary text-white px-4 py-2 rounded-full hover:bg-primary/90"
             >
               Close

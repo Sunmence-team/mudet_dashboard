@@ -6,6 +6,8 @@ import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import api from "../../utilities/api";
 import { toast } from "sonner";
 
+const IMAGE__BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
+
 const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValidity }) => {
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -138,8 +140,6 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
       document.documentElement.style.overflow = "";
     };
   }, [selectedProduct]);
-
-
 
   const handleEdit = (product) => {
     setLoading((prev) => ({ ...prev, edit: true }));
@@ -422,7 +422,7 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
               >
                 <div className="flex justify-center">
                   {product.product_image ? (
-                    <img src={product.product_image} alt="Product" className="w-16 h-16 object-cover" />
+                    <img src={`${IMAGE__BASE_URL}/${product.product_image}`} alt="Product" className="w-16 h-16 object-cover" />
                   ) : (
                     <div className="bg-gray-100 w-16 h-16"></div>
                   )}

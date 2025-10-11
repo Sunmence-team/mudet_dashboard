@@ -24,11 +24,16 @@ import Stockist from "./pages/admin/Stockist";
 import StockistUser from "./pages/StockistUser";
 import Upgrade from "./pages/user/Upgrade";
 import Announcements from "./pages/admin/Announcements";
+import Newsletters from "./pages/admin/Newsletters";
+import ManageWithdrawals from "./pages/admin/transactions/ManageWithdrawals";
 
 function App() {
   return (
     <>
-      <Toaster richColors />
+      <Toaster 
+        richColors
+        closeButton
+      />
       <Routes>
         <Route path="/login" element={<Login />} />
 
@@ -115,6 +120,10 @@ function App() {
           element={<MainLayout child={<Transactions />} />}
         />
         <Route
+          path={"/admin/transactions"}
+          element={<MainLayout child={<ManageWithdrawals />} />}
+        />
+        <Route
           path={"/admin/product-upload"}
           element={<MainLayout child={<ProductUpload />} />}
         />
@@ -123,6 +132,18 @@ function App() {
           element={<MainLayout child={<PackageUpload />} />}
         />
         <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
+        <Route
+          path={"/admin/users"}
+          element={<MainLayout child={<Users />} />}
+        />
+        <Route
+          path={"/admin/newsletter"}
+          element={<MainLayout child={<Newsletters />} />}
+        />
+        <Route
+          path={"/user/transactions"}
+          element={<MainLayout child={<Transactions />} />}
+        />
         <Route
           path={"/user/upgrade-package"}
           element={<MainLayout child={<Upgrade />} />}

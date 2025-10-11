@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utilities/api";
-import LazyLoader from "../LazyLoader";
+import LazyLoader from "../loaders/LazyLoader";
+import {
+  formatDateToStyle,
+  formatISODateToCustom,
+  formatISODateToReadable,
+} from "../../utilities/formatterutility";
 
 const MembersCard = () => {
   const [newMembers, setNewMembers] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const fetchNewMembers = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/api/referrals/sponsoredDownlines");
+      const res = await api.get("/api/referrals/latest");
+      console.log("res", res);
       if (res.status === 200) {
-        const resData = res?.data?.data?.downlines;
-        const userToDisPlay = resData.filter((user) => {
-          return user.relationship_type === "sponsored";
-        });
-        setNewMembers(userToDisPlay);
+        const resData = res?.data?.data;
+        setNewMembers(resData);
       } else {
         console.log("Failed to fetch new members");
       }
@@ -25,16 +29,6 @@ const MembersCard = () => {
       console.log(newMembers);
     }
   };
-
-  function formatDate(rawDate) {
-    const date = new Date(rawDate);
-
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = String(date.getFullYear()).slice(-2);
-
-    return `${day}/${month}/${year}`;
-  }
 
   useEffect(() => {
     fetchNewMembers(newMembers);
@@ -53,7 +47,7 @@ const MembersCard = () => {
               className="flex cursor-pointer justify-between items-start bg-white rounded-xl p-4 border border-gray-300 lg:w-[97%]"
             >
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary/30 text-primary font-bold">
+                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-primary/30 text-primary uppercase font-bold">
                   {member?.user?.fullname
 
                     ?.split(" ")
@@ -61,7 +55,7 @@ const MembersCard = () => {
                     ?.join("")}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-black">
+                  <h3 className="font-semibold text-black line-clamp-1">
                     {member?.user?.fullname}
                   </h3>
                   <p className="text-sm text-gray-500">
@@ -70,7 +64,7 @@ const MembersCard = () => {
                 </div>
               </div>
               <span className="lg:text-base font-semibold text-sm text-black">
-                {formatDate(member?.created_at)}
+                {formatISODateToCustom(member?.user?.created_at).split(" ")[0]}
               </span>
             </div>
           ))
