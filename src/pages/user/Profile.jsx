@@ -40,7 +40,7 @@ const Profile = () => {
       <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_3fr] gap-6">
         {/* Profile Card (fixed height removed, content-based height instead) */}
         <div className="bg-white rounded-2xl shadow flex flex-col items-center h-[520px] ">
-          <div className="p-6 flex items-center justify-center rounded-full bg-[var(--color-primary)]/30 text-green-900 font-bold text-[36px] mt-6">
+          <div className="p- flex items-center justify-center rounded-full bg-[var(--color-primary)]/30 text-green-900 font-bold text-[36px] mt-6 w-[100px] h-[100px]">
             {name
               .split(" ")
               .map((n) => n[0])

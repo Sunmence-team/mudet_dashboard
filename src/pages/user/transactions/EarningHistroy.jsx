@@ -63,7 +63,7 @@ const EarningWallet = () => {
   }, [token, user?.id, currentPage]);
 
   const getStatusColor = (status) => {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case "success":
       case "successful":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiEye } from "react-icons/fi";
-import { useUser } from "../../../context/UserContext"; // Adjust to "@context/UserContext" if using alias
+import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
@@ -16,14 +16,6 @@ const RepurchaseWallet = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [activeTab, setActiveTab] = useState("all");
-
-  const tabs = [
-    { value: "all", label: "All" },
-    { value: "pending", label: "Pending" },
-    { value: "success", label: "Success" },
-    { value: "failed", label: "Failed" },
-  ];
 
   const userId = user?.id;
 
@@ -58,7 +50,7 @@ const RepurchaseWallet = () => {
 
       if (response.status === 200) {
         setRepurchaseData({
-          data: response?.data?.data?.data,
+          data: response?.data?.data?.data || [],
           current_page: page,
           last_page: Math.ceil((response.data.total || 0) / 10),
           per_page: 10,
@@ -111,7 +103,7 @@ const RepurchaseWallet = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "success":
       case "successful":
       case "delivered":
@@ -175,10 +167,10 @@ const RepurchaseWallet = () => {
               <LazyLoader />
               <span className="text-black/60">Loading...</span>
             </div>
-          ) : filteredRepurchases.length === 0 ? (
+          ) : repurchases.length === 0 ? (
             <div className="text-center py-4">No repurchase records found.</div>
           ) : (
-            filteredRepurchases?.map((row, idx) => {
+            repurchases.map((row, idx) => {
               const { date, time } = formatDateTime(row.created_at);
               const serialNumber = (current_page - 1) * per_page + idx + 1;
               return (
