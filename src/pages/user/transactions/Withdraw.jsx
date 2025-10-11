@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
-import LazyLoader from "../../../components/LazyLoader";
+import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 
 const WithdrawHistory = () => {
