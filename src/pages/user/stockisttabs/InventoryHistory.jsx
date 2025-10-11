@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect,  useState } from "react"; 
 import { toast } from "sonner";
-import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import LazyLoader from "../../../components/loaders/LazyLoader";
+import { useUser } from "../../../context/UserContext";
+// import LazyLoader from "../../../components/LazyLoader";
 
 const InventoryHistory = () => {
   const { user, token } = useUser();
