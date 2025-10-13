@@ -152,10 +152,7 @@ const StockistUser = () => {
                 error?.message ||
                 "Please try again later.")
           );
-          console.error(
-            "Error during requesting stockist registration:",
-            error
-          );
+          console.error("Error during requesting stockist registration:", error);
         }
       } finally {
         resetForm();
@@ -535,7 +532,7 @@ const StockistUser = () => {
                       formik.errors.stockist_plan
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr cursor-not-allowed opacity-[60%] focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr cursor-not-allowed opacity-[60%] focus:border-pryClr`}
                   />
                 </div>
 
@@ -560,12 +557,11 @@ const StockistUser = () => {
                     value={formik.values.stockist_location}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    className={`h-12 px-4 py-2 border w-full ${
-                      formik.touched.stockist_location &&
-                      formik.errors.stockist_location
+                    className={`h-12 px-4 py-2 border w-full ${formik.touched.stockist_location &&
+                        formik.errors.stockist_location
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                   />
                 </div>
 
@@ -577,12 +573,11 @@ const StockistUser = () => {
                     checked={formik.values.termsAndConditions}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    className={`${
-                      formik.touched.termsAndConditions &&
-                      formik.errors.termsAndConditions
+                    className={`${formik.touched.termsAndConditions &&
+                        formik.errors.termsAndConditions
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                   />
                   <label
                     htmlFor="termsAndConditions"
@@ -654,11 +649,10 @@ const StockistUser = () => {
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`nav-links relative py-4 cursor-pointer px-5 text-sm md:text-base font-medium transition-colors duration-200
-                    ${
-                      activeTab === tab
-                        ? "text-primary active bg-white"
-                        : "text-gray-600 hover:text-primary"
-                    }`}
+                    ${activeTab === tab
+                          ? "text-primary active bg-white"
+                          : "text-gray-600 hover:text-primary"
+                        }`}
                     >
                       {tab}
                     </button>

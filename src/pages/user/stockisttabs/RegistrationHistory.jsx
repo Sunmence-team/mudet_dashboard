@@ -9,6 +9,7 @@ import {
   formatterUtility,
   formatTransactionType,
 } from "../../../utilities/formatterutility";
+import WarningModal from "../../../components/modals/WarningModal";
 
 const RegistrationHistory = () => {
   const { user, token, refreshUser } = useUser();
@@ -17,6 +18,9 @@ const RegistrationHistory = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [isConfirming, setIsConfirming] = useState(false);
   const apiItemsPerPage = 5;
 
   const userId = user?.id;
@@ -96,7 +100,7 @@ const RegistrationHistory = () => {
 
       if (response.data.ok) {
         toast.success("Order confirmed successfully");
-        fetchRegistration(currentPage);
+        fetchRegistration();
         refreshUser();
       } else {
         throw new Error(response.data.message || "Failed to confirm order");
@@ -111,8 +115,24 @@ const RegistrationHistory = () => {
     }
   };
 
+  const handleConfirmClick = (orderId) => {
+    setSelectedOrderId(orderId);
+    setShowModal(true);
+  };
+
+  const handlePositiveAction = async () => {
+    setIsConfirming(true);
+    await confirmOrder(selectedOrderId);
+    setIsConfirming(false);
+    setShowModal(false);
+  };
+
+  const handleNegativeAction = () => {
+    setShowModal(false);
+  };
+
   useEffect(() => {
-    fetchRegistration(currentPage);
+    fetchRegistration();
   }, [currentPage, userId, token]);
 
   return (
@@ -201,7 +221,7 @@ const RegistrationHistory = () => {
                   {/* Confirm Button */}
                   <td className="p-4 text-end text-sm text-pryClr font-semibold border-e-1 rounded-e-lg border-y border-black/10">
                     <button
-                      onClick={() => confirmOrder(transaction.orders?.id)}
+                      onClick={() => handleConfirmClick(transaction.orders?.id)}
                       className="p-2 bg-[var(--color-primary)] text-white rounded-md cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Confirm Order"
                       disabled={
@@ -227,6 +247,15 @@ const RegistrationHistory = () => {
             setCurrentPage={setCurrentPage}
           />
         </div>
+      )}
+      {showModal && (
+        <WarningModal
+          title="Confirm Order"
+          message="Are you sure you want to confirm this order?"
+          positiveAction={handlePositiveAction}
+          negativeAction={handleNegativeAction}
+          isPositive={isConfirming}
+        />
       )}
     </div>
   );
