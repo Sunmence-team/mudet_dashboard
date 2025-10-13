@@ -84,17 +84,15 @@ const EwalletTransfer = () => {
     }
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async (transactionPin) => {
     if (!recipientConfirmed) {
       handleConfirmRecipient();
       return;
     }
-    const transactionPin = localStorage.getItem("currentAuth");
     if (!transactionPin) {
       setPinModal(true);
       return;
     }
-    setPinModal(true);
     try {
       if (!token) {
         throw new Error("No authentication token found. Please log in.");
@@ -144,7 +142,6 @@ const EwalletTransfer = () => {
       ) {
         toast.success("Transfer completed successfully");
         refreshUser();
-        localStorage.removeItem("currentAuth");
         setPinModal(false);
 
         formik.resetForm();
@@ -152,11 +149,9 @@ const EwalletTransfer = () => {
         setRecipientConfirmed(false);
         setReceiverId(null);
         setPinModal(false);
-        localStorage.removeItem("currentAuth");
       } else {
         console.error("Transfer failed:", response.data.message);
         toast.error(response.data.message || "Transfer failed");
-        localStorage.removeItem("currentAuth");
       }
     } catch (error) {
       console.error("Error during transfer:", error);
@@ -180,15 +175,11 @@ const EwalletTransfer = () => {
             "An error occurred during the transfer"
         );
       }
-    } finally {
-      localStorage.removeItem("currentAuth");
     }
   };
 
-  const onDecline = () => {
-    const transactionPin = localStorage.getItem("currentAuth");
+  const onDecline = (transactionPin) => {
     if (transactionPin) {
-      localStorage.removeItem("currentAuth");
       setPinModal(false);
     } else {
       setPinModal(false);
