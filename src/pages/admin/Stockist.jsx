@@ -189,7 +189,7 @@ const Stockist = () => {
             const response = await api.post(`/api/upgrade-stockist-products/${selectedStockistId}`, payload, {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             });
-            console.log("handleSubmitProducts response:", JSON.stringify(response.data, null, 2));
+            console.log("handleSubmitProducts response:", response.data);
             if (response.data.message) {
                 toast.success(response.data.message);
                 setShowProductPopup(false);

@@ -22,6 +22,7 @@ const RepurchaseHistory = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "success":
+      case "picked":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
       case "failed":
         return "bg-[#c51236]/20 text-red-600";
@@ -60,14 +61,7 @@ const RepurchaseHistory = () => {
           (transaction) => transaction.transaction_type === "manual_purchase"
         );
 
-        // ✅ Log confirmation states here INSIDE the function
-        filteredTransactions.forEach((t, i) => {
-          console.log(
-            `#${i + 1}: ${t.orders?.products
-              ?.map((p) => p.product_name)
-              .join(", ") || "N/A"} | Order ID: ${t.orders?.id} | Status: ${t.orders?.status} | Delivery: ${t.orders?.delivery}`
-          );
-        });
+        console.log("filteredTransactions", filteredTransactions)
 
         setTransactions(filteredTransactions || []);
         setCurrentPage(response.data.transactions.current_page || 1);
@@ -185,10 +179,10 @@ const RepurchaseHistory = () => {
                   <td className="p-4 border-y border-black/10">
                     <div
                       className={`px-3 py-2 w-[100px] rounded-full text-sm font-medium border border-black/10 mx-auto ${getStatusColor(
-                        transaction.status
+                        transaction.orders?.delivery
                       )}`}
                     >
-                      {transaction.status
+                      {transaction.orders?.delivery
                         .replace(/_/g, " ")
                         .replace(/\b\w/g, (c) => c.toUpperCase())}
                     </div>
