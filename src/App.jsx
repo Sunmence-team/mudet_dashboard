@@ -26,6 +26,7 @@ import Upgrade from "./pages/user/Upgrade";
 import Announcements from "./pages/admin/Announcements";
 import Newsletters from "./pages/admin/Newsletters";
 import ManageWithdrawals from "./pages/admin/transactions/ManageWithdrawals";
+import AuthRedirect from "./pages/auth/AuthRedirect";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
       />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/auth-redirect" element={<AuthRedirect />} />
 
         <Route
           path={"/user/overview"}

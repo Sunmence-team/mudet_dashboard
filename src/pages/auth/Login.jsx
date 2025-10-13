@@ -70,9 +70,6 @@ const Login = () => {
     },
   });
 
-
-
-
   return (
     <div className="min-h-screen flex">
       {/* Desktop layout - unchanged */}
