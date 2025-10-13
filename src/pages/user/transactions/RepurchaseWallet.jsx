@@ -124,12 +124,12 @@ const RepurchaseWallet = () => {
   const { data: repurchases, current_page, per_page } = repurchaseData;
 
   // Filter repurchases based on activeTab
-  const filteredRepurchases =
-    activeTab === "all"
-      ? repurchases
-      : repurchases.filter(
-          (row) => row.status?.toLowerCase() === activeTab.toLowerCase()
-        );
+  // const filteredRepurchases =
+  //   activeTab === "all"
+  //     ? repurchases
+  //     : repurchases.filter(
+  //         (row) => row.status?.toLowerCase() === activeTab.toLowerCase()
+  //       );
 
   return (
     <div className="bg-[var(--color-tetiary)]">
