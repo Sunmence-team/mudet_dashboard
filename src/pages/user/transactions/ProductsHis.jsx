@@ -21,13 +21,6 @@ const ProductsHis = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [activeTab, setActiveTab] = useState("all");
-
-  const tabs = [
-    { value: "all", label: "All" },
-    { value: "pending", label: "Pending" },
-    { value: "delivered", label: "Delivered" },
-  ];
 
   const userId = user?.id;
 
@@ -105,7 +98,7 @@ const ProductsHis = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "delivered":
       case "success":
       case "picked":
@@ -127,31 +120,8 @@ const ProductsHis = () => {
 
   const { data: products, current_page, per_page } = productsData;
 
-  // Filter products based on activeTab
-  const filteredProducts =
-    activeTab === "all"
-      ? products
-      : products.filter(
-          (row) =>
-            row.orders?.delivery?.toLowerCase() === activeTab.toLowerCase()
-        );
-
   return (
     <div className="">
-      {/* <div className="mb-4 w-full max-w-xs">
-        <select
-          value={activeTab}
-          onChange={(e) => setActiveTab(e.target.value)}
-          className="appearance-none w-full bg-white border border-black/20 text-[var(--color-primary)] font-medium px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-black/20 focus:border-black/20 outline-0 transition duration-200 cursor-pointer"
-          aria-label="Select delivery status"
-        >
-          {tabs.map((tab) => (
-            <option key={tab.value} value={tab.value}>
-              {tab.label}
-            </option>
-          ))}
-        </select>
-      </div> */}
 
       <div className="overflow-x-auto">
         <table className="min-w-full">
@@ -177,14 +147,14 @@ const ProductsHis = () => {
                   <LazyLoader />
                 </td>
               </tr>
-            ) : filteredProducts.length === 0 ? (
+            ) : products.length === 0 ? (
               <tr className="text-center py-4">
                 <td colSpan={8} className="">
                   No purchase records found.
                 </td>
               </tr>
             ) : (
-              filteredProducts.map((row, idx) => {
+              products.map((row, idx) => {
                 const product = row.orders?.products?.[0] || {};
                 const stockist = row.orders?.stockist || {};
                 const serialNumber = (current_page - 1) * per_page + idx + 1;
@@ -204,8 +174,8 @@ const ProductsHis = () => {
                       {row.ref_no || "N/A"}
                     </td>
                     <td className="p-4 border-y border-black/10">
-                      {product.price
-                        ? formatterUtility(Number(product.price))
+                      {row.orders?.total_amount
+                        ? formatterUtility(Number(row.orders?.total_amount))
                         : "N/A"}
                     </td>
                     <td className={"p-4 border-y border-black/10"}>
@@ -276,10 +246,6 @@ const ProductsHis = () => {
               Product Details
             </h2>
             <div className="space-y-2 text-[15px]">
-              <p>
-                <span className="font-semibold">S/N:</span>{" "}
-                {selectedRow.serialNumber.toString().padStart(3, "0")}
-              </p>
               <p>
                 <span className="font-semibold">Product Name:</span>{" "}
                 {selectedRow.product_name || "N/A"}

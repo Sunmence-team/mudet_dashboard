@@ -3,77 +3,56 @@ import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
+import { toast } from "sonner";
+import { formatISODateToCustom, formatterUtility, formatTransactionType } from "../../../utilities/formatterutility";
 
 const EarningWallet = () => {
-  const { user } = useUser();
-  const [earningData, setEarningData] = useState({
-    data: [],
-    current_page: 1,
-    last_page: 1,
-    per_page: 10,
-    total: 0,
-  });
+  const { user, token } = useUser();
+  const [earningData, setEarningData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
 
   const userId = user?.id;
 
-  const fetchEarnings = async (page = 1) => {
+  const fetchEarnings = async () => {
     setLoading(true);
     try {
       if (!userId) {
         console.error("User ID is undefined. Please log in.");
-        setEarningData({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          per_page: 10,
-          total: 0,
-        });
         return;
       }
 
-      // Note: Endpoint uses hardcoded user ID '2'. Consider using `userId` for dynamic user data: `/api/users_repurchase/${userId}`
       const response = await api.get(
-        `/api/users_repurchase/${user?.id}?page=${page}`,
+        `/api/users_repurchase/${user?.id}`,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              user?.token ||
-              JSON.parse(localStorage.getItem("user") || "{}").token
-            }`,
+            Authorization: `Bearer ${token}`,
           },
+          params: {
+            page: currentPage,
+            perPage: perPage
+          }
         }
       );
 
       console.log("response", response);
 
       if (response.status === 200) {
-        setEarningData({
-          data: response?.data?.data?.data || [],
-          current_page: page,
-          last_page: Math.ceil((response?.data?.data?.total || 0) / 10),
-          per_page: 10,
-          total: response?.data?.data?.total || 0,
-        });
+        const { data, current_page, last_page, per_page } = response.data.data;
+        console.log("data",data)
+        setEarningData(data);
+        setCurrentPage(current_page);
+        setLastPage(last_page);
+        setPerPage(per_page);
       } else {
-        setEarningData({
-          data: [],
-          current_page: 1,
-          last_page: 1,
-          per_page: 10,
-          total: 0,
-        });
+        throw new Error(response.data.message || "Failed to fetch Earnings history.");
       }
     } catch (err) {
+      toast.error(err.response?.data?.message || "An error occurred fetching Earnings history!.");
       console.error("Error fetching earnings:", err);
-      setEarningData({
-        data: [],
-        current_page: 1,
-        last_page: 1,
-        per_page: 10,
-        total: 0,
-      });
     } finally {
       setLoading(false);
     }
@@ -81,28 +60,10 @@ const EarningWallet = () => {
 
   useEffect(() => {
     fetchEarnings();
-  }, []);
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= earningData.last_page) {
-      fetchEarnings(page);
-    }
-  };
-
-  const formatDateTime = (dateString) => {
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString("en-CA"),
-      time: date.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      }),
-    };
-  };
+  }, [token, user?.id, currentPage]);
 
   const getStatusColor = (status) => {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case "success":
       case "successful":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
@@ -116,78 +77,82 @@ const EarningWallet = () => {
     }
   };
 
-  const { data: earnings, current_page, last_page } = earningData;
-
   return (
-    <div className="bg-[var(--color-tetiary)]">
-      {/* Table container */}
+    <div>
       <div className="overflow-x-auto">
-        {/* Header */}
-        <div className="flex justify-between py-3 font-semibold text-black/60 bg-[var(--color-tetiary)] w-full text-center uppercase text-[17px]">
-          <span className="text-start ps-4 w-[15%]">SN</span>
-          <span className="text-start w-[25%]">Type</span>
-          <span className="w-[20%] text-center">Amount</span>
-          <span className="w-[20%] text-center">Status</span>
-          <span className="text-end pe-8 w-[20%]">Date</span>
-        </div>
+        <table className="w-full">
+          <thead>
+            <tr className="font-semibold text-black/60 w-full text-center uppercase text-sm">
+              <td className="text-start ps-2 p-5">SN</td>
+              <td className="p-5 text-center">Type</td>
+              <td className="p-5 text-center">Amount</td>
+              <td className="p-5 text-center">Status</td>
+              <td className="text-end pe-2 p-5">Date</td>
+            </tr>
+          </thead>
 
-        {/* Rows */}
-        <div className="space-y-3 w-full">
-          {loading ? (
-            <div className="text-center py-4">
-              <LazyLoader />
-              <span className="text-black/60">Loading...</span>
-            </div>
-          ) : earnings.length === 0 ? (
-            <div className="text-center py-4">No earning records found.</div>
-          ) : (
-            earnings.map((item, idx) => {
-              const { date, time } = formatDateTime(item.created_at);
-              return (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center py-3 bg-white rounded-md shadow-sm text-black/80 text-[15px] font-medium hover:bg-gray-50 transition"
-                >
-                  <span className="font-semibold text-[var(--color-primary)] text-start ps-4 w-[15%]">
-                    00{idx + 1}
-                  </span>
-                  <span className="capitalize px-2 break-words text-sm text-start w-[25%]">
-                    {item.transaction_type.replace(/_/g, " ")}
-                  </span>
-                  <span className="font-medium text-sm w-[20%] text-center">
-                    ₦{parseFloat(item.amount).toLocaleString()}
-                  </span>
-                  <span className="w-[20%] text-center">
-                    <div
-                      className={`px-3 py-2 w-[100px] rounded-[10px] text-xs font-medium border-black/10 border mx-auto ${getStatusColor(
-                        item.status
-                      )}`}
-                    >
-                      {item.status
-                        .replace(/_/g, " ")
-                        .replace(/\b\w/g, (c) => c.toUpperCase())}
-                    </div>
-                  </span>
-                  <span className="text-[var(--color-primary)] font-bold flex flex-col text-sm text-end pe-5 ps-2 w-[20%]">
-                    <span>{date}</span>
-                    <span className="text-[var(--color-primary)] font-bold pe-2">
-                      {time}
-                    </span>
-                  </span>
-                </div>
-              );
-            })
-          )}
-        </div>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="5" className="text-center p-8">
+                  <LazyLoader color={"green"} />
+                </td>
+              </tr>
+            ) : earningData.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="text-center py-4">
+                  No earning records found.
+                </td>
+              </tr>
+            ) : (
+              earningData.map((item, idx) => {
+                const serialNumber = (currentPage - 1) * perPage + idx + 1;
+                return (
+                  <tr
+                    key={idx}
+                    className="bg-white font-medium capitalize text-center text-sm"
+                  >
+                    <td className="p-3 text-start rounded-s-lg border-y border-s-1 border-black/10 font-semibold text-[var(--color-primary)]">
+                      {String(serialNumber).padStart(3, "0")}
+                    </td>
+                    <td className="p-4 border-y border-black/10">
+                      {formatTransactionType(item.transaction_type, true)}
+                    </td>
+                    <td className="font-medium text-sm text-center">
+                      {formatterUtility(item.amount)}
+                    </td>
+                    <td className="p-4 border-y border-black/10">
+                      <div
+                        className={`px-4 py-2 w-max rounded-full text-xs font-medium border-black/10 border mx-auto ${getStatusColor(
+                          item.status
+                        )}`}
+                      >
+                        {item.status
+                          .replace(/_/g, " ")
+                          .replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </div>
+                    </td>
+                    <td className="p-4 text-end text-sm text-primary font-semibold border-e-1 rounded-e-lg border-y border-black/10">
+                      <span>{formatISODateToCustom(item.created_at).split(" ")[0]}</span>
+                      <span className="text-[var(--color-primary)] font-bold block">
+                        {formatISODateToCustom(item.created_at).split(" ")[1]}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Pagination */}
-      {last_page > 1 && (
+      {!loading && lastPage > 1 && (
         <div className="mt-4">
           <PaginationControls
-            currentPage={current_page}
-            totalPages={last_page}
-            setCurrentPage={handlePageChange}
+            currentPage={currentPage}
+            totalPages={lastPage}
+            setCurrentPage={setCurrentPage}
           />
         </div>
       )}

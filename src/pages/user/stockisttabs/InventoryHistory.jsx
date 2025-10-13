@@ -28,7 +28,7 @@ const InventoryHistory = () => {
         },
       });
 
-      console.log("Product history response:", JSON.stringify(response.data, null, 2));
+      console.log("Product history response:", response);
 
       if (response.data.ok && response.data.products) {
         setProducts(response.data.products || []);
@@ -86,7 +86,7 @@ const InventoryHistory = () => {
               >
                 {/* SN */}
                 <td className="p-3 text-primary text-start rounded-s-lg border-y border-s-1 border-black/10">
-                  {String(index + 1).padStart(3, "000")}
+                  {String(index + 1).padStart(3, "0")}
                 </td>
 
                 {/* Product Name */}

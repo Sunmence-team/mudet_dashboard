@@ -308,7 +308,7 @@ const ManageWithdrawals = () => {
                       setSelectedData(data);
                       setShowConfirmModal(true);
                     }}
-                    className="md:hidden block bg-primary h-[40px] px-4 rounded-md cursor-pointer text-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                    className="md:hidden block bg-primary h-[40px] px-4 rounded-md cursor-pointer text-tetiary disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {isPaying ? "Paying..." : "Pay All"}
                   </button>
@@ -324,7 +324,7 @@ const ManageWithdrawals = () => {
                       setSelectedData(data);
                       setShowConfirmModal(true);
                     }}
-                    className="md:block hidden bg-primary h-[40px] px-4 rounded-md cursor-pointer text-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                    className="md:block hidden bg-primary h-[40px] px-4 rounded-md cursor-pointer text-tetiary disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {isPaying ? "Paying..." : "Pay All"}
                   </button>
@@ -439,68 +439,86 @@ const ManageWithdrawals = () => {
       )}
 
       {showConfirmModal && (
-        <Modal onClose={() => setShowConfirmModal(false)}>
-          <ConfirmationDialog
-            title="Confirm Withdrawal"
-            message={`Are you sure you want to pay all pending withdrawals for ${selectedDate}?`}
-            onCancel={() => setShowConfirmModal(false)}
-            onConfirm={() => {
-              setShowConfirmModal(false);
-              setShowPinModal(true);
-            }}
-            type="confirm"
-          />
-        </Modal>
+        <div className="fixed inset-0 backdrop-blur-xs bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-[90%] max-w-md rounded-xl shadow-lg p-6 relative">
+            <div className="flex flex-col gap-6 text-center">
+              <h3 className="md:text-2xl text-lg font-bold text-gray-800">Confirm Withdrawal</h3>
+              <p className="text-gray-600">Are you sure you want to pay all pending withdrawals for {selectedDate}?</p>
+              <div className="flex justify-center md:gap-4 gap-2">
+                <button
+                    type="button"
+                    onClick={() => setShowConfirmModal(false)}
+                    className="bg-gray-200 text-gray-800 font-medium px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors cursor-pointer"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    onClick={() => {
+                      setShowConfirmModal(false);
+                      setShowPinModal(true);
+                    }}
+                    className={`bg-primary hover:bg-primary/80 text-white font-medium px-6 py-2 rounded-lg transition-colors cursor-pointer`}
+                >
+                    Confirm
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
       )}
 
       {showPinModal && (
-        <Modal onClose={() => setShowPinModal(false)}>
-          <div className="flex flex-col items-center gap-6 text-center">
-            <h2 className="text-2xl font-bold">Enter 4-Digit PIN</h2>
-            <div className="flex gap-3">
-              {[0, 1, 2, 3].map((index) => (
-                <input
-                  key={index}
-                  type="text"
-                  maxLength={1}
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={pin[index]}
-                  onChange={(e) => handlePinChange(index, e.target.value)}
-                  className="w-12 h-12 md:w-14 md:h-14 bg-gray-200 rounded-lg text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary border border-gray-300"
-                  onKeyDown={(e) => {
-                    if (e.key === "Backspace" && !e.target.value && index > 0) {
-                      document.getElementById(`pin-input-${index - 1}`).focus();
-                    }
-                  }}
-                  id={`pin-input-${index}`}
-                />
-              ))}
+        <div className="fixed inset-0 backdrop-blur-xs bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-[90%] max-w-md rounded-xl shadow-lg p-6 relative">
+            <div className="flex flex-col items-center gap-6 text-center">
+              <h2 className="text-2xl font-bold">Enter 4-Digit PIN</h2>
+              <div className="flex gap-3">
+                {[0, 1, 2, 3].map((index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={pin[index]}
+                    onChange={(e) => handlePinChange(index, e.target.value)}
+                    className="w-12 h-12 md:w-14 md:h-14 bg-gray-200 rounded-lg text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary border border-gray-300"
+                    onKeyDown={(e) => {
+                      if (e.key === "Backspace" && !e.target.value && index > 0) {
+                        document.getElementById(`pin-input-${index - 1}`).focus();
+                      }
+                    }}
+                    id={`pin-input-${index}`}
+                  />
+                ))}
+              </div>
+              <button
+                disabled={!isPinComplete || isPinSubmitting}
+                onClick={async () => {
+                  setIsPinSubmitting(true);
+                  try {
+                    await handleDatePayout(
+                      selectedDate,
+                      selectedData,
+                      pin.join("")
+                    );
+                    setShowPinModal(false);
+                    setPin(Array(4).fill(""));
+                  } catch (err) {
+                    console.error(err);
+                  } finally {
+                    setIsPinSubmitting(false);
+                  }
+                }}
+                className="w-full py-3 bg-primary text-white rounded-lg disabled:opacity-50"
+              >
+                {isPinSubmitting ? "Verifying..." : "Confirm Withdrawal"}
+              </button>
             </div>
-            <button
-              disabled={!isPinComplete || isPinSubmitting}
-              onClick={async () => {
-                setIsPinSubmitting(true);
-                try {
-                  await handleDatePayout(
-                    selectedDate,
-                    selectedData,
-                    pin.join("")
-                  );
-                  setShowPinModal(false);
-                  setPin(Array(4).fill(""));
-                } catch (err) {
-                  console.error(err);
-                } finally {
-                  setIsPinSubmitting(false);
-                }
-              }}
-              className="w-full py-3 bg-primary text-white rounded-lg disabled:opacity-50"
-            >
-              {isPinSubmitting ? "Verifying..." : "Confirm Withdrawal"}
-            </button>
           </div>
-        </Modal>
+        </div>
       )}
     </div>
   );

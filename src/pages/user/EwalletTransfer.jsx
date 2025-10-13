@@ -101,7 +101,9 @@ const EwalletTransfer = () => {
       }
 
       if (!receiverId) {
-        throw new Error("Recipient not validated. Please validate the username.");
+        throw new Error(
+          "Recipient not validated. Please validate the username."
+        );
       }
 
       if (!activeUser.id) {
@@ -137,7 +139,8 @@ const EwalletTransfer = () => {
 
       if (
         response.data.ok &&
-        response.data.message === "e_wallet_transfer transfer completed successfully."
+        response.data.message ===
+          "e_wallet_transfer transfer completed successfully."
       ) {
         toast.success("Transfer completed successfully");
         refreshUser();
@@ -157,7 +160,10 @@ const EwalletTransfer = () => {
       }
     } catch (error) {
       console.error("Error during transfer:", error);
-      const errorMessage = error.response?.data?.message || error.message || "An error occurred during the transfer";
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "An error occurred during the transfer";
       if (error.response?.data?.errors) {
         const errorMessages = Object.values(error.response.data.errors)
           .flat()
@@ -305,9 +311,7 @@ const EwalletTransfer = () => {
                     <button
                       type="button"
                       onClick={handleConfirmRecipient}
-                      disabled={
-                        !formik.values.recipientName || validating
-                      }
+                      disabled={!formik.values.recipientName || validating}
                       className="bg-primary text-white px-4 py-2 rounded-lg disabled:bg-gray-400"
                     >
                       {validating ? (
@@ -376,11 +380,7 @@ const EwalletTransfer = () => {
         </div>
       </div>
       {pinModal && (
-        <PinModal
-          onClose={onDecline}
-          onConfirm={onSubmit}
-          user={activeUser}
-        />
+        <PinModal onClose={onDecline} onConfirm={onSubmit} user={activeUser} />
       )}
     </>
   );
