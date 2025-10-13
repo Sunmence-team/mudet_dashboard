@@ -56,7 +56,6 @@ const Upgrade = () => {
 
   const handleConfirmModal = () => {
     setShowModal(true);
-    fetchStokists();
   };
 
   const handleConfirmUpgrade = async () => {
@@ -105,6 +104,7 @@ const Upgrade = () => {
 
   useEffect(() => {
     fetchPackages();
+    fetchStokists();
   }, []);
 
   const filterNonCurrentPackage = packages.filter(
@@ -277,7 +277,7 @@ const Upgrade = () => {
                 onChange={(e) => setSelectedStockist(e.target.value)}
                 className="w-full border px-3 py-2 rounded-md"
               >
-                <option value="">
+                <option value="" disabled>
                   {fetchingStokist
                     ? "Fetching Stockists..."
                     : "-- Select Stockist --"}
