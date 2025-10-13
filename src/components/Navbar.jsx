@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { IoMdCart } from "react-icons/io";
 import { GoBellFill } from "react-icons/go";
 import assets from "../assets/assets";
@@ -6,19 +6,21 @@ import { Link, NavLink } from "react-router-dom";
 import { HiMiniBars3BottomLeft } from "react-icons/hi2";
 import { IoCloseOutline } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
-import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from "react-icons/md";
 import { useCart } from "../context/CartProvider";
+import { FaAngleDown } from "react-icons/fa";
 
 const Navbar = () => {
-  const { user } = useUser();
+  const { user, logout } = useUser();
   const { cart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const cartItem = cart.length;
+  const dropdownRef = useRef(null);
 
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -32,7 +34,7 @@ const Navbar = () => {
     scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" });
   };
 
-  // detect if we can scroll in either direction
+  // Detect if we can scroll in either direction
   const checkScrollPosition = () => {
     const el = scrollRef.current;
     if (!el) return;
@@ -42,11 +44,25 @@ const Navbar = () => {
     setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
   };
 
+  // Handle clicks outside the dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
-    checkScrollPosition(); // initial check
+    checkScrollPosition(); // Initial check
     el.addEventListener("scroll", checkScrollPosition);
     window.addEventListener("resize", checkScrollPosition);
 
@@ -64,7 +80,7 @@ const Navbar = () => {
     },
     {
       name: "Dashboard",
-      path: "/admin/overview",
+      path: "/admin-overview",
       role: ["admin"],
     },
     {
@@ -202,19 +218,16 @@ const Navbar = () => {
             {/* Links */}
             <ul
               ref={scrollRef}
-              className={`md:flex hidden flex-nowrap items-center gap-4 overflow-x-scroll no-scrollbar scroll-smooth flex-1 ${
-                canScrollLeft ? "ps-10" : ""
-              } pe-10`}
+              className={`md:flex hidden flex-nowrap items-center gap-4 overflow-x-scroll no-scrollbar scroll-smooth flex-1 ${canScrollLeft ? "ps-10" : ""} pe-10`}
             >
               {filteredLinks.map(({ name, path }, index) => (
                 <NavLink
                   to={path}
                   key={index}
                   className={({ isActive }) =>
-                    `nav-links relative whitespace-nowrap text-black cursor-pointer py-1 ${
-                      isActive
-                        ? "active text-primary !font-extrabold text-base"
-                        : "font-medium text-sm"
+                    `nav-links relative whitespace-nowrap text-black cursor-pointer py-1 ${isActive
+                      ? "active text-primary !font-extrabold text-base"
+                      : "font-medium text-sm"
                     }`
                   }
                   onClick={() => setIsOpen(false)}
@@ -251,29 +264,49 @@ const Navbar = () => {
             )}
             <IoMdCart />
           </Link>
-          <Link
-            to={"/user/profile"}
-            className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-lg bg-tetiary text-primary"
-          >
-            <h3>
-              {" "}
-              {userName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()}
-            </h3>
-          </Link>
+          <div className="relative flex border-1 rounded-4xl border-primary p-2 gap-4 items-center" ref={dropdownRef}>
+            <Link
+              to={"/user/profile"}
+              className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-lg bg-tetiary text-primary"
+            >
+              <h3>
+                {" "}
+                {userName
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()}
+              </h3>
+            </Link>
+            <button
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+              className="text-black/50"
+            >
+              <FaAngleDown />
+            </button>
+            {isDropdownOpen && (
+              <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsDropdownOpen(false);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                >
+                  <IoIosLogOut size={20} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
       <nav
-        className={`fixed top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${
-          isOpen ? "slide-in" : "slide-out"
-        }`}
+        className={`fixed top-0 left-0 z-999 w-full h-screen bg-tetiary flex flex-col items-center justify-between gap-6 px-4 py-6 shadow-md ${isOpen ? "slide-in" : "slide-out"}`}
       >
         <div className="flex flex-col h-[calc(100%-40px-24px)] w-full md:gap-6 gap-3">
-          <div className="flex flex-row-reverse items-center justify-between ">
+          <div className="flex flex-row-reverse items-center justify-between">
             <button
               type="button"
               className="md:hidden block text-2xl text-secondary"
@@ -288,26 +321,19 @@ const Navbar = () => {
             />
           </div>
           <ul className="flex flex-col items-center gap-4 overflow-y-scroll no-scrollbar">
-            {
-              // filteredLinks.map(({ name, path }, index) => (
-              filteredLinks.map(({ name, path }, index) => (
-                <NavLink
-                  to={path}
-                  key={index}
-                  className={({ isActive }) => `
-                                        nav-links relative font-medium whitespace-nowrap text-black cursor-pointer text-base py-1
-                                        ${
-                                          isActive
-                                            ? "active text-primary !font-extrabold"
-                                            : ""
-                                        }
-                                    `}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {name}
-                </NavLink>
-              ))
-            }
+            {filteredLinks.map(({ name, path }, index) => (
+              <NavLink
+                to={path}
+                key={index}
+                className={({ isActive }) => `
+                  nav-links relative font-medium whitespace-nowrap text-black cursor-pointer text-base py-1
+                  ${isActive ? "active text-primary !font-extrabold" : ""}
+                `}
+                onClick={() => setIsOpen(false)}
+              >
+                {name}
+              </NavLink>
+            ))}
           </ul>
         </div>
         <div className="flex items-center gap-4 w-full text-center pt-4 border-t border-black/50">

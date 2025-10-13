@@ -1,10 +1,11 @@
-import React, { useEffect,  useState } from "react"; 
+import React, { useEffect, useState } from "react"; 
 import { toast } from "sonner";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
 import LazyLoader from "../../../components/loaders/LazyLoader";
 import PaginationControls from "../../../utilities/PaginationControls";
 import { FaCheck } from "react-icons/fa";
+import WarningModal from "../../../components/modals/WarningModal";
 
 const UpgradeHistory = () => {
   const { user, token } = useUser();
@@ -13,6 +14,9 @@ const UpgradeHistory = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const userId = user?.id;
 
@@ -125,6 +129,22 @@ const UpgradeHistory = () => {
     }
   };
 
+  const handleConfirmClick = (orderId) => {
+    setSelectedOrderId(orderId);
+    setShowModal(true);
+  };
+
+  const handlePositiveAction = async () => {
+    setIsConfirming(true);
+    await confirmOrder(selectedOrderId);
+    setIsConfirming(false);
+    setShowModal(false);
+  };
+
+  const handleNegativeAction = () => {
+    setShowModal(false);
+  };
+
   useEffect(() => {
     fetchTransactions(currentPage);
   }, [currentPage, userId, token]);
@@ -212,7 +232,7 @@ const UpgradeHistory = () => {
                 <td className="p-3 text-start rounded-e-xl border-y border-e-1 border-black/10">
                   <div className="flex items-center justify-end">
                     <button
-                      onClick={() => confirmOrder(transaction?.orders?.id)}
+                      onClick={() => handleConfirmClick(transaction?.orders?.id)}
                       className="p-2 bg-[var(--color-primary)] text-white rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Confirm Order"
                       disabled={
@@ -239,6 +259,15 @@ const UpgradeHistory = () => {
             setCurrentPage={setCurrentPage}
           />
         </div>
+      )}
+      {showModal && (
+        <WarningModal
+          title="Confirm Order"
+          message="Are you sure you want to confirm this order?"
+          positiveAction={handlePositiveAction}
+          negativeAction={handleNegativeAction}
+          isPositive={isConfirming}
+        />
       )}
     </div>
   );
