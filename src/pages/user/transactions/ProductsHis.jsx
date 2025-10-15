@@ -154,7 +154,6 @@ const ProductsHis = () => {
               </tr>
             ) : (
               products.map((row, idx) => {
-                const product = row.orders?.products?.[0] || {};
                 const stockist = row.orders?.stockist || {};
                 const serialNumber = (current_page - 1) * per_page + idx + 1;
                 return (
@@ -169,9 +168,10 @@ const ProductsHis = () => {
                       {formatTransactionType(row.transaction_type, true) ||
                         "N/A"}
                     </td>
-                    <td className="p-4 border-y border-black/10">
-                      {row.ref_no || "N/A"}
+                    <td className="p-4 text-center border-y border-black/10">
+                      <p className="max-w-[100px] mx-auto text-xs">{row?.ref_no || "N/A"}</p>
                     </td>
+
                     <td className="p-4 border-y border-black/10">
                       {row.orders?.total_amount
                         ? formatterUtility(Number(row.orders?.total_amount))
@@ -188,7 +188,7 @@ const ProductsHis = () => {
                           .replace(/\b\w/g, (c) => c.toUpperCase())}
                       </span>
                     </td>
-                    <td className="p-4 border-y border-black/10">
+                    <td className="p-4 border-y border-black/10 capitalize">
                       {stockist.username || "N/A"}
                     </td>
                     <td className="p-4 border-y border-black/10">
@@ -207,9 +207,7 @@ const ProductsHis = () => {
                         onClick={() =>
                           setSelectedRow({
                             ...row,
-                            product_name: product.product_name,
                             order_id: row.ref_no,
-                            price: product.price,
                             status: row.orders?.delivery,
                             stockist: stockist.username,
                             dateTime: formatISODateToCustom(row.created_at),
@@ -245,18 +243,23 @@ const ProductsHis = () => {
               Product Details
             </h2>
             <div className="space-y-2 text-[15px]">
+              <p className="font-semibold">Products</p>
+              {
+                selectedRow?.orders?.products?.map((product, index) => (
+                  <p key={index} className="flex items-center justify-between ps-2">
+                    <span className="font-semibold">{product.product_name || "N/A"}</span>
+                    X{product.product_quantity || product.quantity}
+                  </p>
+                ))
+              }
               <p>
-                <span className="font-semibold">Product Name:</span>{" "}
-                {selectedRow.product_name || "N/A"}
-              </p>
-              <p>
-                <span className="font-semibold pe-2">Order ID:</span>{" "}
-                {selectedRow.order_id || "N/A"}
+                <span className="font-semibold">Order ID:</span>{" "}
+                <span className="text-xs">{selectedRow.order_id || "N/A"}</span>
               </p>
               <p>
                 <span className="font-semibold">Price:</span>{" "}
-                {selectedRow.price
-                  ? `₦${parseFloat(selectedRow.price).toLocaleString()}`
+                {selectedRow.orders?.total_amount
+                  ? formatterUtility(selectedRow.orders?.total_amount)
                   : "N/A"}
               </p>
               <p>
@@ -266,7 +269,7 @@ const ProductsHis = () => {
                   .replace(/\b\w/g, (c) => c.toUpperCase())}
               </p>
               <p>
-                <span className="font-semibold ps-3 bore">Stockist:</span>{" "}
+                <span className="font-semibold">Stockist:</span>{" "}
                 {selectedRow.stockist || "N/A"}
               </p>
               <p>

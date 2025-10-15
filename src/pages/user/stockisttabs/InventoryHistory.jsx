@@ -28,7 +28,7 @@ const InventoryHistory = () => {
         },
       });
 
-      console.log("Product history response:", response);
+      // console.log("Product history response:", response);
 
       if (response.data.ok && response.data.products) {
         setProducts(response.data.products || []);

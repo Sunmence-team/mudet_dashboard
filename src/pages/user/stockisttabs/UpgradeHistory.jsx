@@ -65,7 +65,7 @@ const UpgradeHistory = () => {
         }
       );
 
-      console.log("Upgrade history response:", response);
+      // console.log("Upgrade history response:", response);
 
       if (response.data.ok && response.data.transactions) {
         // Filter for upgrade_debit transactions only
@@ -73,7 +73,7 @@ const UpgradeHistory = () => {
           (transaction) => transaction.transaction_type === "upgrade_debit"
         );
 
-        console.log("filteredTransactions", filteredTransactions)
+        // console.log("filteredTransactions", filteredTransactions)
 
         setTransactions(filteredTransactions || []);
         setCurrentPage(response.data.transactions.current_page || 1);
@@ -111,7 +111,7 @@ const UpgradeHistory = () => {
         }
       );
 
-      console.log("confirm response", response)
+      // console.log("confirm response", response)
 
       if (response.data.ok) {
         toast.success("Order confirmed successfully");
@@ -155,9 +155,11 @@ const UpgradeHistory = () => {
         <thead>
           <tr className="text-black/70 uppercase">
             <th className="ps-2 p-5 text-xs text-start">SN</th>
+            <th className="p-5 text-center">Order id</th>
             <th className="p-5 text-xs text-center">Product Name(s) & Qty</th>
             <th className="p-5 text-xs text-center">Transaction Type</th>
             <th className="p-5 text-xs text-center">Amount</th>
+            <th className="p-5 text-xs text-center">username</th>
             <th className="p-5 text-xs text-center">Status</th>
             <th className="pe-2 p-5 text-xs text-end">Action</th>
           </tr>
@@ -193,6 +195,11 @@ const UpgradeHistory = () => {
                   {String(index + 1).padStart(3, "0")}
                 </td>
 
+                {/* Order Id */}
+                <td className="p-3 text-center rounded-s-lg border-y border-black/10 font-semibold text-primary">
+                  {transaction?.ref_no}
+                </td>
+
                 {/* Product Names with Quantities */}
                 <td className="p-4 border-y border-black/10 whitespace-pre">
                   {transaction.orders?.products
@@ -213,6 +220,11 @@ const UpgradeHistory = () => {
                 {/* Amount */}
                 <td className="p-4 border-y border-black/10">
                   {formatAmount(transaction.amount)}
+                </td>
+
+                {/* USERNAME */}
+                <td className="p-3 text-center rounded-s-lg border-y border-black/10 font-semibold text-primary">
+                  {transaction?.user?.username}
                 </td>
 
                 {/* Status */}
