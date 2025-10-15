@@ -110,7 +110,7 @@ export const UserProvider = ({ children }) => {
       setMiscellaneousDetails(null);
 
       setTimeout(() => {
-        // window.location.href = "/login";
+        window.location.href = "https://www.mudetrealsolution.com/#/login";
       }, 100);
     }
   };

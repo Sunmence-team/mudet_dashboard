@@ -13,6 +13,7 @@ import {
 } from "react-icons/md";
 import { useCart } from "../context/CartProvider";
 import { FaAngleDown } from "react-icons/fa";
+import { FaPerson } from "react-icons/fa6";
 
 const Navbar = () => {
   const { user, logout } = useUser();
@@ -80,7 +81,7 @@ const Navbar = () => {
     },
     {
       name: "Dashboard",
-      path: "/admin-overview",
+      path: "/admin/overview",
       role: ["admin"],
     },
     {
@@ -264,8 +265,12 @@ const Navbar = () => {
             )}
             <IoMdCart />
           </Link>
-          <div className="relative flex border-1 rounded-4xl border-primary p-2 gap-4 items-center" ref={dropdownRef}>
-            <Link
+          <button 
+            className="relative cursor-pointer flex border-1 rounded-4xl border-primary py-1.5 px-2 gap-2 items-center" 
+            ref={dropdownRef}
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+          >
+            <div
               to={"/user/profile"}
               className="w-10 h-10 flex justify-center items-center rounded-full font-bold text-lg bg-tetiary text-primary"
             >
@@ -277,15 +282,21 @@ const Navbar = () => {
                   .join("")
                   .toUpperCase()}
               </h3>
-            </Link>
+            </div>
             <button
-              onClick={() => setIsDropdownOpen((prev) => !prev)}
               className="text-black/50"
             >
               <FaAngleDown />
             </button>
             {isDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                <Link
+                  to={"/user/profile"}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                >
+                  <FaPerson size={20} />
+                  <span>Profile</span>
+                </Link>
                 <button
                   onClick={() => {
                     logout();
@@ -298,7 +309,7 @@ const Navbar = () => {
                 </button>
               </div>
             )}
-          </div>
+          </button>
         </div>
       </nav>
 
@@ -337,7 +348,11 @@ const Navbar = () => {
           </ul>
         </div>
         <div className="flex items-center gap-4 w-full text-center pt-4 border-t border-black/50">
-          <button className="flex gap-4 justify-center items-center mx-auto rounded-full font-medium text-xl bg-tetiary text-primary">
+          <button 
+            type="button"
+            onClick={() => logout()}
+            className="flex gap-4 justify-center items-center mx-auto rounded-full font-medium text-xl bg-tetiary text-primary"
+          >
             <IoIosLogOut size={30} />
             <span>Logout</span>
           </button>

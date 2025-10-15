@@ -164,7 +164,6 @@ const Step1 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
       setValidatingSponsor(true);
       try {
         if (!token) {
-          toast.error("No authentication token found. Please log in.");
           setSponsorSuggestions([]);
           return;
         }
@@ -200,7 +199,7 @@ const Step1 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
       }
     };
     fetchSponsorSuggestions();
-  }, [debouncedSponsor, token, sponsorConfirmed, user?.id]);
+  }, [token, debouncedSponsor, sponsorConfirmed, user?.id]);
 
   // Fetch placement suggestions
   useEffect(() => {
@@ -353,7 +352,6 @@ const Step1 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
       setLoadingPlans(true);
       try {
         if (!token) {
-          toast.error("No authentication token found. Please log in.");
           setSubmitting(false);
           return;
         }
@@ -479,7 +477,7 @@ const Step1 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
               {validatingPlacement && <p className="text-sm text-gray-500 mt-2">Searching...</p>}
             </div>
             {showPlacementDropdown && placementSuggestions.length > 0 && (
-              <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-sm mt-2 max-h-48 overflow-y-auto z-10">
+              <div className="absolute top-2/3 left-0 w-full bg-white border border-gray-300 rounded-lg shadow-sm mt-2 max-h-48 overflow-y-auto z-10">
                 {placementSuggestions.map((suggestion) => (
                   <div
                     key={suggestion.id}

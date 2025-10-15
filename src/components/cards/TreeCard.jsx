@@ -41,7 +41,7 @@ const TreeCard = ({ user, isExpanded, onToggle, hasChildren }) => {
                     )}
                 </div>
             </Popover.Button>
-            {isExpanded && user.left && <div className="absolute -Z-[1] left-1/2 -translate-x-1/2 -bottom-8 h-8 w-[1px] bg-black"></div>}
+            {isExpanded && <div className="absolute -Z-[1] left-1/2 -translate-x-1/2 -bottom-8 h-8 w-[1px] bg-black"></div>}
             <Popover.Panel
                 ref={refs.setFloating}
                 style={floatingStyles}
