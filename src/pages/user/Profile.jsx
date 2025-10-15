@@ -99,7 +99,7 @@ const Profile = () => {
 
         <div className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[var(--color-primary)] text-white rounded-xl p-6 flex justify-between items-center">
+            <div className="bg-[var(--color-primary)] text-white rounded-lg p-6 shadow-md flex justify-between items-center">
               <div className="flex gap-2 items-center text-center">
                 <FaUser className="w-[18px] h-[18px]" />
                 <span className="text-sm font-semibold "> Personal PV</span>
@@ -109,7 +109,7 @@ const Profile = () => {
               </span>
             </div>
 
-            <div className="bg-[var(--color-secondary)] text-white rounded-xl p-6 flex justify-between items-center">
+            <div className="bg-[var(--color-secondary)] text-white rounded-lg p-6 shadow-md flex justify-between items-center">
               <div className="flex gap-2 items-center text-center">
                 <HiUserGroup className="w-[22px] h-[22px]" />
                 <span className="text-sm font-semibold ">Total PV</span>
@@ -119,20 +119,20 @@ const Profile = () => {
               </span>
             </div>
 
-            <div className="bg-[var(--color-secondary)] text-white rounded-xl p-6 flex justify-between items-center">
+            <div className="bg-[var(--color-secondary)] text-white rounded-lg p-6 shadow-md flex justify-between items-center">
               <div className="flex gap-2 items-center text-center">
-                <FaArrowAltCircleRight className="w-[18px] h-[18px]" />
-                <span className="text-sm font-semibold ">Right PV</span>
+                <FaArrowAltCircleLeft className="w-[18px] h-[18px]" />
+                <span className="text-sm font-semibold ">Left PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
                 {formatterUtility(Number(miscellaneousDetails?.totalPVLeft), true)}
               </span>{" "}
             </div>
 
-            <div className="bg-[var(--color-primary)] text-white rounded-xl p-6 flex justify-between items-center">
+            <div className="bg-[var(--color-primary)] text-white rounded-lg p-6 shadow-md flex justify-between items-center">
               <div className="flex gap-2 items-center text-center">
-                <FaArrowAltCircleLeft className="w-[18px] h-[18px]" />
-                <span className="text-sm font-semibold ">Left PV</span>
+                <FaArrowAltCircleRight className="w-[18px] h-[18px]" />
+                <span className="text-sm font-semibold ">Right PV</span>
               </div>
               <span className="text-2xl font-bold mt-1">
                 {formatterUtility(Number(miscellaneousDetails?.totalPVRight), true)}

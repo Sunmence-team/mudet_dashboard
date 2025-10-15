@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import api from "../../utilities/api";
 import PinModal from "../modals/PinModal";
+import { useCart } from "../../context/CartProvider";
 
 const SummaryCard = ({ items, subtotal, user, stockistId }) => {
+  const { clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
@@ -41,8 +43,7 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
     }
   };
 
-  const onDecline = () => {
-    const transactionPin = localStorage.getItem("currentAuth");
+  const onDecline = (transactionPin) => {
     if (transactionPin) {
       localStorage.removeItem("currentAuth");
       setShowPinModal(false);
@@ -52,9 +53,7 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
   };
 
   // 🛍️ Handle Purchase
-  const handlePurchase = async () => {
-    const transactionPin = localStorage.getItem("currentAuth");
-
+  const handlePurchase = async (transactionPin) => {
     if (!user?.id) {
       toast.error("User not found. Please log in first.");
       return;
@@ -84,13 +83,10 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
 
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data.message || "Order placed successfully!");
-        localStorage.removeItem("currentAuth");
-        setShowPinModal(false); // Close PinModal after successful purchase
-        // Optional: clear cart or redirect
+        setShowPinModal(false);
+        clearCart();
       } else {
         toast.error(response.data.message || "Failed to place order.");
-        localStorage.removeItem("currentAuth");
-        setShowPinModal(false); // Close PinModal on failure
       }
     } catch (error) {
       console.error("Error purchasing:", error);
@@ -105,14 +101,12 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
         message.toLowerCase().includes("unauthenticated")
       ) {
         toast.error("Session expired. Please log in again.");
-        // logout(); // uncomment if you have logout handler
       } else {
         toast.error(message);
       }
-      setShowPinModal(false); // Close PinModal on error
+      setShowPinModal(false);
     } finally {
       setLoading(false);
-      localStorage.removeItem("currentAuth");
     }
   };
 

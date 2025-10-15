@@ -133,7 +133,7 @@ const RepurchaseWallet = () => {
 
   return (
     <div className="bg-[var(--color-tetiary)]">
-      {/* Select Dropdown */}
+      {/* Select Dropdown
       <div hidden className="mb-4 w-full max-w-xs">
         <select
           value={activeTab}
@@ -147,7 +147,7 @@ const RepurchaseWallet = () => {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       <div className="overflow-x-auto">
         {/* Header */}

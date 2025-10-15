@@ -7,7 +7,7 @@ const ViewCommissionHistoryModal = ({ isOpen, onClose, historyData, username }) 
 
     return (
         <div className="fixed inset-0 backdrop-blur-xs bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white w-[90%] max-w-2xl rounded-2xl shadow-lg ps-4 pe-2 py-6 relative">
+            <div className="bg-white md:max-w-2xl w-full rounded-2xl shadow-lg ps-4 pe-2 py-6 relative">
                 <h3 className="text-xl font-bold mb-4 md:text-start text-center">Commission History for <span className='uppercase'>{username}</span></h3>
                 <div className="max-h-86 overflow-auto pe-2 styled-scrollbar">
                     {historyData.length > 0 ? (

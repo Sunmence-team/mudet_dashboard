@@ -64,33 +64,74 @@ const AuthRedirect = () => {
     verifyAndRedirect();
   }, []);
 
+  const Dot = ({ delayOffset }) => (
+    <motion.span
+      style={{ display: 'inline-block', lineHeight: 1 }}
+      variants={{
+        hidden: { opacity: 0, y: 5 },
+        visible: { opacity: 1, y: 0 },
+        fade: { opacity: 0, y: 5 }
+      }}
+      initial="hidden"
+      animate="visible"
+      transition={{
+        delay: 0.5 + delayOffset,
+        duration: 0.2,
+        ease: 'easeOut',
+        repeat: Infinity,
+        repeatDelay: 1,
+        repeatType: 'loop',
+      }}
+    >
+      <div className="w-1 h-1 rounded-full bg-primary"></div>
+    </motion.span>
+  );
+
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-bl from-primary via-primary/70 to-secondary/80 p-6">
-      <motion.div
-        className="bg-primary bg-opacity-80 backdrop-blur-lg rounded-2xl p-8 md:p-12 max-w-md w-full text-center shadow-2xl"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+    <div className="min-h-screen flex flex-col gap-4 items-center justify-center bg-tetiary p-6">
+      <div className="relative z-1">
+        <div className="bg-primary w-40 h-40 backdrop-blur-lg rounded-full p-4 text-center">
+          <img src={assets.biglogo} alt="Mudet Real Solution logo" className="w-full object-cover mx-auto" />
+        </div>
+        <motion.div
+          className="absolute p-4 bg-primary/20 rounded-full"
+          style={{
+              width: 'calc(160px + 16px * 2)',
+              height: 'calc(160px + 16px * 2)',
+              top: '50%',
+              left: '50%',
+              x: '-50%',
+              y: '-50%',
+              zIndex: -1
+          }}
+          initial={{ opacity: 0.5, scale: 0.2 }}
+          animate={{ scale: [1, 1.05], opacity: 1 }}
+          transition={{
+            duration: 1,
+            ease: 'easeInOut',
+            repeat: Infinity,
+            repeatType: 'reverse'
+          }}
+        ></motion.div>
+      </div>
+      <motion.h1
+        className="text-2xl md:text-4xl font-bold text-primary my-4 flex items-end"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{
+          delay: 0.2,
+          duration: 0.5,
+        }}
       >
-        <div className="">
-          <img src={assets.logo} alt="Mudet Real Solution logo" className="w-2/6 mx-auto" />
-        </div>
-        <motion.h1
-          className="text-2xl md:text-4xl font-bold text-white my-4"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          Redirecting...
-        </motion.h1>
-        <div className="flex justify-center mb-6">
-          <LazyLoader 
-            color={"white"}
-            width={50}
-          />
-        </div>
-       
-      </motion.div>
+        Redirecting
+        
+        <span className="flex gap-1 ms-1 mb-2">
+          {['.', '.', '.'].map((_dot, index) => (
+            <Dot key={index} delayOffset={index * 0.2} /> 
+          ))}
+        </span>
+      </motion.h1>
     </div>
   );
 };

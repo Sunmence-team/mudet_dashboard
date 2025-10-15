@@ -59,8 +59,7 @@ const StockistUser = () => {
     },
   });
 
-  const handleWithdraw = async () => {
-    const transactionPin = localStorage.getItem("currentAuth");
+  const handleWithdraw = async (transactionPin) => {
     if (!transactionPin) {
       setPinModal(true);
       return;
@@ -77,11 +76,9 @@ const StockistUser = () => {
         toast.success(res.data.message);
         setPinModal(false);
         withdrawFormik.resetForm();
-        localStorage.removeItem("currentAuth");
         refreshUser();
       } else {
         toast.error(res.data.message);
-        localStorage.removeItem("currentAuth");
       }
     } catch (error) {
       if (
@@ -92,23 +89,17 @@ const StockistUser = () => {
         toast.error(error.response.data.message);
       } else {
         toast.error(
-          "An unexpected error occurred while transferring funds. " +
-            (error?.response?.data?.message ||
-              error?.message ||
-              "Please try again later.")
+          error?.response?.data?.message ||
+            error?.message ||
+            "An unexpected error occurred while transferring funds, please try again later."
         );
         console.error("Error during transferring funds:", error);
       }
-      localStorage.removeItem("currentAuth");
-    } finally {
-      localStorage.removeItem("currentAuth");
     }
   };
 
-  const onDecline = () => {
-    const transactionPin = localStorage.getItem("currentAuth");
+  const onDecline = (transactionPin) => {
     if (transactionPin) {
-      localStorage.removeItem("currentAuth");
       setPinModal(false);
     } else {
       setPinModal(false);
@@ -136,15 +127,14 @@ const StockistUser = () => {
       try {
         const res = await api.post("/api/stockist/request", values);
         if (res.status === 200) {
-          toast.success("Stockist request created successfully.");
-
-          const load = toast.loading("Proceeding to payment");
-
+          toast.success("Stockist request created successfully!");
           setTimeout(() => {
-            window.open(res.data.authorization_url, "_self");
-            toast.dismiss(load);
-          }, 2000);
-          refreshUser();
+            const load = toast.loading("Proceeding to payment...");
+            setTimeout(() => {
+              toast.dismiss(load);
+              window.open(res.data.authorization_url, "_self");
+            }, 1500);
+          }, 800);
         } else {
           toast.error("Stockist request failed");
         }
@@ -162,10 +152,7 @@ const StockistUser = () => {
                 error?.message ||
                 "Please try again later.")
           );
-          console.error(
-            "Error during requesting stockist registration:",
-            error
-          );
+          console.error("Error during requesting stockist registration:", error);
         }
       } finally {
         resetForm();
@@ -179,7 +166,7 @@ const StockistUser = () => {
   }, [token]);
 
   return (
-    <div className="w-full flex flex-col gap-4 items-center justify-center">
+    <div className="w-full flex flex-col gap-4 items-center justify-center capitalize">
       {miscellaneousDetails?.planDetails?.name !== "legend" ? (
         <>
           <div className="flex flex-col justify-center gap-8 items-center bg-white rounded-xl shadow-2xl ring-1 ring-gray-100 w-1/2 m-auto py-12 px-6 sm:px-10">
@@ -513,7 +500,7 @@ const StockistUser = () => {
               onSubmit={formik.handleSubmit}
               className="w-full flex flex-col gap-4"
             >
-              <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
+              <div className="bg-white border border-black/10 capitalize w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
                 <p className="text-xl md:text-2xl font-semibold">
                   Selected Plan
                 </p>
@@ -540,12 +527,12 @@ const StockistUser = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     disabled
-                    className={`h-12 px-4 py-2 border w-full ${
+                    className={`h-12 px-4 py-2 border w-full capitalize ${
                       formik.touched.stockist_plan &&
                       formik.errors.stockist_plan
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr cursor-not-allowed opacity-[60%] focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr cursor-not-allowed opacity-[60%] focus:border-pryClr`}
                   />
                 </div>
 
@@ -570,12 +557,11 @@ const StockistUser = () => {
                     value={formik.values.stockist_location}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    className={`h-12 px-4 py-2 border w-full ${
-                      formik.touched.stockist_location &&
-                      formik.errors.stockist_location
+                    className={`h-12 px-4 py-2 border w-full ${formik.touched.stockist_location &&
+                        formik.errors.stockist_location
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                   />
                 </div>
 
@@ -587,12 +573,11 @@ const StockistUser = () => {
                     checked={formik.values.termsAndConditions}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    className={`${
-                      formik.touched.termsAndConditions &&
-                      formik.errors.termsAndConditions
+                    className={`${formik.touched.termsAndConditions &&
+                        formik.errors.termsAndConditions
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                      } rounded-lg focus:ring-pryClr focus:border-pryClr`}
                   />
                   <label
                     htmlFor="termsAndConditions"
@@ -664,11 +649,10 @@ const StockistUser = () => {
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`nav-links relative py-4 cursor-pointer px-5 text-sm md:text-base font-medium transition-colors duration-200
-                    ${
-                      activeTab === tab
-                        ? "text-primary active bg-white"
-                        : "text-gray-600 hover:text-primary"
-                    }`}
+                    ${activeTab === tab
+                          ? "text-primary active bg-white"
+                          : "text-gray-600 hover:text-primary"
+                        }`}
                     >
                       {tab}
                     </button>
