@@ -18,7 +18,7 @@ const Deposit = () => {
     setLoading(true);
     try {
       if (!user?.id || !token) {
-        console.error("User ID or token is undefined. Please log in.");
+        // console.error("User ID or token is undefined. Please log in.");
         return;
       }
 
@@ -49,7 +49,7 @@ const Deposit = () => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "An error occurred fetching Deposit history!.");
-      console.error("Error fetching deposits:", err);
+      // console.error("Error fetching deposits:", err);
     } finally {
       setLoading(false);
     }

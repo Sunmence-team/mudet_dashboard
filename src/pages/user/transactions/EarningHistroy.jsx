@@ -20,7 +20,7 @@ const EarningWallet = () => {
     setLoading(true);
     try {
       if (!userId) {
-        console.error("User ID is undefined. Please log in.");
+        // console.error("User ID is undefined. Please log in.");
         return;
       }
 
@@ -52,7 +52,7 @@ const EarningWallet = () => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "An error occurred fetching Earnings history!.");
-      console.error("Error fetching earnings:", err);
+      // console.error("Error fetching earnings:", err);
     } finally {
       setLoading(false);
     }

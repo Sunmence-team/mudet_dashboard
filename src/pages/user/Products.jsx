@@ -30,7 +30,7 @@ const Products = () => {
         toast.info("No products found.");
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      // console.error("Error fetching products:", error);
 
       const message =
         error.response?.data?.message ||
