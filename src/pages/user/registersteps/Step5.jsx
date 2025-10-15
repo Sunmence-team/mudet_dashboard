@@ -1,9 +1,15 @@
 // import React, {
-//   useEffect,
-//   useState,
-//   useCallback,
-//   forwardRef,
-//   useImperativeHandle,
+//  
+  // useEffect,
+//  
+  // useState,
+//  
+  // useCallback,
+//  
+  // forwardRef,
+//  
+  // useImperativeHandle,
+//,
 // } from "react";
 // import { useNavigate } from "react-router-dom";
 // import api from "../../../utilities/api";
@@ -323,14 +329,17 @@ const Step5 = forwardRef(
           return;
         }
 
-        setLoading(true);
-        setError(null);
-        console.log(
+          setLoading(true);
+          setError(null);
+          console.log(
+          
           "Completing registration with session_id:",
+         
           formData.session_id
         );
 
-        console.log(Object.keys(formData));
+        console.log(Object.keys(formData)
+        );
 
         try {
           if (!token) {

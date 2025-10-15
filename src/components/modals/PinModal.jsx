@@ -7,6 +7,12 @@ const PinModal = ({ onClose, onConfirm, user }) => {
   const [incorrectPin, setIncorrectPin] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !pin[index] && index > 0) {
+      document.getElementById(`pin-input-${index - 1}`).focus();
+    }
+  };
+
   const handleChange = (value, index) => {
     if (/^[0-9]?$/.test(value)) {
       const newPin = [...pin];
@@ -59,6 +65,7 @@ const PinModal = ({ onClose, onConfirm, user }) => {
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(e.target.value, index)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
               className={`w-12 h-12 text-center text-xl rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
                 incorrectPin ? "border-red-600 border" : "border"
               }`}
@@ -68,7 +75,7 @@ const PinModal = ({ onClose, onConfirm, user }) => {
 
         <div className="flex justify-between gap-4">
           <button
-            onClick={()=> onClose(pin)}
+            onClick={() => onClose(pin)}
             className="flex w-1/2 items-center justify-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
           >
             Cancel
