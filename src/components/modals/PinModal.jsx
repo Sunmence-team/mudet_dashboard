@@ -23,7 +23,7 @@ const PinModal = ({ onClose, onConfirm, user }) => {
     try {
       const pinValue = pin.join("");
       if (pinValue.length === 4) {
-        localStorage.setItem("currentAuth", pinValue);
+        // localStorage.setItem("currentAuth", pinValue);
         if (pinValue) {
           setSubmitting(true);
         }
@@ -68,7 +68,7 @@ const PinModal = ({ onClose, onConfirm, user }) => {
 
         <div className="flex justify-between gap-4">
           <button
-            onClick={onClose}
+            onClick={()=> onClose(pin)}
             className="flex w-1/2 items-center justify-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
           >
             Cancel

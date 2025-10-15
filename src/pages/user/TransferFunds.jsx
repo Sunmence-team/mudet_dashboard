@@ -13,8 +13,7 @@ const TransferFunds = () => {
   const backUpUser = JSON.parse(localStorage.getItem("user"));
   const { user, refreshUser } = useUser();
 
-  const onSubmit = async () => {
-    const transactionPin = localStorage.getItem("currentAuth");
+  const onSubmit = async (transactionPin) => {
     if (!transactionPin) {
       setPinModal(true);
       return;
@@ -29,11 +28,9 @@ const TransferFunds = () => {
         toast.success(res.data.message);
         setPinModal(false);
         formik.resetForm();
-        localStorage.removeItem("currentAuth");
         refreshUser();
       } else {
         toast.error(toast.data.message);
-        localStorage.removeItem("currentAuth");
       }
       console.log(res);
     } catch (error) {
@@ -46,21 +43,16 @@ const TransferFunds = () => {
         toast.error(error.response.data.message);
       } else {
         toast.error(
-          "An unexpected error occurred while transfering funds. " +
-            error?.response?.data?.message ||
+          error?.response?.data?.message ||
             error?.message ||
-            "Please try again later."
+            "An unexpected error occurred while transferring funds, please try again later."
         );
-        console.error("Error during transfering funds:", error);
+        console.error("Error during transferring funds:", error);
       }
-    } finally {
-      localStorage.removeItem("currentAuth");
     }
   };
-  const onDecline = () => {
-    const transactionPin = localStorage.getItem("currentAuth");
+  const onDecline = (transactionPin) => {
     if (transactionPin) {
-      localStorage.removeItem("currentAuth");
       setPinModal(false);
     } else {
       setPinModal(false);
