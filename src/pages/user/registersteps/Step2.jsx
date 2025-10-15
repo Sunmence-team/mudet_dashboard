@@ -53,39 +53,12 @@ const Step2 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
     },
     validationSchema,
     onSubmit: async (values) => {
-      // Check if form is valid before proceeding
-      const isValid = await formik.validateForm();
-      if (Object.keys(isValid).length > 0) {
-        setSubmitting(false);
-        toast.error("Please correct the form errors before proceeding");
-        return;
-      }
-
-      setSubmitting(true);
-      const logData = {
-        success: true,
-        message: "Step 2 completed successfully",
-        current_step: 3,
-        data: {
-          first_name: values.first_name,
-          last_name: values.last_name,
-          date_of_birth: values.date_of_birth,
-          gender: values.gender,
-          country: values.country,
-          state: values.state,
-          city: values.city,
-          mobile: values.mobile,
-          email: values.email,
-          stockist: parseInt(values.stockist),
-        },
-      };
-      console.log(JSON.stringify(logData, null, 2));
-
       try {
+        setSubmitting(true);
+
         if (!token) {
           toast.error("No authentication token found. Please log in.");
-          setSubmitting(false);
-          return;
+          return false;
         }
 
         const payload = {
@@ -115,42 +88,49 @@ const Step2 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
             ...response.data.data,
             session_id: formData.session_id,
           });
+          return true; // ✅ success — go to next step
         } else {
           toast.error(response.data.message || "Step 2 submission failed");
-          setSubmitting(false);
+          return false; // ❌ fail — stay here
         }
       } catch (error) {
         console.error("Error during Step 2 submission:", error);
         toast.error(
-          error.response?.data?.message || error.message || "An error occurred during Step 2 submission"
+          error.response?.data?.message ||
+          error.message ||
+          "An error occurred during Step 2 submission"
         );
-        setSubmitting(false);
+        return false; // ❌ fail — stay here
       } finally {
         setSubmitting(false);
       }
     },
   });
 
+
   useImperativeHandle(ref, () => ({
     submit: async () => {
       try {
-        await formik.submitForm();
+        // Wait for form submission result (true/false)
+        const result = await formik.submitForm();
 
-        // If there are still validation errors, stop here
+        // If formik.onSubmit returned false (e.g., email exists), stop here
+        if (result === false) return false;
+
+        // Validate front-end form fields again just in case
         const errors = await formik.validateForm();
         if (Object.keys(errors).length > 0) {
-          setSubmitting(false);
-          return false; // ❌ failed — stay on this step
+          return false; // ❌ validation error
         }
 
-        return true; // ✅ success (Register.jsx will move to next step)
+        return true; // ✅ all good — move to next step
       } catch (error) {
         console.error("Submit failed in Step 2:", error);
-        setSubmitting(false);
         return false;
       }
     },
   }));
+
 
 
   useEffect(() => {
@@ -336,12 +316,16 @@ const Step2 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
                 type="date"
                 id="date_of_birth"
                 name="date_of_birth"
+                max={new Date().toISOString().split("T")[0]} // ✅ prevents today and future dates
                 value={formik.values.date_of_birth}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`h-12 w-full px-4 py-2 border ${formik.touched.date_of_birth && formik.errors.date_of_birth ? "border-red-500" : "border-gray-300"
+                className={`h-12 w-full px-4 py-2 border ${formik.touched.date_of_birth && formik.errors.date_of_birth
+                    ? "border-red-500"
+                    : "border-gray-300"
                   } rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
+
             </div>
             <div className="flex flex-col">
               <label htmlFor="gender" className="text-sm font-medium text-gray-700 mb-1">
