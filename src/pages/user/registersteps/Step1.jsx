@@ -503,7 +503,7 @@ const Step1 = forwardRef(({ prevStep, nextStep, formData = {}, updateFormData, s
 
           <div className="flex-[2] w-full flex flex-col gap-3">
             <p className="text-sm md:text-lg">Position</p>
-            <div className="flex w-full justify-between">
+            <div className="flex w-full gap-8">
               <button
                 type="button"
                 className={`px-8 py-2 rounded-full ${
