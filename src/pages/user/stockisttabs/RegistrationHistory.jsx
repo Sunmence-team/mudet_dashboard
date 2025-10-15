@@ -28,6 +28,7 @@ const RegistrationHistory = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "success":
+      case "picked":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
       case "failed":
         return "bg-[#c51236]/20 text-red-600";
@@ -58,7 +59,7 @@ const RegistrationHistory = () => {
         }
       });
 
-      console.log("Registration history response:", response);
+      // console.log("Registration history response:", response);
 
       if (response.status === 200 && response.data.success) {
         const { data, current_page, last_page } = response.data.registrations;
@@ -141,12 +142,14 @@ const RegistrationHistory = () => {
         <table className="w-full">
           <thead>
             <tr className="text-black/70 text-[12px] uppercase font-semibold">
-              <td className="ps-2 p-5 text-start">SN</td>
-              <td className="p-5 text-center">Product Name(s) & Qty</td>
-              <td className="p-5 text-center">Transaction Type</td>
-              <td className="p-5 text-center">Amount</td>
-              <td className="p-5 text-center">Status</td>
-              <td className="pe-2 p-5 text-end">Action</td>
+              <th className="ps-2 p-5 text-start">SN</th>
+              <th className="p-5 text-center">Order id</th>
+              <th className="p-5 text-center">Product Name(s) & Qty</th>
+              <th className="p-5 text-center">Transaction Type</th>
+              <th className="p-5 text-center">Amount</th>
+              <th className="p-5 text-center">username</th>
+              <th className="p-5 text-center">Status</th>
+              <th className="pe-2 p-5 text-end">Action</th>
             </tr>
           </thead>
 
@@ -183,6 +186,11 @@ const RegistrationHistory = () => {
                     {String(index + 1).padStart(3, "0")}
                   </td>
 
+                  {/* Order Id */}
+                  <td className="p-3 text-center rounded-s-lg border-y border-black/10 font-semibold text-primary">
+                    <p className="max-w-[100px] mx-auto text-xs">{transaction?.ref_no}</p>
+                  </td>
+
                   {/* Product Names with Quantities */}
                   <td className="p-4 border-y border-black/10 whitespace-pre">
                     {transaction.orders?.products
@@ -205,16 +213,22 @@ const RegistrationHistory = () => {
                     {formatterUtility(transaction.amount)}
                   </td>
 
+                  {/* USERNAME */}
+                  <td className="p-3 text-center rounded-s-lg border-y border-black/10 font-semibold text-primary">
+                    {transaction?.user?.username}
+                  </td>
+
                   {/* Status */}
                   <td className="p-4 border-y border-black/10">
                     <div
                       className={`px-3 py-2 w-[100px] rounded-full text-sm font-medium border border-black/10 mx-auto ${getStatusColor(
-                        transaction.status
+                        transaction?.orders?.delivery
                       )}`}
                     >
-                      {transaction.status
+                      {transaction.orders?.delivery}
+                      {/* {transaction.orders?.delivery
                         .replace(/_/g, " ")
-                        .replace(/\b\w/g, (c) => c.toUpperCase())}
+                        .replace(/\b\w/g, (c) => c.toUpperCase())} */}
                     </div>
                   </td>
 

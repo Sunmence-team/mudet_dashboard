@@ -50,7 +50,7 @@ const TransactionHistory = () => {
         },
       });
 
-      console.log("Transaction history response:", response);
+      // console.log("Transaction history response:", response);
 
       if (response.data.ok && response.data.data) {
         setTransactions(response.data.data.data || []);

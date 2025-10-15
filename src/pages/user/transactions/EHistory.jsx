@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../../context/UserContext";
 import api from "../../../utilities/api";
-import PaginationControls from "../../../utilities/PaginationControls"; // 👈 adjust the path as needed
+import PaginationControls from "../../../utilities/PaginationControls";
 
 const EHistory = () => {
   const { user } = useUser();

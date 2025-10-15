@@ -56,7 +56,7 @@ const RepurchaseHistory = () => {
         }
       );
 
-      console.log("Repurchase history response:", response);
+      // // console.log("Repurchase history response:", response);
 
       if (response.data.ok && response.data.transactions) {
         // Filter for manual_purchase transactions only
@@ -64,7 +64,7 @@ const RepurchaseHistory = () => {
           (transaction) => transaction.transaction_type === "manual_purchase"
         );
 
-        console.log("filteredTransactions", filteredTransactions)
+        // // console.log("filteredTransactions", filteredTransactions)
 
         setTransactions(filteredTransactions || []);
         setCurrentPage(response.data.transactions.current_page || 1);
@@ -140,12 +140,14 @@ const RepurchaseHistory = () => {
         <table className="w-full">
           <thead>
             <tr className="text-black/70 text-[12px] uppercase font-semibold">
-              <td className="ps-2 p-5 text-start">SN</td>
-              <td className="p-5 text-center">Product Name(s) & Qty</td>
-              <td className="p-5 text-center">Transaction Type</td>
-              <td className="p-5 text-center">Amount</td>
-              <td className="p-5 text-center">Status</td>
-              <td className="pe-2 p-5 text-end">Action</td>
+              <th className="ps-2 p-5 text-start">SN</th>
+              <th className="p-5 text-center">Order id</th>
+              <th className="p-5 text-center">Product Name(s) & Qty</th>
+              <th className="p-5 text-center">Transaction Type</th>
+              <th className="p-5 text-center">Amount</th>
+              <th className="p-5 text-center">USERname</th>
+              <th className="p-5 text-center">Status</th>
+              <th className="pe-2 p-5 text-end">Action</th>
             </tr>
           </thead>
 
@@ -175,6 +177,11 @@ const RepurchaseHistory = () => {
                     {String(index + 1).padStart(3, "0")}
                   </td>
 
+                  {/* Order Id */}
+                  <td className="p-3 text-center rounded-s-lg border-y border-black/10 font-semibold text-primary">
+                    {transaction?.ref_no}
+                  </td>
+
                   {/* Product Names with Quantities */}
                   <td className="p-4 border-y border-black/10 whitespace-pre">
                     {transaction.orders?.products
@@ -190,6 +197,10 @@ const RepurchaseHistory = () => {
                   {/* Amount */}
                   <td className="p-4 border-y border-black/10">
                     {formatterUtility(transaction.amount)}
+                  </td>
+
+                  <td className="p-3 text-center rounded-s-lg border-y border-black/10 font-semibold text-primary">
+                    {transaction?.user?.username}
                   </td>
 
                   {/* Status */}

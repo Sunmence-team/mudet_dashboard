@@ -283,11 +283,11 @@ const Navbar = () => {
                   .toUpperCase()}
               </h3>
             </div>
-            <button
+            <span
               className="text-black/50"
             >
               <FaAngleDown />
-            </button>
+            </span>
             {isDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                 <Link
