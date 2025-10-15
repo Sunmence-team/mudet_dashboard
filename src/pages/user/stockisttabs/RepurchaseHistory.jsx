@@ -141,6 +141,7 @@ const RepurchaseHistory = () => {
           <thead>
             <tr className="text-black/70 text-[12px] uppercase font-semibold">
               <td className="ps-2 p-5 text-start">SN</td>
+              <td className="ps-2 p-5 text-start">REF NO</td>
               <td className="p-5 text-center">Product Name(s) & Qty</td>
               <td className="p-5 text-center">Transaction Type</td>
               <td className="p-5 text-center">Amount</td>
@@ -171,6 +172,11 @@ const RepurchaseHistory = () => {
                   className="bg-white text-sm text-center capitalize"
                 >
                   {/* SN */}
+                  <td className="p-3 text-start rounded-s-lg border-y border-s-1 border-black/10 font-semibold text-primary">
+                    {String(index + 1).padStart(3, "0")}
+                  </td>
+
+                  {/*  */}
                   <td className="p-3 text-start rounded-s-lg border-y border-s-1 border-black/10 font-semibold text-primary">
                     {String(index + 1).padStart(3, "0")}
                   </td>

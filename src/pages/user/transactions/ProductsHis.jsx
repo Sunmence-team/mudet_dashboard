@@ -39,7 +39,6 @@ const ProductsHis = () => {
         return;
       }
 
-      // Note: Endpoint uses hardcoded user ID '2'. Consider using `userId` for dynamic user data: `/api/users/${userId}/manual-purchases`
       const response = await api.get(
         `/api/users/${user?.id}/manual-purchases?page=${page}`,
         {

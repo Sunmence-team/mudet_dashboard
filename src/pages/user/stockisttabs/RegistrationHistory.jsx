@@ -28,6 +28,7 @@ const RegistrationHistory = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "success":
+      case "picked":
         return "bg-[#dff7ee]/80 text-[var(--color-primary)]";
       case "failed":
         return "bg-[#c51236]/20 text-red-600";
@@ -209,12 +210,13 @@ const RegistrationHistory = () => {
                   <td className="p-4 border-y border-black/10">
                     <div
                       className={`px-3 py-2 w-[100px] rounded-full text-sm font-medium border border-black/10 mx-auto ${getStatusColor(
-                        transaction.status
+                        transaction?.orders?.delivery
                       )}`}
                     >
-                      {transaction.status
+                      {transaction.orders?.delivery}
+                      {/* {transaction.orders?.delivery
                         .replace(/_/g, " ")
-                        .replace(/\b\w/g, (c) => c.toUpperCase())}
+                        .replace(/\b\w/g, (c) => c.toUpperCase())} */}
                     </div>
                   </td>
 
