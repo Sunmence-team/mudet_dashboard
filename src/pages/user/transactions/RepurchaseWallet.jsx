@@ -123,17 +123,9 @@ const RepurchaseWallet = () => {
 
   const { data: repurchases, current_page, per_page } = repurchaseData;
 
-  // Filter repurchases based on activeTab
-  const filteredRepurchases =
-    activeTab === "all"
-      ? repurchases
-      : repurchases.filter(
-          (row) => row.status?.toLowerCase() === activeTab.toLowerCase()
-        );
-
   return (
     <div className="bg-[var(--color-tetiary)]">
-      {/* Select Dropdown */}
+      {/* Select Dropdown
       <div hidden className="mb-4 w-full max-w-xs">
         <select
           value={activeTab}
@@ -147,7 +139,7 @@ const RepurchaseWallet = () => {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       <div className="overflow-x-auto">
         {/* Header */}

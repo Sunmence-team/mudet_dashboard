@@ -16,7 +16,7 @@ const CommisionCard = ({ details, index, isLoading, onViewHistory }) => {
     );
   }
 
-  const colors = ["deepGreen", "gold", "lightGreen"];
+  const colors = ["deepGreen", "gold", "lightGreen", ""];
   const { color = colors[index % colors.length], user, total_amount, total_transactions } = details;
 
   const bgColor =

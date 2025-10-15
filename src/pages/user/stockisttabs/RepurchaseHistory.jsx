@@ -6,7 +6,7 @@ import PaginationControls from "../../../utilities/PaginationControls";
 import { FaCheck } from "react-icons/fa";
 import LazyLoader from "../../../components/loaders/LazyLoader";
 import { formatterUtility, formatTransactionType } from "../../../utilities/formatterutility";
-
+import WarningModal from "../../../components/modals/WarningModal";
 
 const RepurchaseHistory = () => {
   const { user, token, refreshUser } = useUser();
@@ -15,6 +15,9 @@ const RepurchaseHistory = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const userId = user?.id;
 
@@ -111,7 +114,21 @@ const RepurchaseHistory = () => {
     }
   };
 
+  const handleConfirmClick = (orderId) => {
+    setSelectedOrderId(orderId);
+    setShowModal(true);
+  };
 
+  const handlePositiveAction = async () => {
+    setIsConfirming(true);
+    await confirmOrder(selectedOrderId);
+    setIsConfirming(false);
+    setShowModal(false);
+  };
+
+  const handleNegativeAction = () => {
+    setShowModal(false);
+  };
 
   useEffect(() => {
     fetchTransactions(currentPage);
@@ -191,7 +208,7 @@ const RepurchaseHistory = () => {
                   {/* Confirm Button */}
                   <td className="p-4 text-end text-sm text-pryClr font-semibold border-e-1 rounded-e-lg border-y border-black/10">
                     <button
-                      onClick={() => confirmOrder(transaction.orders?.id)}
+                      onClick={() => handleConfirmClick(transaction.orders?.id)}
                       className="p-2 bg-[var(--color-primary)] text-white rounded-md cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Confirm Order"
                       disabled={
@@ -219,6 +236,16 @@ const RepurchaseHistory = () => {
             setCurrentPage={setCurrentPage}
           />
         </div>
+      )}
+
+      {showModal && (
+        <WarningModal
+          title="Confirm Order"
+          message="Are you sure you want to confirm this order?"
+          positiveAction={handlePositiveAction}
+          negativeAction={handleNegativeAction}
+          isPositive={isConfirming}
+        />
       )}
     </div>
   );

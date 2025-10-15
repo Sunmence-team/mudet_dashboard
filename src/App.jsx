@@ -49,106 +49,227 @@ function App() {
         />
         <Route
           path={"/admin/overview"}
-          element={<MainLayout child={<AdminOverview />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<AdminOverview />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/users"}
-          element={<MainLayout child={<Users />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Users />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/announcements"}
-          element={<MainLayout child={<Announcements />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Announcements />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/stockist"}
-          element={<MainLayout child={<Stockist />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Stockist />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/contact"}
-          element={<MainLayout child={<Contact />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Contact />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/announcements"}
-          element={<MainLayout child={<Announcements />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Announcements />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/stockist"}
-          element={<MainLayout child={<Stockist />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Stockist />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/profile"}
-          element={<MainLayout child={<Profile />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Profile />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/deposit"}
-          element={<MainLayout child={<Deposit />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Deposit />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/transfer"}
-          element={<MainLayout child={<TransferFunds />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<TransferFunds />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/network"}
-          element={<MainLayout child={<Network />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Network />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/register"}
-          element={<MainLayout child={<Register />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Register />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/ewallet-transfer"}
-          element={<MainLayout child={<EwalletTransfer />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<EwalletTransfer />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/products"}
-          element={<MainLayout child={<Products />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Products />} />
+            </ProtectedRoute>
+          }
         />
-        <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
-        <Route path={"/user/stockistuser"} element={<MainLayout child={<StockistUser />} />} />
+        <Route  
+          path={"/user/cart"} 
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Cart />} /> 
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path={"/user/stockistuser"} 
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<StockistUser />} /> 
+            </ProtectedRoute>
+          }
+        />
         <Route
           path={"/user/stockistuser"}
-          element={<MainLayout child={<StockistUser />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<StockistUser />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/stockistuser"}
-          element={<MainLayout child={<StockistUser />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<StockistUser />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/testimonials"}
-          element={<MainLayout child={<Testimonials />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Testimonials />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/transactions"}
-          element={<MainLayout child={<Transactions />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Transactions />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/transactions"}
-          element={<MainLayout child={<ManageWithdrawals />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<ManageWithdrawals />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/product-upload"}
-          element={<MainLayout child={<ProductUpload />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<ProductUpload />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/package-upload"}
-          element={<MainLayout child={<PackageUpload />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<PackageUpload />} />
+            </ProtectedRoute>
+          }
         />
-        <Route path={"/user/cart"} element={<MainLayout child={<Cart />} />} />
+        <Route 
+          path={"/user/cart"} 
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Cart />} />
+            </ProtectedRoute>
+          } 
+        />
         <Route
           path={"/admin/users"}
-          element={<MainLayout child={<Users />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Users />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/admin/newsletter"}
-          element={<MainLayout child={<Newsletters />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Newsletters />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/transactions"}
-          element={<MainLayout child={<Transactions />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Transactions />} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path={"/user/upgrade-package"}
-          element={<MainLayout child={<Upgrade />} />}
+          element={
+            <ProtectedRoute>
+              <MainLayout child={<Upgrade />} />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </>

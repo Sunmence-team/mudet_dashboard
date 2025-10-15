@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import api from "../../utilities/api";
 import PinModal from "../modals/PinModal";
+import { useCart } from "../../context/CartProvider";
 
 const SummaryCard = ({ items, subtotal, user, stockistId }) => {
+  const { clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
@@ -81,8 +83,8 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
 
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data.message || "Order placed successfully!");
-        setShowPinModal(false); // Close PinModal after successful purchase
-        // Optional: clear cart or redirect
+        setShowPinModal(false);
+        clearCart();
       } else {
         toast.error(response.data.message || "Failed to place order.");
       }
@@ -102,7 +104,7 @@ const SummaryCard = ({ items, subtotal, user, stockistId }) => {
       } else {
         toast.error(message);
       }
-      setShowPinModal(false); // Close PinModal on error
+      setShowPinModal(false);
     } finally {
       setLoading(false);
     }
