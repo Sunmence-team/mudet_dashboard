@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const IMAGE__BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
 
-const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setFormValidity }) => {
+const ProductUpload = ({ nextStep, formData = {}, updateFormData, setFormValidity }) => {
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
@@ -53,9 +53,6 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
       .required("In Stock is required")
       .min(0, "In Stock must be at least 0"),
     description: Yup.string().required("Description is required"),
-    repurchase: Yup.number()
-      .required("Repurchase is required")
-      .min(0, "Repurchase must be at least 0"),
   });
 
   const formik = useFormik({
@@ -65,7 +62,6 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
       pointValue: formData.pointValue || "",
       inStock: formData.inStock || "",
       description: formData.description || "",
-      repurchase: formData.repurchase || "",
       image: formData.image || null,
     },
     validationSchema,
@@ -77,7 +73,6 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
       formDataToSend.append("product_pv", values.pointValue);
       formDataToSend.append("price", values.price);
       formDataToSend.append("in_stock", values.inStock);
-      formDataToSend.append("repurchase", values.repurchase);
       if (values.image) {
         formDataToSend.append("product_image", values.image);
       }
@@ -151,7 +146,6 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
       pointValue: product.product_pv,
       inStock: product.in_stock,
       description: product.product_description,
-      repurchase: product.repurchase || "",
       image: null,
     });
     setLoading((prev) => ({ ...prev, edit: false }));
@@ -175,18 +169,8 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
     }
   };
 
-  const handleView = async (id) => {
-    setLoading((prev) => ({ ...prev, view: true }));
-    try {
-      const response = await api.get(`/api/eachproduct/${id}`);
-      console.log("View response:", response.data); // Debug log
-      setSelectedProduct(response.data); // Changed to response.data assuming flat structure
-    } catch (err) {
-      console.error("Error fetching product details:", err);
-      toast.error(err?.response?.data?.message || "Failed to fetch product details.");
-    } finally {
-      setLoading((prev) => ({ ...prev, view: false }));
-    }
+  const handleView = async (product) => {
+    setSelectedProduct(product);
   };
 
   const closeModal = () => {
@@ -195,9 +179,9 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
 
   return (
     <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
-      <form onSubmit={formik.handleSubmit} className="w-full flex flex-col gap-4">
-        <div className="bg-white border border-black/10 w-full flex flex-col gap-6 p-4 md:p-8 rounded-lg">
-          <p className="text-xl font-semibold">Manage Products</p>
+      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4 bg-white border border-black/10 w-full p-4 md:p-8 rounded-lg">
+        <p className="text-xl font-semibold">Manage Products</p>
+        <div className="grid grid-cols-2 gap-6">
           {/* Product Name - Full Width */}
           <div className="flex flex-col w-full">
             <label htmlFor="productName" className="text-sm font-medium text-gray-700 mb-1">
@@ -217,176 +201,156 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
                 } rounded-lg focus:ring-pryClr focus:border-pryClr`}
             />
           </div>
-          {/* Other Fields - Two Columns */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label htmlFor="price" className="text-sm font-medium text-gray-700 mb-1">
-                Price{" "}
-                {formik.touched.price && formik.errors.price && (
-                  <span className="text-red-500 text-xs"> - {formik.errors.price}</span>
-                )}
-              </label>
+          <div className="flex flex-col">
+            <label htmlFor="price" className="text-sm font-medium text-gray-700 mb-1">
+              Price{" "}
+              {formik.touched.price && formik.errors.price && (
+                <span className="text-red-500 text-xs"> - {formik.errors.price}</span>
+              )}
+            </label>
+            <input
+              type="number"
+              id="price"
+              name="price"
+              value={formik.values.price}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-12 px-4 py-2 border w-full ${formik.touched.price && formik.errors.price ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="pointValue" className="text-sm font-medium text-gray-700 mb-1">
+              Point Value{" "}
+              {formik.touched.pointValue && formik.errors.pointValue && (
+                <span className="text-red-500 text-xs"> - {formik.errors.pointValue}</span>
+              )}
+            </label>
+            <input
+              type="number"
+              id="pointValue"
+              name="pointValue"
+              value={formik.values.pointValue}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-12 px-4 py-2 border w-full ${formik.touched.pointValue && formik.errors.pointValue ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="inStock" className="text-sm font-medium text-gray-700 mb-1">
+              In Stock{" "}
+              {formik.touched.inStock && formik.errors.inStock && (
+                <span className="text-red-500 text-xs"> - {formik.errors.inStock}</span>
+              )}
+            </label>
+            <input
+              type="number"
+              id="inStock"
+              name="inStock"
+              value={formik.values.inStock}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-12 px-4 py-2 border w-full ${formik.touched.inStock && formik.errors.inStock ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="description" className="text-sm font-medium text-gray-700 mb-1">
+              Description{" "}
+              {formik.touched.description && formik.errors.description && (
+                <span className="text-red-500 text-xs"> - {formik.errors.description}</span>
+              )}
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formik.values.description}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-36 px-4 py-2 resize-none border w-full ${formik.touched.description && formik.errors.description ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
+              Image
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500 h-36">
+              <PiUploadSimple size={30} className="mb-4" />
               <input
-                type="number"
-                id="price"
-                name="price"
-                value={formik.values.price}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border w-full ${formik.touched.price && formik.errors.price ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*" // Added to restrict to images only
+                className="hidden"
+                onChange={(event) => {
+                  formik.setFieldValue("image", event.currentTarget.files[0]);
+                }}
               />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="pointValue" className="text-sm font-medium text-gray-700 mb-1">
-                Point Value{" "}
-                {formik.touched.pointValue && formik.errors.pointValue && (
-                  <span className="text-red-500 text-xs"> - {formik.errors.pointValue}</span>
+              <div className="flex items-center gap-3">
+                <label
+                  htmlFor="image"
+                  className="px-6 text-xs py-2 bg-pryClr text-black border border-black/50 rounded-lg cursor-pointer hover:bg-pryClr/90"
+                >
+                  Choose File
+                </label>
+                {formik.values.image ? (
+                  <span className="text-sm text-gray-700">{formik.values.image.name}</span>
+                ) : (
+                  <span className="text-sm text-gray-500">No file chosen</span>
                 )}
-              </label>
-              <input
-                type="number"
-                id="pointValue"
-                name="pointValue"
-                value={formik.values.pointValue}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border w-full ${formik.touched.pointValue && formik.errors.pointValue ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:ring-pryClr focus:border-pryClr`}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="inStock" className="text-sm font-medium text-gray-700 mb-1">
-                In Stock{" "}
-                {formik.touched.inStock && formik.errors.inStock && (
-                  <span className="text-red-500 text-xs"> - {formik.errors.inStock}</span>
-                )}
-              </label>
-              <input
-                type="number"
-                id="inStock"
-                name="inStock"
-                value={formik.values.inStock}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border w-full ${formik.touched.inStock && formik.errors.inStock ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:ring-pryClr focus:border-pryClr`}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="repurchase" className="text-sm font-medium text-gray-700 mb-1">
-                Repurchase{" "}
-                {formik.touched.repurchase && formik.errors.repurchase && (
-                  <span className="text-red-500 text-xs"> - {formik.errors.repurchase}</span>
-                )}
-              </label>
-              <input
-                type="number"
-                id="repurchase"
-                name="repurchase"
-                value={formik.values.repurchase}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border w-full ${formik.touched.repurchase && formik.errors.repurchase ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:ring-pryClr focus:border-pryClr`}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="description" className="text-sm font-medium text-gray-700 mb-1">
-                Description{" "}
-                {formik.touched.description && formik.errors.description && (
-                  <span className="text-red-500 text-xs"> - {formik.errors.description}</span>
-                )}
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formik.values.description}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className={`h-36 px-4 py-2 border w-full ${formik.touched.description && formik.errors.description ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:ring-pryClr focus:border-pryClr`}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="image" className="text-sm font-medium text-gray-700 mb-1">
-                Image
-              </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500 h-36">
-                <PiUploadSimple size={30} className="mb-4" />
-                <input
-                  type="file"
-                  id="image"
-                  name="image"
-                  accept="image/*" // Added to restrict to images only
-                  className="hidden"
-                  onChange={(event) => {
-                    formik.setFieldValue("image", event.currentTarget.files[0]);
-                  }}
-                />
-                <div className="flex items-center gap-3">
-                  <label
-                    htmlFor="image"
-                    className="px-6 text-xs py-2 bg-pryClr text-black border border-black/50 rounded-lg cursor-pointer hover:bg-pryClr/90"
-                  >
-                    Choose File
-                  </label>
-                  {formik.values.image ? (
-                    <span className="text-sm text-gray-700">{formik.values.image.name}</span>
-                  ) : (
-                    <span className="text-sm text-gray-500">No file chosen</span>
-                  )}
-                </div>
               </div>
             </div>
           </div>
-          <button
-            type="submit"
-            disabled={loading.submit}
-            className="bg-primary text-white px-6 py-2 rounded-full w-full flex items-center justify-center"
-          >
-            {loading.submit ? (
-              <>
-                <svg
-                  className="animate-spin h-5 w-5 mr-2 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Loading...
-              </>
-            ) : isEditing ? (
-              "Update Product"
-            ) : (
-              "Upload Product"
-            )}
-          </button>
+          <div className="md:col-span-2 col-span-1">
+            <button
+              type="submit"
+              disabled={loading.submit}
+              className="bg-primary text-white px-6 py-2 rounded-full w-full flex items-center justify-center"
+            >
+              {loading.submit ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Loading...
+                </>
+              ) : isEditing ? (
+                "Update Product"
+              ) : (
+                "Upload Product"
+              )}
+            </button>
+          </div>
         </div>
       </form>
       <div className="w-full mt-6">
         <h2 className="text-xl font-semibold mb-4">All Products</h2>
-        <div className="overflow-x-auto">
-          <div className="grid grid-cols-7 gap-4 text-center p-4 rounded-lg bg-gray-100 min-w-[700px]">
+        <div className="overflow-x-auto space-y-6">
+          <div className="grid grid-cols-6 gap-4 text-center p-4 rounded-lg min-w-[700px] font-semibold text-black/80">
             <span>IMAGE</span>
             <span>NAME</span>
             <span>PRICE</span>
             <span>POINT VALUE</span>
             <span>STOCK</span>
-            <span>REPURCHASE</span>
             <span>ACTION</span>
           </div>
           {loading.fetch ? (
@@ -418,7 +382,7 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
             products.map((product) => (
               <div
                 key={product.id}
-                className="grid grid-cols-7 gap-4 text-center p-4 bg-white min-w-[700px]"
+                className="grid grid-cols-6 items-center gap-4 text-center p-4 bg-white min-w-[700px] rounded-s-xl rounded-e-xl border border-black/10"
               >
                 <div className="flex justify-center">
                   {product.product_image ? (
@@ -431,10 +395,9 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
                 <span>{product.price}</span>
                 <span>{product.product_pv}</span>
                 <span>{product.in_stock}</span>
-                <span>{product.repurchase || "N/A"}</span>
                 <div className="flex justify-center gap-4">
                   <button
-                    onClick={() => handleView(product.id)}
+                    onClick={() => handleView(product)}
                     disabled={loading.view}
                     className="text-primary cursor-pointer disabled:opacity-50"
                     title="View"
@@ -538,11 +501,11 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
                     max-h-[90vh] overflow-y-auto transform transition-all scale-100">
 
             {/* Header */}
-            <div className="flex justify-between items-center border-b px-6 py-4 bg-gradient-to-r from-primary to-primary/80 text-white">
+            <div className="flex justify-between items-center px-6 py-4">
               <h2 className="text-lg sm:text-xl font-bold">Product Details</h2>
               <button
                 onClick={closeModal}
-                className="text-white hover:text-gray-200 transition-colors"
+                className="transition-colors"
               >
                 ✕
               </button>
@@ -553,7 +516,7 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
               {selectedProduct.product_image && (
                 <div className="flex justify-center">
                   <img
-                    src={selectedProduct.product_image}
+                    src={`${IMAGE__BASE_URL}/${selectedProduct.product_image}`}
                     alt={selectedProduct.product_name}
                     className="w-40 h-40 object-cover rounded-lg shadow-md"
                   />
@@ -577,10 +540,6 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
                   <p className="font-semibold text-gray-700">In Stock</p>
                   <p className="text-gray-600">{selectedProduct.in_stock}</p>
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-700">Repurchase</p>
-                  <p className="text-gray-600">{selectedProduct.repurchase || "N/A"}</p>
-                </div>
               </div>
 
               <div>
@@ -592,10 +551,10 @@ const ProductUpload = ({ prevStep, nextStep, formData = {}, updateFormData, setF
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t flex justify-end">
+            <div className="px-6 py-4">
               <button
                 onClick={closeModal}
-                className="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-full shadow-md transition-all"
+                className="bg-primary w-full hover:bg-primary/90 text-white px-5 py-2 rounded-full shadow-md transition-all"
               >
                 Close
               </button>
