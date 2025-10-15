@@ -1,32 +1,23 @@
-// import { useUser } from '../context/UserContext';
-
-// const ProtectedRoute = ({ element: Component, ...rest }) => {
-//   const { token, logout } = useUser()
-//   const isAuthenticated = !!token
-
-//   return isAuthenticated ? <Component {...rest} /> : logout()
-// };
-
-// export default ProtectedRoute;
-
-
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import { useUser } from '../context/UserContext';
-
 
 const ProtectedRoute = ({ children }) => {
   const { isLoggedIn, loading } = useUser();
-  console.log("isLoggedIn")
-    
+
+  useEffect(() => {
+    if (!loading && !isLoggedIn) {
+      // Redirect to external login page
+      // window.location.replace('https://www.mudetrealsolution.com/#/login');
+    }
+  }, [loading, isLoggedIn]);
+
   if (loading) {
     return <div>Loading user session...</div>;
   }
 
-  const isAuthenticated = !!isLoggedIn;
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  if (!isLoggedIn) {
+    // While redirecting, return null (or a spinner)
+    return null;
   }
 
   return children;

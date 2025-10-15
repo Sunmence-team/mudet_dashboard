@@ -294,7 +294,7 @@ const Stockist = () => {
                                                 {isRequests ? (
                                                     <button
                                                         onClick={() => handleEnableStockist(item)}
-                                                        disabled={loadingEnable[item.user_id]}
+                                                        disabled={item.status === "pending" || loadingEnable[item.user_id]}
                                                         className={`flex ms-auto items-center space-x-2 px-4 py-2 rounded-full ${loadingEnable[item.user_id] ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary"}`}
                                                         title="Enable Stockist"
                                                     >
