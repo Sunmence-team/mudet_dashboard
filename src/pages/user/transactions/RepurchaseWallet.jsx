@@ -23,7 +23,7 @@ const RepurchaseWallet = () => {
     setLoading(true);
     try {
       if (!userId) {
-        console.error("User ID is undefined. Please log in.");
+        // console.error("User ID is undefined. Please log in.");
         setRepurchaseData({
           data: [],
           current_page: 1,
@@ -66,7 +66,7 @@ const RepurchaseWallet = () => {
         });
       }
     } catch (err) {
-      console.error("Error fetching repurchase data:", err);
+      // console.error("Error fetching repurchase data:", err);
       setRepurchaseData({
         data: [],
         current_page: 1,

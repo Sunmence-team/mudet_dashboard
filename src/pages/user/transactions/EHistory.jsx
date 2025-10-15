@@ -39,7 +39,7 @@ const EHistory = () => {
         });
       }
     } catch (err) {
-      console.error("Error fetching transaction history:", err);
+      // console.error("Error fetching transaction history:", err);
     } finally {
       setLoading(false);
     }

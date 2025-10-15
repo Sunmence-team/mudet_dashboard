@@ -28,7 +28,7 @@ const ProductsHis = () => {
     setLoading(true);
     try {
       if (!userId) {
-        console.error("User ID is undefined. Please log in.");
+        // console.error("User ID is undefined. Please log in.");
         setProductsData({
           data: [],
           current_page: 1,
@@ -73,7 +73,7 @@ const ProductsHis = () => {
         });
       }
     } catch (err) {
-      console.error("Error fetching products:", err);
+      // console.error("Error fetching products:", err);
       setProductsData({
         data: [],
         current_page: 1,
